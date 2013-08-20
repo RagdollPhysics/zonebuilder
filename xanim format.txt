@@ -1,0 +1,22 @@
+xanim file
+
+version (17) : short
+numnotetracks - short
+numtags - short
+looping & delta - short
+framerate - int
+zero + 1 for field_1D - byte
+
+
+
+anim data
+foreach(tag)
+{
+	numloopframes - short : if zero then result is next short?
+	
+}
+
+
+databytecount = field_19 + tagcount
+dataintcount = field_19 + 2 * field_19
+randomdataintcount = 0; // always zero
