@@ -1,5 +1,5 @@
 #include "StdInc.h"
-int ffVersion = 276;
+int ffVersion = 277;
 
 char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0', 
 	ffVersion, ffVersion >> 8, ffVersion >> 16, ffVersion >> 24, 

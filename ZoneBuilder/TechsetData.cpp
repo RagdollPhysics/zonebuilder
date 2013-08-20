@@ -50,7 +50,6 @@ void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		techset->techniques[curTechnique]->name = (char*)malloc(strlen(techName) + 1);
 		strcpy(techset->techniques[curTechnique]->name, techName);
 		techset->techniques[curTechnique]->numPasses = passCount;
-		techset->techniques[curTechnique]->passes = new MaterialPass[passCount];
 		for(int i=0; i<passCount; i++)
 		{
 			char vertexDecl[64];
@@ -102,31 +101,25 @@ void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		if(!set->techniques[i]) continue;
 		MaterialTechnique * tech = (MaterialTechnique*)buf->at();
 		buf->write(set->techniques[i], sizeof(MaterialTechnique), 1);
-		buf->write(set->techniques[i]->name, strlen(set->techniques[i]->name) + 1, 1);
-		tech->name = (char*)0xFFFFFFFF;
 
-		for(int j=0; j<tech->numPasses; j++)
+		int offset = (int)&tech->passes[0].vertexDecl - (int)set;
+		addFixup(info, asset, offset, (int)tech->passes[0].vertexDecl);
+
+		offset = (int)&tech->passes[0].vertexShader - (int)set;
+		addFixup(info, asset, offset, (int)tech->passes[0].vertexShader);
+
+		offset = (int)&tech->passes[0].pixelShader - (int)set;
+		addFixup(info, asset, offset, (int)tech->passes[0].pixelShader);
+
+		for(int k=0; k<tech->passes[0].argCount1 + tech->passes[0].argCount2 + tech->passes[0].argCount3; k++)
 		{
-			MaterialPass * pass = (MaterialPass*)buf->at();
-			buf->write(&tech->passes[j], sizeof(MaterialPass), 1);
-
-			int offset = (int)&pass->vertexDecl - (int)set;
-			addFixup(info, asset, offset, (int)pass->vertexDecl);
-
-			offset = (int)&pass->vertexShader - (int)set;
-			addFixup(info, asset, offset, (int)pass->vertexShader);
-
-			offset = (int)&pass->pixelShader - (int)set;
-			addFixup(info, asset, offset, (int)pass->pixelShader);
-
-			for(int k=0; k<pass->argCount1 + pass->argCount2 + pass->argCount3; k++)
-			{
-				buf->write(&pass->argumentDef[k], sizeof(ShaderArgumentDef), 1);
-			}
-			pass->argumentDef = (ShaderArgumentDef*)0xFFFFFFFF;
+			buf->write(&tech->passes[0].argumentDef[k], sizeof(ShaderArgumentDef), 1);
 		}
-		tech->passes = (MaterialPass*)0xFFFFFFFF;
+		tech->passes[0].argumentDef = (ShaderArgumentDef*)0xFFFFFFFF;
 		set->techniques[i] = (MaterialTechnique*)0xFFFFFFFF;
+
+		buf->write(tech->name, strlen(tech->name) + 1, 1);
+		tech->name = (char*)0xFFFFFFFF;
 	}
 	buf->resize(-1);
 	// fix the data

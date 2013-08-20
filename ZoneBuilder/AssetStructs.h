@@ -214,7 +214,7 @@ struct MaterialTechnique
 	char* name;
 	short pad2;
 	short numPasses;
-	MaterialPass * passes;
+	MaterialPass passes[1];
 };
 
 struct MaterialTechniqueSet

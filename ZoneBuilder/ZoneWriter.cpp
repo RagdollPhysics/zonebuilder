@@ -27,7 +27,7 @@ BUFFER* writeZone(zoneInfo_t * info)
 	for(int i=0; i<info->assetCount; i++)
 	{
 		buf->write(&info->assets[i].type, 4, 1);
-		buf->write(&pad, 4, 1);
+		buf->write(-2, 1); // mark everything!
 	}
 
 	for(int i=0; i<info->assetCount; i++)
@@ -40,7 +40,7 @@ BUFFER* writeZone(zoneInfo_t * info)
 		for(map<int,int>::iterator it = fixups.begin(); it != fixups.end(); it++)
 		{
 			buf->seek(info->assets[i].offset + it->first, SEEK_SET);
-			buf->write(info->assets[it->second].offset | 0xF0000000, 4);
+			buf->write((info->assets[it->second].offset + 1) | 0xF0000000, 1);
 		}
 		buf->seek(end, SEEK_SET);
 	}

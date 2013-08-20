@@ -49,6 +49,8 @@ int containsAsset(zoneInfo_t* info, int type, const char* name)
 
 int addAsset(zoneInfo_t* info, int type, const char* name, char* data, size_t dataLen)
 {
+	int a = containsAsset(info, type, name);
+	if(a > 0) return a;
 	if(data)
 	{
 		info->assets[info->assetCount].data = (char*)malloc(dataLen);
