@@ -3,6 +3,11 @@
 unsigned int pad = 0xFFFFFFFF;
 unsigned int zero = 0;
 
+void fwriteint(FILE* f, int i)
+{
+	fwrite(&i, 4, 1, f);
+}
+
 BUFFER* writeZone(zoneInfo_t * info)
 {
 	BUFFER* buf = new BUFFER(0x8000);
@@ -27,14 +32,14 @@ BUFFER* writeZone(zoneInfo_t * info)
 	for(int i=0; i<info->assetCount; i++)
 	{
 		buf->write(&info->assets[i].type, 4, 1);
-		buf->write(-2, 1); // mark everything!
+		buf->write(-1, 1);
 	}
 
 	for(int i=0; i<info->assetCount; i++)
 	{
-		info->assets[i].offset = buf->tell(); // store offset
+		//info->assets[i].offset = buf->tell(); // store offset
 		buf->write(info->assets[i].data, info->assets[i].length, 1);
-		int end = buf->tell();
+		/*int end = buf->tell();
 
 		map<int, int> fixups = *(info->assets[i].fixups); // do fixups
 		for(map<int,int>::iterator it = fixups.begin(); it != fixups.end(); it++)
@@ -42,7 +47,7 @@ BUFFER* writeZone(zoneInfo_t * info)
 			buf->seek(info->assets[i].offset + it->first, SEEK_SET);
 			buf->write((info->assets[it->second].offset + 1) | 0xF0000000, 1);
 		}
-		buf->seek(end, SEEK_SET);
+		buf->seek(end, SEEK_SET);*/
 	}
 
 	buf->resize(-1); // should be maxsize
@@ -66,8 +71,3 @@ BUFFER* writeZone(zoneInfo_t * info)
 
 	return buf;
 }
-
-typedef struct
-{
-
-} XHeader_t;

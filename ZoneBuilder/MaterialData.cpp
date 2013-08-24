@@ -25,16 +25,28 @@ typedef struct
 	int mipAddr1;
 } _IWI;
 
+const char * materialUsageTypes [] = 
+{
+	"ui",
+	"model"
+};
+
+#define MATERIAL_USAGE_UI 0
+#define MATERIAL_USAGE_MODEL 1
+
 int materialMapCount;
 char materialMaps[8][16];
 char materialTextureNames[8][64];
 _IWI iwiHeaders[8];
 char techsetName [64];
+int materialUsage = -1;
 
-void parseMatFile(char* data, size_t dataLen)
+int parseMatFile(char* data, size_t dataLen)
 {
 	char* at = data;
 	materialMapCount = 0;
+	*techsetName = 0;
+	materialUsage = -1;
 	*(data + dataLen) = 0x0;
 	while(at < data + dataLen)
 	{
@@ -50,6 +62,15 @@ void parseMatFile(char* data, size_t dataLen)
 			at += strlen(line) + 2;
 			continue;
 		}
+		if(!strncmp("usage", line, 4))
+		{
+			for(int i=0; i<2;i++)
+			{
+				if(!strcmp(materialUsageTypes[i], (line + 6))) { materialUsage = i; break; }
+			}
+			at += strlen(line) + 2;
+			continue;
+		}
 		strncpy(materialMaps[materialMapCount], l.substr(0, split).c_str(), 16);
 		strncpy(materialTextureNames[materialMapCount], l.substr(split + 1, strlen(line) - split).c_str(), 64);
 
@@ -57,19 +78,19 @@ void parseMatFile(char* data, size_t dataLen)
 
 		char fname [64 + 11];
 		sprintf(fname, "images/%s.iwi", materialTextureNames[materialMapCount]);
-		if(GetFileAttributesA(fname) == INVALID_FILE_ATTRIBUTES) { Com_Error(false, "File %s does not exist!", fname); return; }
+		if(GetFileAttributesA(fname) == INVALID_FILE_ATTRIBUTES) { Com_Error(false, "File %s does not exist!", fname); return -1; }
 		FILE * iwi = fopen(fname, "r");
 		fread(&iwiHeaders[materialMapCount], sizeof(_IWI), 1, iwi);
 		fclose(iwi);
 
 		materialMapCount++;
 	}
-	
+	return 0;
 }
 
 void addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	parseMatFile(data, dataLen);
+	if(parseMatFile(data, dataLen) < 0) return;
 
 	// load up the techset
 	char techsetfname [128];
@@ -83,16 +104,19 @@ void addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	Material* mat = new Material;
 	memset(mat, 0, sizeof(Material));
 	mat->name = (char*)0xFFFFFFFF;
-	mat->flags = 0x2F;
-	mat->animationX = 1;
-	mat->animationY = 1;
-	mat->unknown2 = 0xFFFFFFFF;
-	mat->unknown3 = 0xFFFFFF00;
-	memset(mat->unknown4, 0xFF, sizeof(mat->unknown4));
-	mat->numMaps = materialMapCount;
-	mat->stateMapCount = 1;
-	mat->unknown6 = 3;
-	mat->unknown7 = 4;
+	if(materialUsage == MATERIAL_USAGE_UI)
+	{
+		mat->flags = 0x2F;
+		mat->animationX = 1;
+		mat->animationY = 1;
+		mat->unknown2 = 0xFFFFFFFF;
+		mat->unknown3 = 0xFFFFFF00;
+		memset(mat->unknown4, 0xFF, sizeof(mat->unknown4));
+		mat->numMaps = materialMapCount;
+		mat->stateMapCount = 1;
+		mat->unknown6 = 3;
+		mat->unknown7 = 4;
+	}
 
 	// null dem pointers!
 	mat->techniqueSet = (MaterialTechniqueSet*)0x0;//0xFFFFFFFF;
@@ -162,11 +186,15 @@ void addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	// unknown 8 goes here whenever we use it
 
 	// statemap
-	char statemap[] = {0x65, 0x51, 0x12, 0x18, 0x02, 0x00, 0x0E, 0xE0 };
-	buf->write(statemap, 8, 1);
+	if(materialUsage == MATERIAL_USAGE_UI)
+	{
+		char statemap[] = {0x65, 0x51, 0x12, 0x18, 0x02, 0x00, 0x0E, 0xE0 };
+		buf->write(statemap, 8, 1);
+	}
 
 	buf->resize(-1);
 
 	// fix the data
 	setAssetData(info, asset, buf->data(), buf->getsize());
 }
+

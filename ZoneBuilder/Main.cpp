@@ -23,12 +23,13 @@ void doArgs(int argc, char* argv[])
 
 void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name)
 {
+	if(containsAsset(info, type, name) > 0) return;
 	if(GetFileAttributesA(filename) == INVALID_FILE_ATTRIBUTES) { Com_Error(false, "File %s does not exist!", filename); return; }
 	Com_Debug("Loading Asset %s of type %s (%s)\n", name, getAssetStringForType(type), filename);
 	FILE* fp = fopen(filename, "rb");
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
-	char* data = (char*)malloc(size);
+	char* data = (char*)VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);//malloc(size);
 	fseek(fp, 0, SEEK_SET);
 
 	fread(data, 1, size, fp);

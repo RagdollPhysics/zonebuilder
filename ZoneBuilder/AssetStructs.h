@@ -263,19 +263,43 @@ struct XModelTagPos
 	float z;
 };
 
+struct XSurfaceCTEntry
+{
+	char pad[24];
+	int numNode;
+	char* node; // el size 16
+	int numLeaf;
+	short* leaf;
+};
+
+struct XSurfaceCT
+{
+	int pad;
+	int pad2;
+	XSurfaceCTEntry* entry;
+};
+
 struct XSurface
 {
-	short index; // +0
+	short pad; // +0
 	short numVertices; // +2
 	short numPrimitives; // +4
 	unsigned char streamHandle; // something to do with buffers, +6
 	char pad2; // +7
 	int pad3; // +8
-	void* indexBuffer; // +12
-	char pad4[12]; // +16
-	void* vertexBuffer; // +28
-	char pad5[32]; // +32
-}; // total size, 64
+	short* indexBuffer; // +12
+	short blendNum1; // +16
+	short blendNum2; // +18
+	short blendNum3; // +20
+	short blendNum4; // +22
+	char* blendInfo; // +24
+	char* vertexBuffer; // +28
+	int numCT; // +32
+	XSurfaceCT* ct; // +36
+	char pad5[22]; // +40
+	short numVerts2; // +60
+	// total size, 64
+};
 
 typedef struct
 {
