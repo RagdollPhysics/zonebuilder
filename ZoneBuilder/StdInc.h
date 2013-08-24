@@ -104,6 +104,7 @@ int getAssetTypeForString(const char* str);
 const char* getAssetStringForType(int type);
 
 // ZoneWriter
+//extern void writeZone(zoneInfo_t * info);
 extern BUFFER* writeZone(zoneInfo_t * info);
 
 // ZoneData
@@ -128,3 +129,6 @@ extern void addVertexShader(zoneInfo_t* info, const char* name, char* data, size
 extern void addPixelShader(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 extern void addVertexDecl(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 extern void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// XSurfaceData
+extern void addXModelSurfs(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

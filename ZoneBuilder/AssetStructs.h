@@ -279,6 +279,25 @@ struct XSurfaceCT
 	XSurfaceCTEntry* entry;
 };
 
+struct GfxPackedVertex
+{
+	float x;
+	float y;
+	float z;
+	float unk; // either 1.0f or -1.0f
+	DWORD color;
+	DWORD texCoords;
+	DWORD normal;
+	DWORD unk2;
+};
+
+struct Face
+{
+	short v1;
+	short v2;
+	short v3;
+};
+
 struct XSurface
 {
 	short pad; // +0
@@ -287,32 +306,32 @@ struct XSurface
 	unsigned char streamHandle; // something to do with buffers, +6
 	char pad2; // +7
 	int pad3; // +8
-	short* indexBuffer; // +12
+	Face* indexBuffer; // +12
 	short blendNum1; // +16
 	short blendNum2; // +18
 	short blendNum3; // +20
 	short blendNum4; // +22
 	char* blendInfo; // +24
-	char* vertexBuffer; // +28
+	GfxPackedVertex* vertexBuffer; // +28
 	int numCT; // +32
 	XSurfaceCT* ct; // +36
-	char pad5[22]; // +40
-	short numVerts2; // +60
+	char pad5[24]; // +40
+	// pad5 matches XModelSurfaces pad
 	// total size, 64
 };
 
 typedef struct
 {
-	const char* name;
-	XSurface* surfaces;
-	int numSurfaces;
-	char pad[24];
-} XModelSurface;
+	const char* name; // +0
+	XSurface* surfaces; // +4
+	int numSurfaces; // +8
+	char pad[24]; // +12, matches XSurface pad5
+} XModelSurfaces; // total size, 36
 
 struct XSurfaceLod
 {
 	char pad[8];
-	XModelSurface* surfaces;
+	XModelSurfaces* surfaces;
 	char pad2[32];
 };
 

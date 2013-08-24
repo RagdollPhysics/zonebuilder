@@ -39,6 +39,9 @@
     <ClCompile Include="TechsetData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XSurfaceData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffers.h">

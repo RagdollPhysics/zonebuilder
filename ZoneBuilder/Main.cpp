@@ -58,6 +58,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		case ASSET_TYPE_PIXELSHADER:
 			addPixelShader(info, name, data, size);
 			break;
+		case ASSET_TYPE_XMODELSURFS:
+			addXModelSurfs(info, name, data, size);
+			break;
 	}
 }
 
@@ -103,15 +106,15 @@ int main(int argc, char* argv[])
 	Com_Printf("Writing Zone File.....\n");
 	BUFFER* buf = writeZone(info);
 #if _DEBUG
-	FILE* fp = fopen("uncompressed_zone", "wb");
-	buf->writetofile(fp);
-	fclose(fp);
+    FILE* fp = fopen("uncompressed_zone", "wb");
+    buf->writetofile(fp);
+    fclose(fp);
 #endif
 	Com_Printf("Compressing Zone File.....\n");
 	BUFFER* compressed = buf->compressZlib();
 	Com_Printf("Writing to Disk.....\n");
 	CreateDirectoryA("zone", NULL);
-	FILE* out = fopen(output.insert(0, "zone\\").append(".ff").c_str(), "w");
+	FILE* out = fopen(output.insert(0, "zone\\").append(".ff").c_str(), "wb");
 	_setmode( _fileno( out ), _O_BINARY ); // it was fucking up zlib output
 	FILETIME time;
 	GetSystemTimeAsFileTime(&time);

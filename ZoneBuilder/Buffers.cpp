@@ -49,10 +49,12 @@ void BUFFER::resize(size_t newsize)
 	char* newdata = new char[newsize];
 	memset(newdata, 0, newsize);
 	memcpy(newdata, _origin, newsize);
-	delete[] _origin;
+	if(_freeOnDestroy)
+		delete[] _origin;
 	_origin = newdata;
 	_size = newsize;
-	_location = _origin + _offset;
+	_location = newdata + _offset;
+	_freeOnDestroy = true;
 }
 
 size_t BUFFER::getsize()
@@ -70,9 +72,10 @@ size_t BUFFER::read(void * dest, size_t size, size_t count)
 	return count;
 }
 
-size_t BUFFER::write(void * _str, size_t size, size_t count)
+size_t BUFFER::write(const void * _str, size_t size, size_t count)
 {
-	if((size*count) + _origin > _origin + _size) resize(_size + size*count + 2048);
+	if((size*count) + _location > _origin + _size) 
+		resize(_size + size*count + 2048);
 	memcpy(_location, _str, size*count);
 	seek(size*count, SEEK_CUR);
 	if(_offset > _maxsize) _maxsize = _offset;

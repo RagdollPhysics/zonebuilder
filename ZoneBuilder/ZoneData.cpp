@@ -47,6 +47,15 @@ int containsAsset(zoneInfo_t* info, int type, const char* name)
 	return -1;
 }
 
+int containsScriptString(zoneInfo_t* info, const char* string)
+{
+	for(int i=0; i<info->scriptStringCount; i++)
+	{
+		if(!strcmp(info->scriptStrings[i].c_str(), string)) return i;
+	}
+	return -1;
+}
+
 int addAsset(zoneInfo_t* info, int type, const char* name, char* data, size_t dataLen)
 {
 	int a = containsAsset(info, type, name);

@@ -26,7 +26,7 @@ public:
 	void resize(size_t newsize);
 	size_t getsize();
 	size_t read(void * dest, size_t size, size_t count);
-	size_t write(void * _str, size_t size, size_t count);
+	size_t write(const void * _str, size_t size, size_t count);
 	size_t write(int value, size_t count);
 	size_t seek(size_t offset, size_t type); // same as fseek
 	size_t tell();

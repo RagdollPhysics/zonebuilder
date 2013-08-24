@@ -90,6 +90,7 @@
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="TechsetData.cpp" />
     <ClCompile Include="Util.cpp" />
+    <ClCompile Include="XSurfaceData.cpp" />
     <ClCompile Include="ZoneData.cpp" />
     <ClCompile Include="ZoneWriter.cpp" />
   </ItemGroup>
