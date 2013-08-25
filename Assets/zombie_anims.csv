@@ -1,6 +1,6 @@
-xanim,viewmodel_zombie_ads_down,xanim/viewmodel_zombie_ads_down.xme
-xanim,viewmodel_zombie_ads_up,xanim/viewmodel_zombie_ads_up.xme
-xanim,viewmodel_zombie_fire,xanim/viewmodel_zombie_fire.xme
-xanim,viewmodel_zombie_idle,xanim/viewmodel_zombie_idle.xme
-xanim,viewmodel_zombie_lower,xanim/viewmodel_zombie_lower.xme
-xanim,viewmodel_zombie_raise,xanim/viewmodel_zombie_raise.xme
+xanim,viewmodel_zombie_ads_down,xanim/viewmodel_zombie_ads_down.xanim
+xanim,viewmodel_zombie_ads_up,xanim/viewmodel_zombie_ads_up.xanim
+xanim,viewmodel_zombie_fire,xanim/viewmodel_zombie_fire.xanim
+xanim,viewmodel_zombie_idle,xanim/viewmodel_zombie_idle.xanim
+xanim,viewmodel_zombie_lower,xanim/viewmodel_zombie_lower.xanim
+xanim,viewmodel_zombie_raise,xanim/viewmodel_zombie_raise.xanim
