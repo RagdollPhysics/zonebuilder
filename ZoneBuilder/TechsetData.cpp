@@ -1,127 +1,96 @@
 #include "StdInc.h"
+#include "Tool.h"
 
-void addVertexShader(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+// NOTE: None of these assets can be added... only exported
+
+void * addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	BUFFER* buf = new BUFFER(dataLen + 16 + strlen(name) + 1);
-	buf->write(-1, 1);
-	buf->write(0, 1);
-	buf->write(-1, 1);
-	buf->write(dataLen >> 2, 1);
-	buf->write((void*)name, strlen(name) + 1, 1);
-	buf->write(data, dataLen, 1);
-	addAsset(info, ASSET_TYPE_VERTEXSHADER, name, buf->data(), buf->getsize());
-}
-
-void addPixelShader(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
-{
-	BUFFER* buf = new BUFFER(dataLen + 16 + strlen(name) + 1);
-	buf->write(-1, 1);
-	buf->write(0, 1);
-	buf->write(-1, 1);
-	buf->write(dataLen >> 2, 1);
-	buf->write((void*)name, strlen(name) + 1, 1);
-	buf->write(data, dataLen, 1);
-	addAsset(info, ASSET_TYPE_PIXELSHADER, name, buf->data(), buf->getsize());
-}
-
-void addVertexDecl(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
-{
-	addAsset(info, ASSET_TYPE_VERTEXDECL, name, data, dataLen);
-}
-
-char* techsetBuffer;
-int techsetBufferCount;
-
-void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
-{
-	MaterialTechniqueSet* techset = new MaterialTechniqueSet;
-	memset(techset, 0, sizeof(MaterialTechniqueSet));
-	techset->name = name;
-
-	int curTechnique;
-	int passCount;
-	char techName[128];
-	sscanlinef_init(data);
-	while(_sscanlinef("%d:%d:%s", &curTechnique, &passCount, &techName))
+	if(dataLen != -1) { Com_Error(false, "How did we get a non bulitin techset?"); return NULL; }
+	MaterialTechniqueSet* asset = (MaterialTechniqueSet*)data;
+	for(int i=0; i<48; i++)
 	{
-		_sscanlinef_inc();
-		techset->techniques[curTechnique] = new MaterialTechnique;
-		memset(techset->techniques[curTechnique], 0, sizeof(MaterialTechnique));
-		techset->techniques[curTechnique]->name = (char*)malloc(strlen(techName) + 1);
-		strcpy(techset->techniques[curTechnique]->name, techName);
-		techset->techniques[curTechnique]->numPasses = passCount;
-		for(int i=0; i<passCount; i++)
-		{
-			char vertexDecl[64];
-			char vertexShader[64];
-			char pixelShader[64];
-			sscanlinef("%s", vertexDecl);
-			sscanlinef("%s", vertexShader);
-			sscanlinef("%s", pixelShader);
+		MaterialTechnique* tech = asset->techniques[i];
+		if(!tech) continue;
 
-			MaterialPass* pass = &techset->techniques[curTechnique]->passes[i];
-			// vertexdecl is special
-			char fname[128];
+		if(asset->techniques[i]->numPasses != 1) Com_Error(true, "Um why does this technique have more than 1 pass?");
+		addAsset(info, ASSET_TYPE_VERTEXDECL, tech->passes[0].vertexDecl->name, tech->passes[0].vertexDecl);
+		addAsset(info, ASSET_TYPE_VERTEXSHADER, tech->passes[0].vertexShader->name, tech->passes[0].vertexShader);
+		addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);		
+	}
+	addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
+}
 
-			_snprintf(fname, 128, "vertexdecl/%s", vertexDecl);
-			loadAsset(info, ASSET_TYPE_VERTEXDECL, fname, vertexDecl);
-			pass->vertexDecl = (VertexDecl*)(info->assetCount - 1);
+void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data)
+{
+	// get all our pointers straight
+	int vshader[48];
+	int pshader[48];
+	int vdecl[48];
+	memset(&vshader, 0, 48 * 4);
+	memset(&pshader, 0, 48 * 4);
+	memset(&vdecl, 0, 48 * 4);
+	for(int i=0; i<48; i++)
+	{
+		MaterialTechnique* tech = data->techniques[i];
+		if(!tech) continue;
 
-			_snprintf(fname, 128, "shader_bin/%s", vertexShader);
-			loadAsset(info, ASSET_TYPE_VERTEXSHADER, fname, vertexShader);
-			pass->vertexShader = (VertexShader*)(info->assetCount - 1);
-
-			_snprintf(fname, 128, "shader_bin/%s", pixelShader);
-			loadAsset(info, ASSET_TYPE_PIXELSHADER, fname, pixelShader);
-			pass->pixelShader = (PixelShader*)(info->assetCount - 1);
-
-			sscanlinef("%hhd,%hhd,%hhd", &pass->argCount1, &pass->argCount2, &pass->argCount3);
-			pass->argumentDef = new ShaderArgumentDef[pass->argCount1 + pass->argCount2 + pass->argCount3];
-			memset(pass->argumentDef, 0, sizeof(ShaderArgumentDef) * (pass->argCount1 + pass->argCount2 + pass->argCount3));
-			for(int j=0; j<pass->argCount1 + pass->argCount2 + pass->argCount3; j++)
-			{
-				sscanlinef("%hd,%hd,%hd,%hd", &pass->argumentDef[j].type, 
-					&pass->argumentDef[j].dest, 
-					&pass->argumentDef[j].paramID,
-					&pass->argumentDef[j].more);
-			}
-		}
+		vdecl[i] = requireAsset(info, ASSET_TYPE_VERTEXDECL, (char*)tech->passes[0].vertexDecl->name, buf);
+		vshader[i] = requireAsset(info, ASSET_TYPE_VERTEXSHADER, (char*)tech->passes[0].vertexShader->name, buf);
+		pshader[i] = requireAsset(info, ASSET_TYPE_PIXELSHADER, (char*)tech->passes[0].pixelShader->name, buf);
 	}
 
-	int asset = addAsset(info, ASSET_TYPE_TECHSET, name, NULL, 0); // add blank asset
-
-	BUFFER* buf = new BUFFER(4096);
-	MaterialTechniqueSet * set = (MaterialTechniqueSet*)buf->at();
-	buf->write(techset, sizeof(MaterialTechniqueSet), 1);
-	buf->write((void*)set->name, strlen(set->name) + 1, 1);
-	set->name = (char*)0xFFFFFFFF;
+	MaterialTechniqueSet * dest = (MaterialTechniqueSet*)buf->at();
+	buf->write(data, sizeof(MaterialTechniqueSet), 1);
+	buf->write(data->name, strlen(data->name) + 1, 1);
+	dest->name = (char*)-1;
 
 	for(int i=0; i<48; i++)
 	{
-		if(!set->techniques[i]) continue;
-		MaterialTechnique * tech = (MaterialTechnique*)buf->at();
-		buf->write(set->techniques[i], sizeof(MaterialTechnique), 1);
-
-		int offset = (int)&tech->passes[0].vertexDecl - (int)set;
-		addFixup(info, asset, offset, (int)tech->passes[0].vertexDecl);
-
-		offset = (int)&tech->passes[0].vertexShader - (int)set;
-		addFixup(info, asset, offset, (int)tech->passes[0].vertexShader);
-
-		offset = (int)&tech->passes[0].pixelShader - (int)set;
-		addFixup(info, asset, offset, (int)tech->passes[0].pixelShader);
-
+		if(!dest->techniques[i]) continue;
+		MaterialTechnique* tech = (MaterialTechnique*)buf->at();
+		buf->write(dest->techniques[i], sizeof(MaterialTechnique), 1);
+		tech->passes[0].vertexDecl = (VertexDecl*)(vdecl[i] | 0xF0000000);
+		tech->passes[0].vertexShader = (VertexShader*)(vshader[i] | 0xF0000000);
+		tech->passes[0].pixelShader = (PixelShader*)(pshader[i] | 0xF0000000);
 		for(int k=0; k<tech->passes[0].argCount1 + tech->passes[0].argCount2 + tech->passes[0].argCount3; k++)
 		{
 			buf->write(&tech->passes[0].argumentDef[k], sizeof(ShaderArgumentDef), 1);
 		}
-		tech->passes[0].argumentDef = (ShaderArgumentDef*)0xFFFFFFFF;
-		set->techniques[i] = (MaterialTechnique*)0xFFFFFFFF;
 
 		buf->write(tech->name, strlen(tech->name) + 1, 1);
-		tech->name = (char*)0xFFFFFFFF;
+
+		tech->passes[0].argumentDef = (ShaderArgumentDef*)-1;
+		tech->name = (char*)-1;
+		dest->techniques[i] = (MaterialTechnique*)-1;
 	}
-	buf->resize(-1);
-	// fix the data
-	setAssetData(info, asset, buf->data(), buf->getsize());
+
+}
+
+void writePixelShader(zoneInfo_t* info, BUFFER* buf, PixelShader* data)
+{
+	PixelShader* dest = (PixelShader*)buf->at();
+	buf->write(data, sizeof(PixelShader), 1);
+	buf->write(data->name, strlen(data->name) + 1, 1);
+	buf->write(data->bytecode, data->codeLen * 4, 1);
+	dest->name = (char*)-1;
+	dest->bytecode = (DWORD*)-1;
+}
+
+void writeVertexShader(zoneInfo_t* info, BUFFER* buf, VertexShader* data)
+{
+	VertexShader* dest = (VertexShader*)buf->at();
+	buf->write(data, sizeof(VertexShader), 1);
+	buf->write(data->name, strlen(data->name) + 1, 1);
+	buf->write(data->bytecode, data->codeLen * 4, 1);
+	dest->name = (char*)-1;
+	dest->bytecode = (DWORD*)-1;
+}
+
+void writeVertexDecl(zoneInfo_t* info, BUFFER* buf, VertexDecl* data)
+{
+	VertexDecl* dest = (VertexDecl*)buf->at();
+	buf->write(data, sizeof(VertexDecl), 1);
+	buf->write(data->name, strlen(data->name) + 1, 1);
+	dest->name = (char*)-1;
+	// seems too easy....
 }

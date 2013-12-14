@@ -7,6 +7,7 @@
 //***************************************
 
 #include "StdInc.h"
+#include "Tool.h"
 
 BUFFER::BUFFER(char * buf, size_t size)
 {
@@ -162,11 +163,11 @@ BUFFER* BUFFER::compressZlib()
 	z_stream strm;
 	int ret;
 	memset(&strm, 0, sizeof(z_stream));
-	char* dest = (char*)malloc(_size);
+	char* dest = (char*)malloc(_size*2); // WHY IS IT BIGGER!!!!!?
 	if(deflateInit(&strm, Z_BEST_COMPRESSION) != Z_OK) { Com_Error(false, "Failed to compress zlib buffer!"); return NULL; }
 	strm.next_out = (Bytef*)dest;
 	strm.next_in = (Bytef*)_origin;
-	strm.avail_out = _size;
+	strm.avail_out = _size*2;
 	strm.avail_in = _size;
 	
 	ret = deflate(&strm, Z_FINISH);

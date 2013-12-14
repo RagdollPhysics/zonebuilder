@@ -1,134 +1,97 @@
+// ==========================================================
+// IW4M project
+// 
+// Component: clientdll
+// Sub-component: steam_api
+// Purpose: standard include file for system headers
+//
+// Initial author: NTAuthority
+// Started: 2010-08-29
+// ==========================================================
+
 #pragma once
 
+#define KEY_DISABLED
+
+// ---------------------------------------------------------
 #define _CRT_SECURE_NO_WARNINGS
+
+// Windows headers
+#define WIN32_LEAN_AND_MEAN
+#define ReadDirectoryChangesW ReadDirectoryChangesW__
+#define CreateRemoteThread CreateRemoteThread__
+#include <windows.h>
+#undef CreateRemoteThread
+#undef ReadDirectoryChangesW
+
+// C/C++ headers
+#define _SCL_SECURE_NO_WARNINGS
+
+#include <map>
+#include <vector>
+#include <string>
 #include <Windows.h>
 #include <stdio.h>
-#include <string>
-#include <map>
 #include <io.h>
 #include <fcntl.h>
 #include <zlib\zlib.h>
 using namespace std;
 
 #include "Buffers.h"
+
+// OSW headers
+#define NO_STEAM // to reduce header amount needed
+#include "CCallback.h"
+#include "ISteamClient008.h"
+#include "ISteamContentServer002.h"
+#include "ISteamUser012.h"
+#include "ISteamFriends005.h"
+#include "ISteamGameServer009.h"
+#include "ISteamMasterServerUpdater001.h"
+#include "ISteamMatchmaking007.h"
+#include "ISteamNetworking003.h"
+#include "ISteamRemoteStorage002.h"
+#include "ISteamUtils005.h"
+#include "ISteamUserStats006.h"
+
+// Generic utilities
+#include "Utils.h"
+
+// MW2 structures
+#include "MW2.h"
+
+// directx shit
+#include "d3dx9.h"
+
+// complete structures
 #include "AssetStructs.h"
 
-#define MAX_ASSET_COUNT 2048
-#define MAX_SCRIPT_STRINGS 2048
+// more names
+void PatchMW2();
+void Sys_RunInit();
 
-#if _DEBUG
-#define Com_Debug Com_Debug_
-#endif
+extern dvar_t* sv_sayName;
 
-typedef enum assetType_e
-{
-	ASSET_TYPE_PHYSPRESET = 0,
-	ASSET_TYPE_PHYS_COLLMAP = 1,
-	ASSET_TYPE_XANIM = 2,
-	ASSET_TYPE_XMODELSURFS = 3,
-	ASSET_TYPE_XMODEL = 4,
-	ASSET_TYPE_MATERIAL = 5,
-	ASSET_TYPE_PIXELSHADER = 6,
-	ASSET_TYPE_VERTEXSHADER = 7,
-	ASSET_TYPE_VERTEXDECL = 8,
-	ASSET_TYPE_TECHSET = 9,
-	ASSET_TYPE_IMAGE = 10,
-	ASSET_TYPE_SOUND = 11,
-	ASSET_TYPE_SNDCURVE = 12,
-	ASSET_TYPE_LOADED_SOUND = 13,
-	ASSET_TYPE_COL_MAP_SP = 14,
-	ASSET_TYPE_COL_MAP_MP = 15,
-	ASSET_TYPE_COM_MAP = 16,
-	ASSET_TYPE_GAME_MAP_SP = 17,
-	ASSET_TYPE_GAME_MAP_MP = 18,
-	ASSET_TYPE_MAP_ENTS = 19,
-	ASSET_TYPE_FX_MAP = 20,
-	ASSET_TYPE_GFX_MAP = 21,
-	ASSET_TYPE_LIGHTDEF = 22,
-	ASSET_TYPE_UI_MAP = 23,
-	ASSET_TYPE_FONT = 24,
-	ASSET_TYPE_MENUFILE = 25,
-	ASSET_TYPE_MENU = 26,
-	ASSET_TYPE_LOCALIZE = 27,
-	ASSET_TYPE_WEAPON = 28,
-	ASSET_TYPE_SNDDRIVERGLOBALS = 29,
-	ASSET_TYPE_FX = 30,
-	ASSET_TYPE_IMPACTFX = 31,
-	ASSET_TYPE_AITYPE = 32,
-	ASSET_TYPE_MPTYPE = 33,
-	ASSET_TYPE_CHARACTER = 34,
-	ASSET_TYPE_XMODELALIAS = 35,
-	ASSET_TYPE_RAWFILE = 36,
-	ASSET_TYPE_STRINGTABLE = 37,
-	ASSET_TYPE_LEADERBOARDDEF = 38,
-	ASSET_TYPE_STRUCTUREDDATADEF = 39,
-	ASSET_TYPE_TRACER = 40,
-	ASSET_TYPE_VEHICLE = 41,
-	ASSET_TYPE_ADDON_MAP_ENTS = 42,
-	ASSET_TYPE_MAX = 43
-} assetType_t;
+void G_SayToClient(int client, DWORD color, const char* name, const char* text);
+void G_SayToAll(DWORD color, const char* name, const char* text);
 
-typedef struct
-{
-	int name;
-	int type;	
-	char* data;
-	int length;
-	int offset;
-	map<int, int> * fixups; // offset, assetNumber
-} asset_t;
+//void* custom_malloc(size_t size, char* file, int line);
 
-typedef struct
-{
-	int scriptStringCount;
-	string * scriptStrings;
-	int assetCount;
-	asset_t * assets;
-} zoneInfo_t;
+//#define malloc(x) custom_malloc(x, __FILE__, __LINE__)
 
-// sscanline ish
-#define sscanlinef_init(ptr) int __sscanlinef_offset = 0; char* __sscanlinef_at = ptr;
-#define _sscanlinef_inc() __sscanlinef_at += __sscanlinef_offset;
+// safe string functions
+#define STRSAFE_NO_DEPRECATE
+#define STRSAFE_NO_CCH_FUNCTIONS
+#include <tchar.h>
+#include <strsafe.h>
 
-#define _sscanlinef(format, ...) sscanf(__sscanlinef_at, format "%n", __VA_ARGS__, &__sscanlinef_offset)
-#define sscanlinef(format, ...) _sscanlinef(format, __VA_ARGS__); _sscanlinef_inc();
+#undef sprintf_s
+#define sprintf_s StringCbPrintf
+//#define sprintf_s(buf, size, format, ...) StringCbPrintf(buf, size, format, __VA_ARGS__)
 
-// Main
-extern void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name);
+#undef strcat_s
+#define strcat_s StringCbCat
+//#define strcat_s(dst, size, src) StringCbCat(dst, size, src)
 
-// Util
-extern void Com_Printf(const char* format, ...);
-void Com_Error(bool exit, const char* format, ...);
-void Com_Debug_(const char* format, ...);
-int getAssetTypeForString(const char* str);
-const char* getAssetStringForType(int type);
-
-// ZoneWriter
-//extern void writeZone(zoneInfo_t * info);
-extern BUFFER* writeZone(zoneInfo_t * info);
-
-// ZoneData
-extern zoneInfo_t * getZoneInfo();
-extern void freeZoneInfo(zoneInfo_t* info);
-extern unsigned int R_HashString(const char* string);
-extern int containsAsset(zoneInfo_t* info, int type, const char* name);
-extern int addAsset(zoneInfo_t* info, int type, const char* name, char* data, size_t dataLen);
-extern void setAssetData(zoneInfo_t * info, int asset, char* data, size_t dataLen);
-extern void addFixup(zoneInfo_t* info, int asset, int offset, int toAsset);
-extern int addScriptString(zoneInfo_t* info, string str);
-extern int addScriptString(zoneInfo_t* info, char* str);
-extern void doLastAsset(zoneInfo_t* info, const char* name);
-extern void addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-
-// MaterialData
-extern void addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-
-// TechsetData
-extern void addVertexShader(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void addPixelShader(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void addVertexDecl(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-
-// XSurfaceData
-extern void addXModelSurfs(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+#undef strcpy_s
+#define strcpy_s StringCbCopy

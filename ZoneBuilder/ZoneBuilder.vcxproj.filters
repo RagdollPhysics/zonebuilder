@@ -11,26 +11,92 @@
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Steam">
+      <UniqueIdentifier>{02425556-5985-42d2-a586-4015e73b0c3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base">
+      <UniqueIdentifier>{d6dc31e3-df5a-4548-a346-c3d18c363b7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Steam">
+      <UniqueIdentifier>{614470f4-2c09-4ebd-b484-1d447b59c9cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Base">
+      <UniqueIdentifier>{bf84b951-ab36-49c2-8261-7cd08d24444c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Buffers.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="SteamAPI.cpp">
+      <Filter>Source Files\Steam</Filter>
     </ClCompile>
-    <ClCompile Include="ZoneWriter.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="SteamFriends005.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamGameServer009.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamMasterServerUpdater001.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamMatchmaking007.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamNetworking003.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamRemoteStorage002.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamUser012.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamUtils005.cpp">
+      <Filter>Source Files\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMW2Console.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="MW2.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooking.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="StdInc.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IW4Bridge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ZoneData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZoneWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XAnimData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RawfileData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XModelData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MaterialData.cpp">
@@ -39,15 +105,54 @@
     <ClCompile Include="TechsetData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="XSurfaceData.cpp">
+    <ClCompile Include="ColMapData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Buffers.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SteamFriends005.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamGameServer009.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamMasterServerUpdater001.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamMatchmaking007.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamNetworking003.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamRemoteStorage002.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamUser012.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamUtils005.h">
+      <Filter>Header Files\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="Hooking.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="MW2.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="s10e5.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="StdInc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AssetStructs.h">

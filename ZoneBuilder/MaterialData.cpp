@@ -1,4 +1,50 @@
 #include "StdInc.h"
+#include "Tool.h"
+
+void writeMaterial(zoneInfo_t* info, BUFFER* buf, Material* data)
+{
+	// require this asset
+	int techsetOffset = requireAsset(info, ASSET_TYPE_TECHSET, (char*)data->techniqueSet->name, buf);
+
+	Material* dest = (Material*)buf->at();
+	buf->write(data, sizeof(Material), 1);
+	buf->write(data->name, strlen(data->name) + 1, 1);
+	dest->name = (char*)-1;
+
+	// write techset here
+	// we are just going to require it and use the offset
+	dest->techniqueSet = (MaterialTechniqueSet*)(techsetOffset | 0xF0000000);
+
+	// write texturedefs here
+	for(int i=0; i<data->numMaps; i++)
+	{
+		MaterialTextureDef * tex = (MaterialTextureDef*)buf->at();
+		buf->write(&data->maps[i], sizeof(MaterialTextureDef), 1);
+		tex->image = (GfxImage*)-1;
+	}
+
+	for(int i=0; i<data->numMaps; i++)
+	{
+		GfxImage * img = (GfxImage*)buf->at();
+		buf->write(data->maps[i].image, sizeof(GfxImage), 1);
+		buf->write(data->maps[i].image->name, strlen(data->maps[i].image->name) + 1, 1);
+		img->name = (char*)-1;
+		img->texture = (GfxImageLoadDef*)-1;
+
+		GfxImageLoadDef * def = (GfxImageLoadDef*)buf->at();
+		buf->write(data->maps[i].image->texture, sizeof(GfxImageLoadDef), 1);
+	}
+	dest->maps = (MaterialTextureDef*)-1;
+
+	if(data->unknown8) {
+		buf->write((char*)data->unknown8, data->unknown5 * 32, 1);
+		dest->unknown8 = -1;
+	}
+	if(data->stateMap) {
+		buf->write(data->stateMap, data->stateMapCount * 8, 1);	
+		dest->stateMap = (void*)-1;
+	}
+}
 
 enum IWI_COMPRESSION_e
 {
@@ -15,38 +61,30 @@ typedef struct
 	char magic[3]; //IWi
 	char version; // 8
 	int flags;
-	char format; // see above
+	short format; // see above
 	short xsize;
 	short ysize;
-	short misc;
+	short depth;
 	int mipAddr4;
 	int mipAddr3;
 	int mipAddr2;
 	int mipAddr1;
 } _IWI;
 
-const char * materialUsageTypes [] = 
-{
-	"ui",
-	"model"
-};
-
 #define MATERIAL_USAGE_UI 0
 #define MATERIAL_USAGE_MODEL 1
 
 int materialMapCount;
-char materialMaps[8][16];
+int materialMaps[8];
 char materialTextureNames[8][64];
 _IWI iwiHeaders[8];
-char techsetName [64];
-int materialUsage = -1;
+char baseMatName [64];
 
 int parseMatFile(char* data, size_t dataLen)
 {
 	char* at = data;
 	materialMapCount = 0;
-	*techsetName = 0;
-	materialUsage = -1;
+	*baseMatName = 0;
 	*(data + dataLen) = 0x0;
 	while(at < data + dataLen)
 	{
@@ -56,145 +94,104 @@ int parseMatFile(char* data, size_t dataLen)
 		sscanf(at, "%s", line);
 		string l = string(line);
 		int split = l.find(',');
-		if(!strncmp("techset", line, 7))
+		if(!strncmp("basemat", line, 7))
 		{
-			strncpy(techsetName, l.substr(split + 1, strlen(line) - split).c_str(), 64);
+			strncpy(baseMatName, l.substr(split + 1, strlen(line) - split).c_str(), 64);
 			at += strlen(line) + 2;
 			continue;
 		}
-		if(!strncmp("usage", line, 4))
-		{
-			for(int i=0; i<2;i++)
-			{
-				if(!strcmp(materialUsageTypes[i], (line + 6))) { materialUsage = i; break; }
-			}
-			at += strlen(line) + 2;
-			continue;
-		}
-		strncpy(materialMaps[materialMapCount], l.substr(0, split).c_str(), 16);
+		materialMaps[materialMapCount] = R_HashString(l.substr(0, split).c_str());
 		strncpy(materialTextureNames[materialMapCount], l.substr(split + 1, strlen(line) - split).c_str(), 64);
 
 		at += strlen(line);
 
 		char fname [64 + 11];
 		sprintf(fname, "images/%s.iwi", materialTextureNames[materialMapCount]);
-		if(GetFileAttributesA(fname) == INVALID_FILE_ATTRIBUTES) { Com_Error(false, "File %s does not exist!", fname); return -1; }
-		FILE * iwi = fopen(fname, "r");
-		fread(&iwiHeaders[materialMapCount], sizeof(_IWI), 1, iwi);
-		fclose(iwi);
+		void* buffer;
+		int size = FS_ReadFile(fname, &buffer);
+		if(size < 0) { Com_Error(false, "File %s does not exist!", fname); return -1; }
+		memcpy(&iwiHeaders[materialMapCount], buffer, sizeof(_IWI));
 
 		materialMapCount++;
 	}
 	return 0;
 }
 
-void addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 {
-	if(parseMatFile(data, dataLen) < 0) return;
+	GfxImage* ret = new GfxImage;
+	memcpy(ret, base, sizeof(GfxImage));
+	ret->texture = new GfxImageLoadDef;
+	memcpy(ret->texture, base->texture, sizeof(GfxImageLoadDef));
+	ret->texture->dataSize = 0;
+	ret->name = name;
 
-	// load up the techset
-	char techsetfname [128];
-	_snprintf(techsetfname, 128, "techsets/%s.techset", techsetName);
-	loadAsset(info, ASSET_TYPE_TECHSET, techsetfname, techsetName);
-
-	int asset = addAsset(info, ASSET_TYPE_MATERIAL, name, NULL, 0);
-
-	BUFFER* buf = new BUFFER(4096);
-
-	Material* mat = new Material;
-	memset(mat, 0, sizeof(Material));
-	mat->name = (char*)0xFFFFFFFF;
-	if(materialUsage == MATERIAL_USAGE_UI)
+	char fname[64];
+	_snprintf(fname, 64, "images/%s.iwi", name);
+	_IWI* buf;
+	if(FS_ReadFile(fname, (void**)&buf) < 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
+	ret->height = buf->xsize;
+	ret->width = buf->ysize;
+	ret->depth = buf->depth;
+	switch(buf->format)
 	{
-		mat->flags = 0x2F;
-		mat->animationX = 1;
-		mat->animationY = 1;
-		mat->unknown2 = 0xFFFFFFFF;
-		mat->unknown3 = 0xFFFFFF00;
-		memset(mat->unknown4, 0xFF, sizeof(mat->unknown4));
-		mat->numMaps = materialMapCount;
-		mat->stateMapCount = 1;
-		mat->unknown6 = 3;
-		mat->unknown7 = 4;
+	case IWI_ARGB:
+		ret->texture->format = 21;
+		break;
+	case IWI_RGB8:
+		ret->texture->format = 20;
+		break;
+	case IWI_DXT1:
+		ret->texture->format = 0x31545844;
+		break;
+	case IWI_DXT3:
+		ret->texture->format = 0x33545844;
+		break;
+	case IWI_DXT5:
+		ret->texture->format = 0x35545844;
+		break;
 	}
-
-	// null dem pointers!
-	mat->techniqueSet = (MaterialTechniqueSet*)0x0;//0xFFFFFFFF;
-	mat->maps = (MaterialTextureDef*)0xFFFFFFFF;
-	mat->stateMap = (void*)0xFFFFFFFF;
-
-	buf->write(mat, sizeof(Material), 1);
-	buf->write((void*)name, strlen(name) + 1, 1);
-
-	// techset
-	int assetPatchTo = containsAsset(info, ASSET_TYPE_TECHSET, techsetName);
-	addFixup(info, asset, 80, assetPatchTo);
-
-	// maps
-	for(int i=0; i<materialMapCount; i++)
-	{
-		MaterialTextureDef* tex = new MaterialTextureDef;
-		memset(tex, 0, sizeof(MaterialTextureDef));
-		tex->firstCharacter = materialMaps[i][0];
-		tex->secondLastCharacter = materialMaps[i][strlen(materialMaps[i])];
-		tex->typeHash = R_HashString(materialMaps[i]);
-		tex->image = (GfxImage*)0xFFFFFFFF;
-		tex->textureType = 0xE2;
-
-		buf->write(tex, sizeof(MaterialTextureDef), 1);
-
-		GfxImage* img = new GfxImage;
-		memset(img, 0, sizeof(GfxImage));
-		img->depth = 1;
-		img->textureType = 3; // 2d texture
-		img->textureType2 = 3;
-		img->texture = (GfxImageLoadDef*)0xFFFFFFFF;
-		img->name = (char*)0xFFFFFFFF;
-		img->width = iwiHeaders[i].xsize;
-		img->height = iwiHeaders[i].ysize;
-
-		buf->write(img, sizeof(GfxImage), 1);
-		buf->write((void*)materialTextureNames[i], strlen(materialTextureNames[i]) + 1, 1);
-
-		GfxImageLoadDef * def = new GfxImageLoadDef;
-		memset(def, 0, sizeof(GfxImageLoadDef));
-		int format = 0;
-		switch(iwiHeaders[i].format)
-		{
-		case IWI_ARGB:
-			format = 21;
-			break;
-		case IWI_RGB8:
-			format = 20;
-			break;
-		case IWI_DXT1:
-			format = 0x31545844;
-			break;
-		case IWI_DXT3:
-			format = 0x33545844;
-			break;
-		case IWI_DXT5:
-			format = 0x35545844;
-			break;
-		}
-		def->format = format;
-		def->mipLevels = 1;
-
-		buf->write(def, sizeof(GfxImageLoadDef), 1);
-	}
-
-	// unknown 8 goes here whenever we use it
-
-	// statemap
-	if(materialUsage == MATERIAL_USAGE_UI)
-	{
-		char statemap[] = {0x65, 0x51, 0x12, 0x18, 0x02, 0x00, 0x0E, 0xE0 };
-		buf->write(statemap, 8, 1);
-	}
-
-	buf->resize(-1);
-
-	// fix the data
-	setAssetData(info, asset, buf->data(), buf->getsize());
+	ret->dataLen1 = buf->mipAddr4 - 32;
+	ret->dataLen2 = buf->mipAddr4 - 32;
+	ret->name = strdup(name);
+	return ret;
 }
 
+void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+{
+	if(dataLen == -1) {
+		Material* mat = (Material*)data;
+		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
+		return data;
+	}
+	parseMatFile(data, dataLen);
+	Material* basemat = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, baseMatName);
+
+	// duplicate the material
+	Material* mat = new Material;
+	memcpy(mat, basemat, sizeof(Material));
+	mat->maps = new MaterialTextureDef[mat->numMaps];
+	memcpy(mat->maps, basemat->maps, sizeof(MaterialTextureDef) * mat->numMaps);
+
+	// new info
+	mat->name = strdup(name);
+	for(int j=0; j<materialMapCount; j++)
+	{
+		int wantedMap = -1;
+		for(int i=0; i<mat->numMaps; i++)
+		{
+			if(mat->maps[i].typeHash == materialMaps[j])
+			{
+				wantedMap = i;
+			}
+		}
+		if(wantedMap == -1) continue; // meh who cares
+		mat->maps[wantedMap].image = LoadImageFromBase(materialTextureNames[j], mat->maps[wantedMap].image);
+	}
+
+	// add techset to our DB here
+	// this one is weird and is all handled internally cause of the shit it does
+	addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
+	//addTechset(info, "2d", (char*)DB_FindXAssetHeader(ASSET_TYPE_TECHSET, "2d"), -1);
+	return mat;
+}

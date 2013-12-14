@@ -24,12 +24,6 @@ typedef struct
 
 typedef struct
 {
-	short _1;
-	short _2;
-} Indicies;
-
-typedef struct
-{
 	int name; // use DB_GetFFString
 	float frame; // something like that
 } Notetrack;
@@ -118,7 +112,7 @@ typedef struct
 	short *randomDataShort; // 64 - 0x40
 	char *randomDataByte; // 68 - 0x44
 	int *randomDataInt; // 72 - 0x48
-	Indicies* indicies; // 76 - 0x4C
+	char* indicies; // 76 - 0x4C
 	Notetrack* notetracks; // 80 - 0x50
 	XAnimDeltaPart * delta; // 84 - 0x54
 	// 88 - 0x58
@@ -131,9 +125,8 @@ struct GfxImageLoadDef // actually a IDirect3DTexture* but this is easier
 	char pad[7];
 	int format; // usually the compression Magic
 	int dataSize; // set to zero to load from IWD
-	//char * data; not needed because we are using IWDs
+	//char * data; 
 };
-
 struct GfxImage
 {
 	GfxImageLoadDef * /*Direct3DTexture9**/ texture;
@@ -184,7 +177,7 @@ struct PixelShader
 struct VertexShader
 {
 	const char* name;
-	void * /*Direct3DVertexShader9**/ shader;
+	void * /*IDirect3DVertexShader9**/ shader;
 	DWORD* bytecode;
 	int codeLen;
 };
@@ -312,7 +305,7 @@ struct XSurface
 	short blendNum3; // +20
 	short blendNum4; // +22
 	char* blendInfo; // +24
-	GfxPackedVertex* vertexBuffer; // +28
+	void* vertexBuffer; // +28
 	int numCT; // +32
 	XSurfaceCT* ct; // +36
 	char pad5[24]; // +40
@@ -330,10 +323,19 @@ typedef struct
 
 struct XSurfaceLod
 {
-	char pad[8];
+	char pad[4];
+	short numSurfs;
+	short pad2;
 	XModelSurfaces* surfaces;
-	char pad2[32];
+	char pad3[32];
 };
+
+struct XColSurf
+{
+	void* tris; // +0, sizeof 48
+	int count; // +4
+	char pad[36]; // +8
+}; // +44
 
 typedef struct XModel
 {
@@ -348,12 +350,12 @@ typedef struct XModel
 	XModelAngle* tagAngles; // +44, element size 8
 	XModelTagPos* tagPositions; // +48, element size 12
 	char* boneUnknown4; // +52
-	char* boneUnknown5; // +56, element size 32
+	char* animMatrix; // +56, element size 32
 	Material** materials; // +60
 	XSurfaceLod lods[4]; // +64
 	int pad4; // +240
-	char* stuffs; // +244
-	int numStuffs; // +248
+	XColSurf* colSurf; // +244
+	int numColSurfs; // +248
 	int pad6;
 	void* unknowns; // bone count, +256, element size 28
 	char pad5[36];
@@ -395,17 +397,83 @@ typedef struct
 	char pad[40];
 } loaded_sound_t;
 
-typedef struct
+struct MapEnts_Brushes
+{
+	int planeCount;
+	short* planes;
+	int vertexCount;
+	void* verticies;
+	int unkCount;
+	void* unk;
+};
+
+typedef struct MapEnts_s
 {
 	const char* name;
-	char pad[252];
-} col_map_sp_t;
+	const char* entitystring;
+	MapEnts_Brushes brushes;
+	char** stageNames;
+	int stageCount;
+} MapEnts;
 
 typedef struct
 {
 	const char* name;
-	char pad[252];
-} col_map_mp_t;
+	int pad; // +8
+	int numCPlanes; // +8
+	void* cPlanes; // sizeof 20, +12
+	int numStaticModels; // +16
+	void* staticModelList; // sizeof 76, +20
+	int numMaterials; // +24
+	void* materials; // sizeof 12 with a string (possibly name?), +28
+	int numCBrushSides; // +32
+	void* cBrushSides; // sizeof 8, +36
+	int numCBrushEdges; // +40
+	char* cBrushEdges; // +44
+	int numCNodes; // +48
+	void * cNodes; // sizeof 8, +52
+	int numCLeaf; // +56
+	void* cLeaf; // +60
+	int numCLeafBrushNodes; // +64
+	void* cLeafBrushNodes; // +68
+	int numCLeafBrushes; // +72
+	void* cLeafBrushes; // +76
+	int unkCount1; // +80
+	int* unknown1; // +84
+	int numVerts; // +88
+	Vector3* verts; // +92
+	int numTriIndicies; // +96
+	short* triIndicies; // +100
+	bool* triEdgeIsWalkable; // +104
+	int numCollisionBorders; // +108
+	void* collisionBorders;// sizeof 28, +112
+	int numCollisionPartitions; // +116
+	void* collisionPartitions; // sizeof 12, +120
+	int numCollisionAABBTrees; // +124
+	void* collisionAABBTrees;// sizeof 32, +128
+	int numCModels; // +132
+	void* cModels; // sizeof 68, +136
+	short numCBrushes; // +140
+	short pad2; // +142
+	void * cBrushes; // sizeof 36, +144
+	void* unknown5; // same count as cBrushes, +148
+	int * unkInt; // same count as cBrushes, +152
+	//void* mapEnts;
+	MapEnts * mapEns; // +156
+	int unkCount6; // +160
+	void* unknown6; // +164
+	short numDynEntities_Model; // +168
+	short numDynEntities_Brush; // +170
+	void* dynEntityDef_Model; // sizeof 92, +172
+	void* dynEntityDef_Brush; // +176
+	void* dynEntityPose_Model; // sizeof 32, +180
+	void* dynEntityPose_Brush; // +184
+	void* dynEntityClient_Model; // sizeof 12, +188
+	void* dynEntityClient_Brush; // +192
+	void* dynEntityColl_Model; // sizeof 20, +196
+	void* dynEntityColl_Brush; // +200
+	char pad3[52]; // +204
+} Col_Map; // +256
 
 struct com_map_entry
 {
@@ -431,12 +499,6 @@ typedef struct
 	const char* name;
 	char pad[4];
 } game_map_mp_t;
-
-typedef struct
-{
-	const char* name;
-	const char* entitystring;
-} map_ents_t;
 
 typedef struct
 {
@@ -512,20 +574,20 @@ typedef struct
 	char pad[4];
 } impactfx_t;
 
-typedef struct
+struct Rawfile
 {
 	const char* name;
 	int sizeCompressed;
 	int sizeUnCompressed;
 	char * compressedData;
-} rawfile_t;
+};
 
 typedef struct {
 	const char* name;
 	int columns;
 	int rows;
 	char** data;
-} stringtable_t;
+} StringTable;
 
 typedef struct
 {

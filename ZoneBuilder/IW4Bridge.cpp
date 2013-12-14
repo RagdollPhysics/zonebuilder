@@ -1,0 +1,153 @@
+#include "StdInc.h"
+#include "Hooking.h"
+#include "Utils.h"
+
+void PatchMW2_Console();
+
+DWORD init1 = 0x42F0A0;
+DWORD init2 = 0x4301B0;
+DWORD init3 = 0x406D10;
+DWORD init4 = 0x4D2280;
+DWORD init5 = 0x47F390;
+DWORD init6 = 0x420830;
+DWORD init7 = 0x64A020;
+DWORD init8 = 0x4E0FB0;
+DWORD init9 = 0x60AD10;
+DWORD init10 = 0x5196C0;
+DWORD init11 = 0x4A62A0;
+DWORD init12 = 0x429080;
+
+bool loadedFastfiles = false;
+
+void ZoneBuild(char* toBuild);
+
+void RunTool()
+{
+	__asm
+	{
+		call init1
+		call init2
+		push 0
+		call init3
+		add esp, 4
+		call init4
+		call init5
+		call init6
+		call init7
+		call init8
+		call init9
+		call init10
+		call init11
+		call init12
+	}
+
+	printf("\nLoading Source Zones...\n");
+	// load source files
+	XZoneInfo* info = new XZoneInfo[3];
+	info[0].name = "code_post_gfx_mp";
+	info[0].type1 = 3;
+	info[0].type2 = 0;
+	info[1].name = "localized_code_post_gfx_mp";
+	info[1].type1 = 3;
+	info[1].type2 = 0;
+	info[2].name = "common_mp";
+	info[2].type1 = 3;
+	info[2].type2 = 0;
+	DB_LoadXAssets(info, 3, 0);
+	while(!loadedFastfiles) Sleep(100);
+	ZoneBuild("testzone");
+}
+
+DWORD LoadFFDBThread = 0x5BC800;
+
+void CheckZoneLoad(char* name, int atype)
+{
+	__asm {
+		push atype
+		push name
+		call LoadFFDBThread
+		add esp, 8
+	}
+	if(!strcmp(name, "common_mp"))
+	{
+		printf("\nDone IW4 Initialization!\n");
+		loadedFastfiles = true;
+	}
+}
+
+
+void InitBridge()
+{
+	printf("Initializing IW4...\n");
+
+	// check version
+	if (strcmp((char*)0x6E9638, "177"))
+	{
+		printf("Error loading IW4!\n");
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
+
+	PatchMW2_Console(); // redirect output
+
+	SetConsoleTitle("ZoneBuilder"); // branding
+
+	// add our entry point
+	call(0x6BABA1, RunTool, PATCH_CALL);
+	call(0x5BCA85, CheckZoneLoad, PATCH_CALL);
+
+	// fuck exceptions
+	memset((DWORD*)0x6114B1, 0x90, 10);
+
+	// always enable system console, not just if generating reflection probes
+	memset((void*)0x60BB58, 0x90, 11);
+
+	// disable 'ignoring asset' notices
+	memset((void*)0x5BB902, 0x90, 5);
+
+	// ignore 'no iwd files found in main'
+	memset((void*)0x642A4B, 0x90, 5);
+
+	// disable safe mode ish
+	memset((void*)0x451434, 0x90, 5);
+
+	// disable optimal options dialog
+	memset((void*)0x450063, 0x90, 5);
+
+	// NTA patches
+	*(DWORD*)0x1CDE7FC = GetCurrentThreadId(); // patch main thread ID
+	*(BYTE*)0x519DDF = 0; //r_loadForrenderer = 0 
+	*(BYTE*)0x4CF7F0 = 0xCC; // dirty disk breakpoint
+	*(BYTE*)0x51F450 = 0xC3; //r_delayloadimage retn
+	*(BYTE*)0x51F03D = 0xEB; // image release jmp
+
+	// basic checks (hash jumps, both normal and playlist)
+	*(WORD*)0x5B97A3 = 0x9090;
+	*(WORD*)0x5BA493 = 0x9090;
+
+	*(WORD*)0x5B991C = 0x9090;
+	*(WORD*)0x5BA60C = 0x9090;
+
+	*(WORD*)0x5B97B4 = 0x9090;
+	*(WORD*)0x5BA4A4 = 0x9090;
+
+	// some other, unknown, check
+	*(BYTE*)0x5B9912 = 0xB8;
+	*(DWORD*)0x5B9913 = 1;
+
+	*(BYTE*)0x5BA602 = 0xB8;
+	*(DWORD*)0x5BA603 = 1;
+
+	*(BYTE*)0x54ADB0 = 0xC3;
+	*(BYTE*)0x647781 = 0xEB;
+
+	memset((void *)0x51F4FA, 0x90, 6);
+	memset((void *)0x505AFB, 0x90, 7);
+	memset((void *)0x505BDB, 0x90, 7);
+	memset((void *)0x51E5CB, 0x90, 5);
+
+	// fs_basegame
+	*(DWORD*)0x6431D1 = (DWORD)"zonebuilder";
+
+	// r_registerDvars hack
+	*(BYTE*)0x51B1CD = 0xC3;
+}

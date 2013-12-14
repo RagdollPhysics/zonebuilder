@@ -1,8 +1,0 @@
-4:1:trivial_vertcol_simple2d
-ppcc0t0t0
-vs_trivial_vertcol_simple.hlsl
-ps_trivial_vertcol_simple.hlsl
-1,1,1
-3,4,98,1024
-3,0,86,1024
-2,0,4161,-24405

@@ -37,7 +37,7 @@ void Com_Error(bool exit, const char* format, ...)
 	printf("ERROR: %s\n", buffer);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	if(IsDebuggerPresent())
-		getchar();
+		DebugBreak();
 	if(exit)
 		TerminateProcess(GetCurrentProcess(), -1);
 }

@@ -1,11 +1,70 @@
 #include "StdInc.h"
+#include "Tool.h"
 
 int zero = 0;
 int pad = 0xFFFFFFFF;
 
+int zoneStreamSizes[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// must be called before you write anything in your asset!!!
+int requireAsset(zoneInfo_t* info, int type, char* name, BUFFER* buf)
+{
+	int a = containsAsset(info, type, name);
+	if(a >= 0)
+	{
+		return writeAsset(info, &info->assets[a], buf);
+	}
+	else
+	{
+		Com_Error(false, "Missing required asset %s (%d). Export may fail!", name, type);
+	}
+	return -1;
+}
+
+void addXZoneMemory(int index, int num)
+{
+	zoneStreamSizes[index] += num;
+}
+
+int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
+{
+	if(asset->written) return asset->offset;
+	asset->offset = buf->tell() + 1; // WHY IS THIS +1 ??????
+	Com_Debug("Writing asset %s, of type %d at offset 0x%x\n", ((Rawfile*)asset->data)->name, asset->type, asset->offset);
+	switch(asset->type)
+	{
+	case ASSET_TYPE_RAWFILE:
+		writeRawfile(info, buf, (Rawfile*)asset->data);
+		break;
+	case ASSET_TYPE_XANIM:
+		writeXAnim(info, buf, (XAnim*)asset->data);
+		break;
+	case ASSET_TYPE_MATERIAL:
+		writeMaterial(info, buf, (Material*)asset->data);
+		break;
+	case ASSET_TYPE_TECHSET:
+		writeTechset(info, buf, (MaterialTechniqueSet*)asset->data);
+		break;
+	case ASSET_TYPE_PIXELSHADER:
+		writePixelShader(info, buf, (PixelShader*)asset->data);
+		break;
+	case ASSET_TYPE_VERTEXSHADER:
+		writeVertexShader(info, buf, (VertexShader*)asset->data);
+		break;
+	case ASSET_TYPE_VERTEXDECL:
+		writeVertexDecl(info, buf, (VertexDecl*)asset->data);
+		break;
+	case ASSET_TYPE_XMODEL:
+		writeXModel(info, buf, (XModel*)asset->data);
+		break;
+	}
+	asset->written = true;
+	return asset->offset;
+}
+
 BUFFER* writeZone(zoneInfo_t * info)
 {
-    BUFFER* buf = new BUFFER(0x8000);
+    BUFFER* buf = new BUFFER(0x8000000);
     buf->seek(40, SEEK_SET);
 
     buf->write(&info->scriptStringCount, 4, 1);
@@ -32,37 +91,23 @@ BUFFER* writeZone(zoneInfo_t * info)
 
     for(int i=0; i<info->assetCount; i++)
     {
-        //info->assets[i].offset = buf->tell(); // store offset
-        buf->write(info->assets[i].data, info->assets[i].length, 1);
-        /*int end = buf->tell();
-
-        map<int, int> fixups = *(info->assets[i].fixups); // do fixups
-        for(map<int,int>::iterator it = fixups.begin(); it != fixups.end(); it++)
-        {
-            buf->seek(info->assets[i].offset + it->first, SEEK_SET);
-            buf->write((info->assets[it->second].offset + 1) | 0xF0000000, 1);
-        }
-        buf->seek(end, SEEK_SET);*/
+		// NO
+        //buf->write(info->assets[i].data, info->assets[i].length, 1);
+		writeAsset(info, &info->assets[i], buf);
     }
 
     buf->resize(-1); // should be maxsize
 
     // YAY... now we get to compute XZoneMemory sizes!
     // got some nice values courtesy of IW4Tool
-    int sizes[10];
-    sizes[0] = buf->getsize() - 39; // data length
-    sizes[1] = 0;
-    sizes[2] = (int)(buf->getsize() * 0.4);
-    sizes[3] = 0;
-    sizes[4] = 0;
-    sizes[5] = (int)(buf->getsize() * 1.3);
-    sizes[6] = 0;
-    sizes[7] = 0;
-    sizes[8] = 0; // 1.2 * something.....
-    sizes[9] = 0; // 1.2 * something.....
+    zoneStreamSizes[0] = buf->getsize() - 39; // data length
+    zoneStreamSizes[2] = (int)(buf->getsize() * 0.4);
+    zoneStreamSizes[5] = (int)(buf->getsize() * 1.3);
+	zoneStreamSizes[8] = (int)(zoneStreamSizes[8] * 1.2);
+	zoneStreamSizes[9] = (int)(zoneStreamSizes[9] * 1.2);
 
     buf->seek(0, SEEK_SET);
-    buf->write(sizes, 40, 1);
+    buf->write(zoneStreamSizes, 40, 1);
 
     return buf;
 }
