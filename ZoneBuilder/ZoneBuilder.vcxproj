@@ -90,6 +90,7 @@
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="MW2.cpp" />
     <ClCompile Include="PatchMW2Console.cpp" />
+    <ClCompile Include="PatchMW2Fastfile.cpp" />
     <ClCompile Include="RawfileData.cpp" />
     <ClCompile Include="StdInc.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Normal|Win32'">Create</PrecompiledHeader>

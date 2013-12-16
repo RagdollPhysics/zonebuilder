@@ -1,8 +1,13 @@
 #include "StdInc.h"
 #include "Hooking.h"
 #include "Utils.h"
+#include <list>
+
+#pragma comment(linker,"/FIXED /BASE:0x8000000")
 
 void PatchMW2_Console();
+void PatchMW2_Fastfile();
+void doWeaponEntries();
 
 DWORD init1 = 0x42F0A0;
 DWORD init2 = 0x4301B0;
@@ -43,19 +48,22 @@ void RunTool()
 
 	printf("\nLoading Source Zones...\n");
 	// load source files
-	XZoneInfo* info = new XZoneInfo[3];
+	XZoneInfo* info = new XZoneInfo[4];
 	info[0].name = "code_post_gfx_mp";
 	info[0].type1 = 3;
 	info[0].type2 = 0;
 	info[1].name = "localized_code_post_gfx_mp";
 	info[1].type1 = 3;
 	info[1].type2 = 0;
-	info[2].name = "common_mp";
+	info[2].name = "weap_trey";
 	info[2].type1 = 3;
 	info[2].type2 = 0;
-	DB_LoadXAssets(info, 3, 0);
+	info[3].name = "common_mp";
+	info[3].type1 = 3;
+	info[3].type2 = 0;
+	DB_LoadXAssets(info, 4, 0);
 	while(!loadedFastfiles) Sleep(100);
-	ZoneBuild("testzone");
+	ZoneBuild("weap_trey_new");
 }
 
 DWORD LoadFFDBThread = 0x5BC800;
@@ -75,7 +83,6 @@ void CheckZoneLoad(char* name, int atype)
 	}
 }
 
-
 void InitBridge()
 {
 	printf("Initializing IW4...\n");
@@ -88,6 +95,7 @@ void InitBridge()
 	}
 
 	PatchMW2_Console(); // redirect output
+	PatchMW2_Fastfile(); // let us load 277 fastfiles
 
 	SetConsoleTitle("ZoneBuilder"); // branding
 
@@ -112,6 +120,10 @@ void InitBridge()
 
 	// disable optimal options dialog
 	memset((void*)0x450063, 0x90, 5);
+
+	// allow loading of IWffu (unsigned) files
+	*(BYTE*)0x4158D9 = 0xEB; // main function
+	*(WORD*)0x4A1D97 = 0x9090; // DB_AuthLoad_InflateInit
 
 	// NTA patches
 	*(DWORD*)0x1CDE7FC = GetCurrentThreadId(); // patch main thread ID
@@ -150,4 +162,52 @@ void InitBridge()
 
 	// r_registerDvars hack
 	*(BYTE*)0x51B1CD = 0xC3;
+
+	// weapon entries stuff here
+	//doWeaponEntries();
+}
+
+typedef struct weaponEntry_s
+{
+	const char* name;
+	int offset;
+	int type;
+} weaponEntry_t;
+
+#define NUM_ENTRIES 672
+
+#define WEAPON_DO_ARRAY(ar, c) \
+{ \
+	for (int _l_1 = 0; _l_1 < c; _l_1++) \
+	{ \
+		if (*(int*)data == _l_1) \
+		{ \
+			fprintf(file, "%s", ((char**)ar)[_l_1]); /* why do I have to explicitly define ar as being a char**? */ \
+		} \
+	} \
+}
+
+weaponEntry_t* weaponEntries = (weaponEntry_t*)0x795F00;
+
+bool compareEntries(weaponEntry_t* first, weaponEntry_t* second)
+{
+	return first->offset < second->offset;
+}
+
+void doWeaponEntries()
+{
+	std::list<weaponEntry_t*> entries;
+
+	for(int i=0; i<NUM_ENTRIES; i++)
+	{
+		weaponEntry_t * e = &weaponEntries[i];
+		entries.push_back(e);
+	}
+	entries.sort(compareEntries);
+	for(std::list<weaponEntry_t*>::iterator it=entries.begin(); it!=entries.end(); ++it)
+	{
+		weaponEntry_t * e = *it;
+		printf("%s: type %d, offset 0x%x\n", e->name, e->type, e->offset);
+	}
+	getchar();
 }

@@ -9,7 +9,9 @@ char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0',
 void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name)
 {
 	if(containsAsset(info, type, name) > 0) return;
-	Com_Debug("Loading Asset %s of type %s (%s)\n", name, getAssetStringForType(type), filename);
+	Com_Debug("Loading Asset %s of type %s", name, getAssetStringForType(type));
+	if(strlen(filename)) Com_Debug(" (%s)", filename);
+	Com_Debug("\n");
 
 	char* data;
 	int size;
@@ -17,7 +19,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	if(strlen(filename) == 0)
 	{
 		data = (char*)DB_FindXAssetHeader(type, name);
-		size = -1;
+		size = 0;
 	}
 	else // custom assets
 	{
@@ -42,7 +44,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 			break;
 	}
 	addAsset(info, type, name, asset);
-	if(size != -1)
+	if(size != 0)
 		FS_FreeFile(data);
 }
 

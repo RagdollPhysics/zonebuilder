@@ -6,7 +6,7 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 	int * materialOffs = new int[data->numSurfaces];
 	for(int i=0; i<data->numSurfaces;i++)
 	{
-		materialOffs[i] = requireAsset(info, ASSET_TYPE_MATERIAL, (char*)data->materials[i]->name, buf);
+		materialOffs[i] = requireAsset(info, ASSET_TYPE_MATERIAL, (char*)data->materials[i]->name, buf) | 0xF0000000;
 	}
 
 	XModel* dest = (XModel*)buf->at();
@@ -137,12 +137,17 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 
 void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == -1)
+	if(dataLen == 0)
 	{
 		XModel * model = (XModel*)data;
 		for(int i=0; i<model->numBones; i++)
 		{
 			model->boneNames[i] = addScriptString(info, SL_ConvertToString(model->boneNames[i]));
+		}
+		for(int i=0; i<model->numSurfaces; i++)
+		{
+			addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
+			addAsset(info, ASSET_TYPE_MATERIAL, model->materials[i]->name, model->materials[i]);
 		}
 		return data;
 	}
@@ -290,6 +295,7 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		else
 		{
 			asset->materials[i] = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, matName);
+			addMaterial(info, matName, (char*)asset->materials[i], 0);
 		}
 		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);
 	}

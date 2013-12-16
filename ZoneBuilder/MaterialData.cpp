@@ -103,7 +103,7 @@ int parseMatFile(char* data, size_t dataLen)
 		materialMaps[materialMapCount] = R_HashString(l.substr(0, split).c_str());
 		strncpy(materialTextureNames[materialMapCount], l.substr(split + 1, strlen(line) - split).c_str(), 64);
 
-		at += strlen(line);
+		at += l.length() + 2; // len + /r/n
 
 		char fname [64 + 11];
 		sprintf(fname, "images/%s.iwi", materialTextureNames[materialMapCount]);
@@ -159,7 +159,7 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 
 void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == -1) {
+	if(dataLen == 0) {
 		Material* mat = (Material*)data;
 		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
 		return data;

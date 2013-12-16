@@ -371,20 +371,6 @@ typedef struct
 	const char* file;
 } StreamFile;
 
-typedef struct  
-{
-	char pad[20];
-	StreamFile* stream;
-	char pad2[76];
-} snd_alias_t;
-
-typedef struct  
-{
-	const char* name;
-	snd_alias_t* aliases;
-	int numAliases;
-} snd_alias_list_t;
-
 typedef struct
 {
 	const char* name;
@@ -393,9 +379,31 @@ typedef struct
 
 typedef struct
 {
+	char* name;
+	char pad[4];
+	int dataLength;
+	char pad2[24];
+	void* soundData;
+} mss_sound_t;
+
+typedef struct  
+{
+	char* name; // +0
+	char* unkName1; // +4
+	char* unkName2; // +8
+	char* unkName3; // +12
+	char* unkName4; // +16
+	StreamFile* stream; // +20
+	char pad2[72];// + 24
+	void* speakerMap; // +96, sizeof 408
+} snd_alias_t;
+
+typedef struct  
+{
 	const char* name;
-	char pad[40];
-} loaded_sound_t;
+	snd_alias_t* aliases;
+	int numAliases;
+} snd_alias_list_t;
 
 struct MapEnts_Brushes
 {
@@ -557,7 +565,69 @@ typedef struct
 {
 	const char* name;
 	char pad[1664];
-} weapon_t;
+} WeaponDef;
+
+enum animNames_e
+{
+	ANIM_NONE,
+	ANIM_IDLE,
+	ANIM_EMPTYIDLE,
+	ANIM_FIRE,
+	ANIM_4,
+	ANIM_LASTSHOT,
+	ANIM_6,
+	ANIM_MELEE,
+	ANIM_MELEE_CHARGE,
+	ANIM_RELOAD,
+	ANIM_RELOAD_EMPTY,
+	ANIM_11,
+	ANIM_12,
+	ANIM_RAISE,
+	ANIM_FIRST_RAISE,
+	ANIM_15,
+	ANIM_DROP,
+	ANIM_17,
+	ANIM_18,
+	ANIM_QUICK_RAISE,
+	ANIM_QUICK_DROP,
+	ANIM_EMPTY_RAISE,
+	ANIM_EMPTY_DROP,
+	ANIM_SPRINT_IN,
+	ANIM_SPRINT_LOOP,
+	ANIM_SPRINT_OUT,
+	ANIM_26,
+	ANIM_27,
+	ANIM_28,
+	ANIM_29,
+	ANIM_30,
+	ANIM_31,
+	ANIM_FIRE_ADS,
+	ANIM_LASTSHOT_ADS,
+	ANIM_34,
+	ANIM_ADS_UP,
+	ANIM_ADS_DOWN,
+	ANIM_MAX
+};
+
+typedef struct
+{
+	const char* name;
+	WeaponDef * weaponDef;
+	char* localizedName;
+	short* hideTags; // I think?
+	char** animNames; // need to document which one is which
+	char pad[40];
+	char* unkString;
+	char pad2[8];
+	Material* hudIconMat;
+	Material* dpadSelectMat;
+	char pad3[20];
+	short unkCount1;
+	short unkCount2;
+	void *unkStuff1; // sizeof 8
+	void *unkStuff2; // sizeof 8
+	int unknown;
+} WeaponHeader; // sizeof 116
 
 typedef struct 
 {

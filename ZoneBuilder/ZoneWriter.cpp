@@ -109,5 +109,7 @@ BUFFER* writeZone(zoneInfo_t * info)
     buf->seek(0, SEEK_SET);
     buf->write(zoneStreamSizes, 40, 1);
 
+	Com_Debug("Wrote %d assets, and %d script strings\n", info->assetCount, info->scriptStringCount);
+
     return buf;
 }

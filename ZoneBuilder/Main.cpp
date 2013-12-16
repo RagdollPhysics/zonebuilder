@@ -89,3 +89,8 @@ bool __stdcall DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 
 	return true;
 }
+
+int main(int argc, char* argv[])
+{
+
+}
