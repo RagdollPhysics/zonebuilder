@@ -64,7 +64,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 
 BUFFER* writeZone(zoneInfo_t * info)
 {
-    BUFFER* buf = new BUFFER(0x8000000);
+    BUFFER* buf = new BUFFER(0x10000000);
     buf->seek(40, SEEK_SET);
 
     buf->write(&info->scriptStringCount, 4, 1);

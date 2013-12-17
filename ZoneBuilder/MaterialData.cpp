@@ -77,7 +77,6 @@ typedef struct
 int materialMapCount;
 int materialMaps[8];
 char materialTextureNames[8][64];
-_IWI iwiHeaders[8];
 char baseMatName [64];
 
 int parseMatFile(char* data, size_t dataLen)
@@ -107,10 +106,8 @@ int parseMatFile(char* data, size_t dataLen)
 
 		char fname [64 + 11];
 		sprintf(fname, "images/%s.iwi", materialTextureNames[materialMapCount]);
-		void* buffer;
-		int size = FS_ReadFile(fname, &buffer);
+		int size = FS_ReadFile(fname, NULL);
 		if(size < 0) { Com_Error(false, "File %s does not exist!", fname); return -1; }
-		memcpy(&iwiHeaders[materialMapCount], buffer, sizeof(_IWI));
 
 		materialMapCount++;
 	}
@@ -128,8 +125,13 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 
 	char fname[64];
 	_snprintf(fname, 64, "images/%s.iwi", name);
-	_IWI* buf;
-	if(FS_ReadFile(fname, (void**)&buf) < 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
+	_IWI* buf = new _IWI;
+	int handle = 0;
+	FS_FOpenFileRead(fname, &handle, 1);
+	if(handle == 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
+	FS_Read(buf, sizeof(_IWI), handle);
+	FS_FCloseFile(handle);
+	//if(FS_ReadFile(fname, (void**)&buf) < 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
 	ret->height = buf->xsize;
 	ret->width = buf->ysize;
 	ret->depth = buf->depth;

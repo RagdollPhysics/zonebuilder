@@ -298,6 +298,7 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 			addMaterial(info, matName, (char*)asset->materials[i], 0);
 		}
 		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);
+		FS_FreeFile(matBuf);
 	}
 	int test = 0;
 	buf->read(&test, 4, 1);

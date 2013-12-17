@@ -8,6 +8,7 @@
 
 void PatchMW2_Console();
 void PatchMW2_Fastfile();
+void PatchMW2_Load();
 void doWeaponEntries();
 
 DWORD init1 = 0x42F0A0;
@@ -131,6 +132,7 @@ void InitBridge()
 
 	PatchMW2_Console(); // redirect output
 	PatchMW2_Fastfile(); // let us load 277 fastfiles
+	//PatchMW2_Load(); // load fastfiles from dlc and alter
 
 	SetConsoleTitle("ZoneBuilder"); // branding
 

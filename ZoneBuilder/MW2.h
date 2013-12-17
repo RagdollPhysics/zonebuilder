@@ -559,6 +559,34 @@ extern FS_FreeFile_t FS_FreeFile;
 typedef int (__cdecl * FS_ReadFile_t)(const char* qpath, void** buffer);
 extern FS_ReadFile_t FS_ReadFile;
 
+typedef char** (__cdecl * FS_ListFiles_t)(char* path, char* extension, int noclue, int* amount);
+extern FS_ListFiles_t FS_ListFiles;
+
+typedef void (__cdecl * FS_FreeFileList_t)(char** list);
+extern FS_FreeFileList_t FS_FreeFileList;
+
+typedef int (__cdecl * FS_FOpenFileAppend_t)(char* file);
+extern FS_FOpenFileAppend_t FS_FOpenFileAppend;
+extern FS_FOpenFileAppend_t FS_FOpenFileWrite;
+
+typedef int (__cdecl * FS_FOpenFileRead_t)(const char* file, int* fh, int uniqueFile);
+extern FS_FOpenFileRead_t FS_FOpenFileRead;
+
+typedef int (__cdecl * FS_FCloseFile_t)(int fh);
+extern FS_FCloseFile_t FS_FCloseFile;
+
+typedef bool (__cdecl * FS_WriteFile_t)(char* filename, char* folder, void* buffer, int size);
+extern FS_WriteFile_t FS_WriteFile;
+
+typedef int (__cdecl * FS_Write_t)(void* buffer, size_t size, int file);
+extern FS_Write_t FS_Write;
+
+typedef int (__cdecl * FS_Read_t)(void* buffer, size_t size, int file);
+extern FS_Read_t FS_Read;
+
+typedef int (__cdecl * FS_Seek_t)(int fileHandle, int seekPosition, int seekOrigin);
+extern FS_Seek_t FS_Seek;
+
 
 typedef void (__cdecl * G_LogPrintf_t)(char*, ...);
 extern G_LogPrintf_t G_LogPrintf;

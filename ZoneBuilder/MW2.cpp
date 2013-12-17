@@ -45,6 +45,16 @@ Dvar_SetCommand_t Dvar_SetCommand = (Dvar_SetCommand_t)0x4EE430;
 
 FS_FreeFile_t FS_FreeFile = (FS_FreeFile_t)0x4416B0;
 FS_ReadFile_t FS_ReadFile = (FS_ReadFile_t)0x4F4B90;
+FS_ListFiles_t FS_ListFiles = (FS_ListFiles_t)0x441BB0;
+FS_FreeFileList_t FS_FreeFileList = (FS_FreeFileList_t)0x4A5DE0;
+FS_FOpenFileAppend_t FS_FOpenFileAppend = (FS_FOpenFileAppend_t)0x410BB0;
+FS_FOpenFileAppend_t FS_FOpenFileWrite = (FS_FOpenFileAppend_t)0x4BA530;
+FS_FOpenFileRead_t FS_FOpenFileRead = (FS_FOpenFileRead_t)0x46CBF0;
+FS_FCloseFile_t FS_FCloseFile = (FS_FCloseFile_t)0x462000;
+FS_WriteFile_t FS_WriteFile = (FS_WriteFile_t)0x426450;
+FS_Write_t FS_Write = (FS_Write_t)0x4C06E0;
+FS_Read_t FS_Read = (FS_Read_t)0x4A04C0;
+FS_Seek_t FS_Seek = (FS_Seek_t)0x4A63D0;
 
 G_LogPrintf_t G_LogPrintf = (G_LogPrintf_t)0x4B0150;
 
