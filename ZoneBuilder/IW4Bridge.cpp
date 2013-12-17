@@ -2,6 +2,7 @@
 #include "Hooking.h"
 #include "Utils.h"
 #include <list>
+#include "Tool.h"
 
 #pragma comment(linker,"/FIXED /BASE:0x8000000")
 
@@ -26,7 +27,10 @@ bool loadedFastfiles = false;
 
 void ZoneBuild(char* toBuild);
 
-void RunTool()
+list<string> sources;
+string zoneToBuild;
+
+void doInit()
 {
 	__asm
 	{
@@ -45,25 +49,26 @@ void RunTool()
 		call init11
 		call init12
 	}
+}
 
-	printf("\nLoading Source Zones...\n");
+void RunTool()
+{
+	doInit();
+
+	printf("Loading Source Zones...\n");
 	// load source files
-	XZoneInfo* info = new XZoneInfo[4];
-	info[0].name = "code_post_gfx_mp";
-	info[0].type1 = 3;
-	info[0].type2 = 0;
-	info[1].name = "localized_code_post_gfx_mp";
-	info[1].type1 = 3;
-	info[1].type2 = 0;
-	info[2].name = "weap_trey";
-	info[2].type1 = 3;
-	info[2].type2 = 0;
-	info[3].name = "common_mp";
-	info[3].type1 = 3;
-	info[3].type2 = 0;
-	DB_LoadXAssets(info, 4, 0);
+	XZoneInfo* info = new XZoneInfo[sources.size()];
+	int i=0;
+	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
+	{
+		info[i].name = strdup((*it).c_str());
+		info[i].type1 = 3;
+		info[i].type2 = 0;
+		i++;
+	}
+	DB_LoadXAssets(info, sources.size(), 0);
 	while(!loadedFastfiles) Sleep(100);
-	ZoneBuild("weap_trey_new");
+	ZoneBuild((char*)zoneToBuild.c_str());
 }
 
 DWORD LoadFFDBThread = 0x5BC800;
@@ -76,16 +81,46 @@ void CheckZoneLoad(char* name, int atype)
 		call LoadFFDBThread
 		add esp, 8
 	}
-	if(!strcmp(name, "common_mp"))
+	if(!strcmp(name, sources.back().c_str()))
 	{
-		printf("\nDone IW4 Initialization!\n");
+		printf("Done IW4 Initialization!\n");
 		loadedFastfiles = true;
 	}
+}
+
+void printUsage()
+{
+	printf("usage: ZoneBuilder.exe [zone name] -sSourceZones\n");
+	TerminateProcess(GetCurrentProcess(), 0);
+}
+
+void parseArgs()
+{
+	sources.push_back(string("code_post_gfx_mp"));
+	sources.push_back(string("localized_code_post_gfx_mp"));
+	sources.push_back(string("common_mp"));
+	char** argv = getArgs();
+	int argc = getArgc();
+	if(argc == 1) printUsage();
+	for(int i=1; i<argc; i++)
+	{
+		if(!strncmp("-s", argv[i], 2))
+		{
+			sources.push_back(string(argv[i] + 2));
+		}
+		else
+		{
+			if(strlen(zoneToBuild.c_str())) { printf("Can't build more than one zone!\n"); TerminateProcess(GetCurrentProcess(), 0); }
+			zoneToBuild = string(argv[i]);
+		}
+	}
+	if(!strlen(zoneToBuild.c_str())) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 }
 
 void InitBridge()
 {
 	printf("Initializing IW4...\n");
+	parseArgs();
 
 	// check version
 	if (strcmp((char*)0x6E9638, "177"))

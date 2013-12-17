@@ -74,29 +74,30 @@ void loadAssetsFromFile(zoneInfo_t* info, const char* file)
 void ZoneBuild(char* building)
 {
 	string toBuild = string(building);
-	Com_Printf("----ZoneBuilder Startup----\n");
+#ifdef _DEBUG
+	Com_Printf("----ZoneBuilder Startup----");
+#endif
 	zoneInfo_t * info = getZoneInfo();
 
-	Com_Printf("Building Zone : %s\n", toBuild.c_str());
+	Com_Printf("\nBuilding Zone : %s\n", toBuild.c_str());
 
-	Com_Printf("Loading assets:\n");
+	Com_Printf("Loading assets...\n");
 	char sourceFile[128];
 	_snprintf(sourceFile, 128, "zone_source/%s.csv", toBuild.c_str());
 	loadAssetsFromFile(info, sourceFile);
-	Com_Printf("Done\n");
 	
 	doLastAsset(info, toBuild.c_str());
 
-	Com_Printf("Writing Zone File.....\n");
+	Com_Printf("Writing Zone..... ");
 	BUFFER* buf = writeZone(info);
 #if _DEBUG
     FILE* fp = fopen("uncompressed_zone", "wb");
     buf->writetofile(fp);
     fclose(fp);
 #endif
-	Com_Printf("Compressing Zone File.....\n");
+	Com_Printf("Compressing Zone..... ");
 	BUFFER* compressed = buf->compressZlib();
-	Com_Printf("Writing to Disk.....\n");
+	Com_Printf("Writing to Disk..... ");
 	CreateDirectoryA("zone", NULL);
 	FILE* out = fopen(toBuild.insert(0, "zone\\english\\").append(".ff").c_str(), "wb");
 	_setmode( _fileno( out ), _O_BINARY ); // it was fucking up zlib output

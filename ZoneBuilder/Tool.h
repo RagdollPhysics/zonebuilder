@@ -11,6 +11,8 @@
 
 #if _DEBUG
 #define Com_Debug Com_Debug_
+#else
+#define Com_Debug
 #endif
 
 typedef struct
@@ -46,6 +48,8 @@ void Com_Error(bool exit, const char* format, ...);
 void Com_Debug_(const char* format, ...);
 int getAssetTypeForString(const char* str);
 const char* getAssetStringForType(int type);
+int getArgc();
+LPSTR* getArgs();
 
 // ZoneWriter
 //extern void writeZone(zoneInfo_t * info);

@@ -40,7 +40,9 @@ static int lastRefresh = 0;
 
 void Sys_Print(const char* message)
 {
+#ifdef _DEBUG
 	printf(message);
+#endif
 }
 
 void Sys_Error(const char* format, ...)

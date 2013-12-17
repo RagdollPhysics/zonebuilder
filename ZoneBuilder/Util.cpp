@@ -1,4 +1,5 @@
 #include "StdInc.h"
+#include <shellapi.h>
 
 void Com_Printf(const char* format, ...)
 {
@@ -102,4 +103,29 @@ int getAssetTypeForString(const char* str)
 const char* getAssetStringForType(int type)
 {
 	return assetTypeStrings[type];
+}
+
+int iArgCount = 0;
+
+int getArgc()
+{
+	return iArgCount;
+}
+
+LPSTR* getArgs()
+{
+	int iIdx;
+
+	LPWSTR * pszArgVectorWide = CommandLineToArgvW(GetCommandLineW(), &iArgCount);
+
+	// Convert the wide string array into an ANSI array (input is ASCII-7)
+	LPSTR * pszArgVectorAnsi = new LPSTR [iArgCount];
+	for (iIdx = 0; iIdx < iArgCount; ++iIdx)
+	{
+		 size_t qStrLen = wcslen(pszArgVectorWide[iIdx]), qConverted = 0;
+		 pszArgVectorAnsi[iIdx] = new CHAR [qStrLen+1];
+		 wcstombs_s(&qConverted,pszArgVectorAnsi[iIdx],qStrLen+1,
+		 pszArgVectorWide [iIdx],qStrLen+1);
+	}
+	return pszArgVectorAnsi;
 }
