@@ -2,7 +2,12 @@
 #include "Hooking.h"
 #include "Utils.h"
 #include <list>
+#include <time.h>
+#include <winsock.h>
+#include <dbghelp.h>
+#include <shellapi.h>
 #include "Tool.h"
+#include "WeaponDef.h"
 
 #pragma comment(linker,"/FIXED /BASE:0x8000000")
 
@@ -52,6 +57,66 @@ void doInit()
 	}
 }
 
+LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
+{
+	// step 1: write minidump
+	static LPEXCEPTION_POINTERS exceptionData;
+
+	exceptionData = ExceptionInfo;
+
+	// create a temporary stack for these calls
+	DWORD* tempStack = new DWORD[16000];
+	static DWORD* origStack;
+
+	__asm
+	{
+		mov origStack, esp
+		mov esp, tempStack
+		add esp, 0FA00h
+		sub esp, 1000h // local stack space over here, sort of
+	}
+
+	char error[1024];
+	char filename[MAX_PATH];
+	__time64_t time;
+	tm* ltime;
+
+	_time64(&time);
+	ltime = _localtime64(&time);
+	strftime(filename, sizeof(filename) - 1, "ZoneBuilder-%Y%m%d%H%M%S.dmp", ltime);
+	_snprintf(error, sizeof(error) - 1, "A minidump has been written to %s.", filename);
+
+	HANDLE hFile = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		MINIDUMP_EXCEPTION_INFORMATION ex;
+		memset(&ex, 0, sizeof(ex));
+		ex.ThreadId = GetCurrentThreadId();
+		ex.ExceptionPointers = exceptionData;
+		ex.ClientPointers = FALSE;
+
+		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ex, NULL, NULL);		
+
+		CloseHandle(hFile);
+	}
+	else
+	{
+		_snprintf(error, sizeof(error) - 1, "An error (0x%x) occurred during creating %s.", GetLastError(), filename);
+	}
+
+	Com_Error(true, "Fatal error (0x%08x) at 0x%08x.\n%s", ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionAddress, error);	
+
+	__asm
+	{
+		mov esp, origStack
+	}
+
+	delete[] tempStack;
+
+	return 0;
+}
+
 void RunTool()
 {
 	doInit();
@@ -97,6 +162,8 @@ void printUsage()
 
 void parseArgs()
 {
+	sources.push_back(string("code_pre_gfx_mp"));
+	sources.push_back(string("localized_code_pre_gfx_mp"));
 	sources.push_back(string("code_post_gfx_mp"));
 	sources.push_back(string("localized_code_post_gfx_mp"));
 	sources.push_back(string("common_mp"));
@@ -117,6 +184,25 @@ void parseArgs()
 	}
 	if(!strlen(zoneToBuild.c_str())) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 }
+
+typedef int (__cdecl * DB_GetXAssetSizeHandler_t)();
+
+void** DB_XAssetPool = (void**)0x7998A8;
+unsigned int* g_poolSize = (unsigned int*)0x7995E8;
+
+DB_GetXAssetSizeHandler_t* DB_GetXAssetSizeHandlers = (DB_GetXAssetSizeHandler_t*)0x799488;
+
+void* ReallocateAssetPool(assetType_t type, unsigned int newSize)
+{
+	int elSize = DB_GetXAssetSizeHandlers[type]();
+	void* poolEntry = malloc(newSize * elSize);
+	DB_XAssetPool[type] = poolEntry;
+	g_poolSize[type] = newSize;
+	return poolEntry;
+}
+
+static DWORD gameWorldSP;
+static DWORD gameWorldMP;
 
 void InitBridge()
 {
@@ -157,6 +243,9 @@ void InitBridge()
 
 	// disable optimal options dialog
 	memset((void*)0x450063, 0x90, 5);
+
+	// exceptions
+	SetUnhandledExceptionFilter(&CustomUnhandledExceptionFilter);
 
 	// allow loading of IWffu (unsigned) files
 	*(BYTE*)0x4158D9 = 0xEB; // main function
@@ -202,7 +291,25 @@ void InitBridge()
 
 	// weapon entries stuff here
 	//doWeaponEntries();
+
+		// reallocate asset pools
+	ReallocateAssetPool(ASSET_TYPE_IMAGE, 7168);
+	ReallocateAssetPool(ASSET_TYPE_LOADED_SOUND, 2700);
+	ReallocateAssetPool(ASSET_TYPE_FX, 1200);
+	ReallocateAssetPool(ASSET_TYPE_LOCALIZE, 14000);
+	ReallocateAssetPool(ASSET_TYPE_XANIM, 8192);
+	//ReallocateAssetPool(ASSET_TYPE_XMODEL, 3072);
+	ReallocateAssetPool(ASSET_TYPE_XMODEL, 5125);
+	ReallocateAssetPool(ASSET_TYPE_PHYSPRESET, 128);
+	ReallocateAssetPool(ASSET_TYPE_PIXELSHADER, 10000);
+	//ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128);
+	ReallocateAssetPool(ASSET_TYPE_VERTEXSHADER, 3072);
+	//ReallocateAssetPool(ASSET_TYPE_TECHSET, 1024);
+	//ReallocateAssetPool(ASSET_TYPE_MATERIAL, 8192);
+	ReallocateAssetPool(ASSET_TYPE_VERTEXDECL, 196);
+	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
 }
+
 
 typedef struct weaponEntry_s
 {
@@ -226,6 +333,53 @@ typedef struct weaponEntry_s
 
 weaponEntry_t* weaponEntries = (weaponEntry_t*)0x795F00;
 
+typedef struct 
+{
+	int offsetStart;
+	int pointerOrigin;
+} rtOffsetMap_t;
+
+#define NUM_OFFSET_MAPS 14
+
+static rtOffsetMap_t offsetMap[] =
+{
+	{ 116, 4 },
+	{ 1784, 12 },
+	{ 1848, 16 },
+	{ 1996, 120 },
+	{ 2060, 128 },
+	{ 2208, 132 },
+	{ 2356, 140 },
+	{ 2388, 144 },
+	{ 2420, 148 },
+	{ 2452, 152 },
+	{ 2484, 588 },
+	{ 2548, 1208 },
+	{ 2672, 1212 },
+	{ 2796, 1576 },
+	{ 0, 0 }
+};
+
+char* MapOffsetToPointer(char* origin, int offset)
+{
+	for (int i = (NUM_OFFSET_MAPS - 1); i >= 0; i--)
+	{
+		rtOffsetMap_t* current = &offsetMap[i];
+		rtOffsetMap_t* next = &offsetMap[i + 1];
+
+		int max = next->offsetStart;
+		if (max == 0) max = 0xFFFFFF;
+
+		if (offset >= current->offsetStart && offset < max)
+		{
+			char* pointer = *(char**)MapOffsetToPointer(origin, current->pointerOrigin);
+			return (pointer + (offset - current->offsetStart));
+		}
+	}
+
+	return (origin + offset);
+}
+
 bool compareEntries(weaponEntry_t* first, weaponEntry_t* second)
 {
 	return first->offset < second->offset;
@@ -238,13 +392,22 @@ void doWeaponEntries()
 	for(int i=0; i<NUM_ENTRIES; i++)
 	{
 		weaponEntry_t * e = &weaponEntries[i];
-		entries.push_back(e);
-	}
-	entries.sort(compareEntries);
-	for(std::list<weaponEntry_t*>::iterator it=entries.begin(); it!=entries.end(); ++it)
-	{
-		weaponEntry_t * e = *it;
-		printf("%s: type %d, offset 0x%x\n", e->name, e->type, e->offset);
+		char* filename = "entries.txt";
+
+		if(e->type >= 16 && e->type <=37)
+			filename = "special.txt";
+		if(e->type == 10)
+			filename = "effects.txt";
+		if(e->type == 11)
+			filename = "models.txt";
+		if(e->type == 12)
+			filename = "materials.txt";
+		if(e->type == 14)
+			filename = "sounds.txt";
+
+		FILE* out = fopen(filename, "a");
+		fprintf(out, "\"%s\",\n", e->name);
+		fclose(out);
 	}
 	getchar();
 }

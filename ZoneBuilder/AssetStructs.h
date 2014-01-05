@@ -277,11 +277,9 @@ struct GfxPackedVertex
 	float x;
 	float y;
 	float z;
-	float unk; // either 1.0f or -1.0f
 	DWORD color;
-	DWORD texCoords;
-	DWORD normal;
-	DWORD unk2;
+	WORD texCoords[2];
+	float normal[3];
 };
 
 struct Face
@@ -305,7 +303,7 @@ struct XSurface
 	short blendNum3; // +20
 	short blendNum4; // +22
 	char* blendInfo; // +24
-	void* vertexBuffer; // +28
+	GfxPackedVertex* vertexBuffer; // +28
 	int numCT; // +32
 	XSurfaceCT* ct; // +36
 	char pad5[24]; // +40
@@ -386,6 +384,13 @@ typedef struct
 	void* soundData;
 } mss_sound_t;
 
+typedef struct
+{
+	char pad[4];
+	char* name;
+	char pad2[400];
+} speakermap_t;
+
 typedef struct  
 {
 	char* name; // +0
@@ -407,43 +412,101 @@ typedef struct
 
 struct MapEnts_Brushes
 {
-	int planeCount;
-	short* planes;
-	int vertexCount;
-	void* verticies;
-	int unkCount;
-	void* unk;
+	int unkCount1;
+	char* unk1;
+	int unkCount2;
+	char* unk2;
+	int unkCount3;
+	char* unk3;
+};
+
+struct MapEnts_Stage
+{
+	const char* name;
+	char pad[16];
 };
 
 typedef struct MapEnts_s
 {
 	const char* name;
 	const char* entitystring;
+	int entitystrlen;
 	MapEnts_Brushes brushes;
-	char** stageNames;
-	int stageCount;
+	MapEnts_Stage* stages;
+	char stageCount;
+	char pad[3];
 } MapEnts;
+
+struct cPlane
+{
+	Vector3 a;
+	float dist;
+	int type;
+};
+
+struct dMaterial
+{
+	char* name;
+	int unk;
+	int unk2;
+};
+
+struct cNode
+{
+	cPlane* plane;
+	short children[2];
+};
+
+struct cBrushSide
+{
+	cPlane* side;
+	short texInfo, dispInfo;
+};
+
+struct cModel
+{
+	Vector3 loc;
+	float rotX, rotY, rotZ, rotW;
+	char pad[40];
+};
+
+struct cBrush
+{
+	int unk;
+	cBrushSide * brushSide;
+	char * brushEdge;
+	char pad[24];
+};
+
+struct cLeafBrushNode
+{
+	short unk;
+	short numBrushes;
+	char pad[4];
+	short* leaf;
+	char pad2[8];
+};
 
 typedef struct
 {
 	const char* name;
 	int pad; // +8
 	int numCPlanes; // +8
-	void* cPlanes; // sizeof 20, +12
+	cPlane* cPlanes; // sizeof 20, +12
 	int numStaticModels; // +16
-	void* staticModelList; // sizeof 76, +20
+	char* staticModelList; // sizeof 76, +20
 	int numMaterials; // +24
-	void* materials; // sizeof 12 with a string (possibly name?), +28
+	dMaterial* materials; // sizeof 12 with a string (possibly name?), +28
 	int numCBrushSides; // +32
-	void* cBrushSides; // sizeof 8, +36
+	cBrushSide* cBrushSides; // sizeof 8, +36
 	int numCBrushEdges; // +40
 	char* cBrushEdges; // +44
 	int numCNodes; // +48
-	void * cNodes; // sizeof 8, +52
+	cNode * cNodes; // sizeof 8, +52
 	int numCLeaf; // +56
 	void* cLeaf; // +60
 	int numCLeafBrushNodes; // +64
-	void* cLeafBrushNodes; // +68
+	cLeafBrushNode* cLeafBrushNodes; // +68
 	int numCLeafBrushes; // +72
 	void* cLeafBrushes; // +76
 	int unkCount1; // +80
@@ -463,11 +526,10 @@ typedef struct
 	void* cModels; // sizeof 68, +136
 	short numCBrushes; // +140
 	short pad2; // +142
-	void * cBrushes; // sizeof 36, +144
+	cBrush * cBrushes; // sizeof 36, +144
 	void* unknown5; // same count as cBrushes, +148
 	int * unkInt; // same count as cBrushes, +152
-	//void* mapEnts;
-	MapEnts * mapEns; // +156
+	MapEnts * mapEnts; // +156
 	int unkCount6; // +160
 	void* unknown6; // +164
 	short numDynEntities_Model; // +168
@@ -483,30 +545,42 @@ typedef struct
 	char pad3[52]; // +204
 } Col_Map; // +256
 
-struct com_map_entry
+struct ComPrimaryLight
 {
-    char data[0x44];
+    char pad[64];
+	char* name;
 };
 
-struct ComMap
+struct ComWorld
 {
     char *name;
     int version;
-    int entryCount;
-    com_map_entry* entries;
+    int lightCount;
+    ComPrimaryLight* lights;
+};
+
+struct GameMap_Data
+{
+	void* unk1;
+	int unkCount1;
+	int unkCount2;
+	void* unk2;
+	char pad[112];
 };
 
 typedef struct
 {
 	const char* name;
-	char pad[52];
-} game_map_sp_t;
+	char pad[48];
+	GameMap_Data* data;
+} GameMap_SP;
+
 
 typedef struct
 {
 	const char* name;
-	char pad[4];
-} game_map_mp_t;
+	GameMap_Data* data;
+} GameMap_MP;
 
 typedef struct
 {

@@ -1,9 +1,10 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-zoneInfo_t * getZoneInfo()
+zoneInfo_t * getZoneInfo(const char* zoneName)
 {
 	zoneInfo_t * info = new zoneInfo_t;
+	info->name = strdup(zoneName);
 
 	info->assets = (asset_t*)malloc(sizeof(asset_t) * MAX_ASSET_COUNT);
 	memset(info->assets, 0, sizeof(asset_t) * MAX_ASSET_COUNT);
@@ -71,10 +72,11 @@ int addAsset(zoneInfo_t* info, int type, const char* name, void* data)
 int addScriptString(zoneInfo_t* info, string str)
 {
 	if(info->scriptStringCount > MAX_SCRIPT_STRINGS) Com_Error(true, "Tell Apadayo to increase MAX_SCRIPT_STRINGS!");
-	int a = containsScriptString(info, str.c_str());
+	int a = containsScriptString(info, str.c_str());	
 	if(a >= 0) return a;
 	info->scriptStrings[info->scriptStringCount] = str;
-	return info->scriptStringCount++;
+	info->scriptStringCount++;
+	return 0;
 }
 
 int addScriptString(zoneInfo_t* info, char* str)

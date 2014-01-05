@@ -26,6 +26,7 @@ typedef struct
 
 typedef struct
 {
+	char* name;
 	int scriptStringCount;
 	string * scriptStrings;
 	int assetCount;
@@ -59,7 +60,7 @@ extern int requireAsset(zoneInfo_t* info, int type, char* name, BUFFER* buf);
 extern void addXZoneMemory(int index, int num);
 
 // ZoneData
-extern zoneInfo_t * getZoneInfo();
+extern zoneInfo_t * getZoneInfo(const char * zoneName);
 extern void freeZoneInfo(zoneInfo_t* info);
 extern unsigned int R_HashString(const char* string);
 extern int containsAsset(zoneInfo_t* info, int type, const char* name);
@@ -90,3 +91,20 @@ extern void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* da
 extern void writePixelShader(zoneInfo_t* info, BUFFER* buf, PixelShader* data);
 extern void writeVertexShader(zoneInfo_t* info, BUFFER* buf, VertexShader* data);
 extern void writeVertexDecl(zoneInfo_t* info, BUFFER* buf, VertexDecl* data);
+
+// ColMapData
+extern void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+extern void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data);
+
+// MapEntsData
+extern void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+extern void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data);
+
+// ComWorldData
+void writeComWorld(zoneInfo_t* info, BUFFER* buf, ComWorld* data);
+void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// GameMapData
+void writeGameMap(zoneInfo_t* info, BUFFER* buf, GameMap_MP* data);
+void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

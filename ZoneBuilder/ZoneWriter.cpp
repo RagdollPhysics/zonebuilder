@@ -30,7 +30,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 {
 	if(asset->written) return asset->offset;
 	asset->offset = buf->tell() + 1; // WHY IS THIS +1 ??????
-	Com_Debug("Writing asset %s, of type %d at offset 0x%x\n", ((Rawfile*)asset->data)->name, asset->type, asset->offset);
+	Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), asset->offset);
 	switch(asset->type)
 	{
 	case ASSET_TYPE_RAWFILE:
@@ -56,6 +56,19 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 		break;
 	case ASSET_TYPE_XMODEL:
 		writeXModel(info, buf, (XModel*)asset->data);
+		break;
+	case ASSET_TYPE_COL_MAP_MP:
+		writeColMap(info, buf, (Col_Map*)asset->data);
+		break;
+	case ASSET_TYPE_MAP_ENTS:
+		writeMapEnts(info, buf, (MapEnts*)asset->data);
+		break;
+	case ASSET_TYPE_COM_MAP:
+		writeComWorld(info, buf, (ComWorld*)asset->data);
+		break;
+	case ASSET_TYPE_GAME_MAP_MP:
+	case ASSET_TYPE_GAME_MAP_SP:
+		writeGameMap(info, buf, (GameMap_MP*)asset->data);
 		break;
 	}
 	asset->written = true;
@@ -109,7 +122,7 @@ BUFFER* writeZone(zoneInfo_t * info)
     buf->seek(0, SEEK_SET);
     buf->write(zoneStreamSizes, 40, 1);
 
-	Com_Debug("Wrote %d assets, and %d script strings\n", info->assetCount, info->scriptStringCount);
+	Com_Debug("\nWrote %d assets, and %d script strings\n", info->assetCount, info->scriptStringCount);
 
     return buf;
 }

@@ -35,6 +35,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <zlib\zlib.h>
+#include <time.h>
 using namespace std;
 
 #include "Buffers.h"

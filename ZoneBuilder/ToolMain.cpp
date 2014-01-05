@@ -42,6 +42,22 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		case ASSET_TYPE_XMODEL:
 			asset = addXModel(info, name, data, size);
 			break;
+		case ASSET_TYPE_COL_MAP_MP:
+			asset = addColMap(info, name, data, size);
+			break;
+		case ASSET_TYPE_MAP_ENTS:
+			asset = addMapEnts(info, name, data, size);
+			break;
+		case ASSET_TYPE_COM_MAP:
+			asset = addComWorld(info, name, data, size);
+			break;
+		case ASSET_TYPE_GAME_MAP_MP:
+			asset = addGameMap_MP(info, name, data, size);
+			break;
+		case ASSET_TYPE_GAME_MAP_SP:
+			asset = addGameMap_SP(info, name, data, size);
+			type = ASSET_TYPE_GAME_MAP_MP;
+			break;
 	}
 	addAsset(info, type, name, asset);
 	if(size != 0)
@@ -77,7 +93,7 @@ void ZoneBuild(char* building)
 #ifdef _DEBUG
 	Com_Printf("----ZoneBuilder Startup----");
 #endif
-	zoneInfo_t * info = getZoneInfo();
+	zoneInfo_t * info = getZoneInfo(toBuild.c_str());
 
 	Com_Printf("\nBuilding Zone : %s\n", toBuild.c_str());
 
@@ -108,7 +124,7 @@ void ZoneBuild(char* building)
 	fwrite(header, 21, 1, out);
 	compressed->writetofile(out);
 	fclose(out);
-	Com_Printf("Done!");
+	Com_Printf("Done!\n");
 
 	if(IsDebuggerPresent()) {
 		getchar();

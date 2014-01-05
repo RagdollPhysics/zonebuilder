@@ -45,11 +45,12 @@
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>StdInc.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
@@ -66,6 +67,7 @@
       <FixedBaseAddress>
       </FixedBaseAddress>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"</Command>
@@ -84,9 +86,12 @@
   <ItemGroup>
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
+    <ClCompile Include="GameMapData.cpp" />
+    <ClCompile Include="ComWorldData.cpp" />
     <ClCompile Include="Hooking.cpp" />
     <ClCompile Include="IW4Bridge.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MapEntsData.cpp" />
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="MW2.cpp" />
     <ClCompile Include="PatchMW2Console.cpp" />
@@ -132,6 +137,7 @@
     <ClInclude Include="SteamUtils005.h" />
     <ClInclude Include="Tool.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="WeaponDef.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

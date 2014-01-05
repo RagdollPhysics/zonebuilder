@@ -131,7 +131,6 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 	if(handle == 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
 	FS_Read(buf, sizeof(_IWI), handle);
 	FS_FCloseFile(handle);
-	//if(FS_ReadFile(fname, (void**)&buf) < 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
 	ret->height = buf->xsize;
 	ret->width = buf->ysize;
 	ret->depth = buf->depth;
@@ -195,5 +194,11 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 	// this one is weird and is all handled internally cause of the shit it does
 	addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
 	//addTechset(info, "2d", (char*)DB_FindXAssetHeader(ASSET_TYPE_TECHSET, "2d"), -1);
+
+	if(!strcmp("weapon_mp44", mat->name))
+	{
+		mat->animationX = 10;
+		mat->animationY = 10;
+	}
 	return mat;
 }

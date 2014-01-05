@@ -73,7 +73,7 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 				if(surf[j].vertexBuffer)
 				{
 					buf->write(surf[j].vertexBuffer, 32, surf[j].numVertices);
-					surf[j].vertexBuffer = (char*)-1;
+					surf[j].vertexBuffer = (GfxPackedVertex*)-1;
 					addXZoneMemory(ZONE_STREAM_VERTEX, 32 * surf[j].numVertices);
 				}
 
@@ -179,7 +179,6 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		buf->readstr(bone, 64);
 		asset->boneNames[i] = addScriptString(info, bone);
 	}
-
 	// allocate stuff and load it
 	if(asset->numBones - asset->numSubBones)
 	{
@@ -215,14 +214,14 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		if(blendCount)
 		{
 			s->blendInfo = new char[blendCount * 2];
-			buf->read(&s->blendInfo, 2, blendCount);
+			buf->read(s->blendInfo, 2, blendCount);
 		}
 		else 
 		{
 			s->blendInfo = NULL;	
 		}
 
-		s->vertexBuffer = new char[32 * s->numVertices];
+		s->vertexBuffer = new GfxPackedVertex[s->numVertices];
 		buf->read(s->vertexBuffer, 32, s->numVertices);
 
 		int ct = 0;
@@ -300,6 +299,7 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);
 		FS_FreeFile(matBuf);
 	}
+
 	int test = 0;
 	buf->read(&test, 4, 1);
 	if(test) Com_Error(true, "Cause NTA said so!");
