@@ -14,17 +14,15 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	Com_Debug("\n");
 
 	char* data;
-	int size;
+	int size = FS_ReadFile(filename, (void**)&data);
 	// non custom assets
-	if(strlen(filename) == 0)
+	if(size < 0)
 	{
-		data = (char*)DB_FindXAssetHeader(type, name);
+		if(strlen(filename) == 0) // stock asset
+			data = (char*)DB_FindXAssetHeader(type, name);
+		else // renamed asset
+			data = (char*)DB_FindXAssetHeader(type, filename);
 		size = 0;
-	}
-	else // custom assets
-	{
-		size = FS_ReadFile(filename, (void**)&data);
-		if(size < 0) { Com_Error(false, "File %s does not exist!", filename); return; }
 	}
 
 	void * asset;
@@ -57,6 +55,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		case ASSET_TYPE_GAME_MAP_SP:
 			asset = addGameMap_SP(info, name, data, size);
 			type = ASSET_TYPE_GAME_MAP_MP;
+			break;
+		case ASSET_TYPE_STRINGTABLE:
+			asset = addStringTable(info, name, data, size);
 			break;
 	}
 	addAsset(info, type, name, asset);

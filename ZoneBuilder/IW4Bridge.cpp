@@ -30,11 +30,15 @@ DWORD init11 = 0x4A62A0;
 DWORD init12 = 0x429080;
 
 bool loadedFastfiles = false;
+bool dumping = false;
 
 void ZoneBuild(char* toBuild);
 
 list<string> sources;
 string zoneToBuild;
+string toDump;
+int dumpType;
+void dumpModel(char * name);
 
 void doInit()
 {
@@ -134,6 +138,14 @@ void RunTool()
 	}
 	DB_LoadXAssets(info, sources.size(), 0);
 	while(!loadedFastfiles) Sleep(100);
+	if(dumping)
+	{
+		printf("dumping stuff now");
+		if(dumpType == ASSET_TYPE_XMODEL)
+			dumpModel((char*)toDump.c_str());
+		getchar();
+		return;
+	}
 	ZoneBuild((char*)zoneToBuild.c_str());
 }
 
@@ -176,13 +188,22 @@ void parseArgs()
 		{
 			sources.push_back(string(argv[i] + 2));
 		}
+		else if(!strncmp("-d", argv[i], 2))
+		{
+			char line[3];
+			strncpy(line, argv[i] + 2, 2);
+			line[2] = 0;
+			dumpType = atoi(line);
+			toDump = string(argv[i] + 4);
+			dumping = true;
+		}
 		else
 		{
 			if(strlen(zoneToBuild.c_str())) { printf("Can't build more than one zone!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 			zoneToBuild = string(argv[i]);
 		}
 	}
-	if(!strlen(zoneToBuild.c_str())) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
+	if(!strlen(zoneToBuild.c_str()) && !dumping) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 }
 
 typedef int (__cdecl * DB_GetXAssetSizeHandler_t)();

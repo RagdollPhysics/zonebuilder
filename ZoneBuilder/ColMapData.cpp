@@ -164,6 +164,7 @@ void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data)
 
 	// dynent shit here later
 
+	delete[] modelOffset;
 }
 
 void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen)

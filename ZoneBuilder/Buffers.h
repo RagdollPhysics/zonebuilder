@@ -37,19 +37,19 @@ public:
 	void writetofile(FILE * file);
 	bool find(char* _str, size_t len);
 	BUFFER* compressZlib();
-	void BUFFER::operator++() {
+	void operator++() {
 		_offset++;
 		_location++;
 	}
-	void BUFFER::operator--() {
+	void operator--() {
 		_offset--;
 		_location--;
 	}
-	void BUFFER::operator+=(int b) {
+	void operator+=(int b) {
 		_offset+=b;
 		_location+=b;
 	}
-	void BUFFER::operator-=(int b) {
+	void operator-=(int b) {
 		_offset-=b;
 		_location-=b;
 	}

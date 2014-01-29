@@ -65,8 +65,8 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 			{
 				if(surf[j].blendInfo)
 				{
-					buf->write(surf[j].blendInfo, surf[j].blendNum1 + 
-						(surf[j].blendNum2 * 3) + (surf[j].blendNum3 * 5) + (surf[j].blendNum4 * 7), 1);
+					buf->write(surf[j].blendInfo, sizeof(short), surf[j].blendNum1 + 
+						(surf[j].blendNum2 * 3) + (surf[j].blendNum3 * 5) + (surf[j].blendNum4 * 7));
 					surf[j].blendInfo = (char*)-1;
 				}
 
@@ -146,8 +146,18 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		}
 		for(int i=0; i<model->numSurfaces; i++)
 		{
-			addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
-			addAsset(info, ASSET_TYPE_MATERIAL, model->materials[i]->name, model->materials[i]);
+			// allow material overriding
+			void* file;
+			void* asset;
+			if(int len = FS_ReadFile(va("zonebuilder/materials/%s.txt", model->materials[i]->name), &file) > 0)
+			{
+				asset = addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
+			}
+			else
+			{
+				asset = addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
+			}
+			addAsset(info, ASSET_TYPE_MATERIAL, model->materials[i]->name, asset);
 		}
 		return data;
 	}
@@ -281,30 +291,32 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		buf->readstr(matName, 50);
 		buf->readstr(techName, 64);
 
-		if(!strncmp("mc/", matName, 3)) matName = matName + 3;
+		char* filename = matName;
 
-		_snprintf(matFileName, 78, "materials/%s.txt", matName);
+		if(!strncmp("mc/", matName, 3)) filename = matName + 3;
+
+		_snprintf(matFileName, 78, "materials/%s.txt", filename);
 
 		void* matBuf;
 		int len = FS_ReadFile(matFileName, &matBuf);
 		if(len > 0)
 		{
 			asset->materials[i] = (Material*)addMaterial(info, matName, (char*)matBuf, len);
+			FS_FreeFile(matBuf);
 		}
 		else
 		{
 			asset->materials[i] = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, matName);
 			addMaterial(info, matName, (char*)asset->materials[i], 0);
 		}
-		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);
-		FS_FreeFile(matBuf);
+		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);		
 	}
 
 	int test = 0;
 	buf->read(&test, 4, 1);
-	if(test) Com_Error(true, "Cause NTA said so!");
+	if(test) Com_Error(false, "Cause NTA said so!");
 	buf->read(&test, 4, 1);
-	if(!test) Com_Error(true, "Cause NTA said so!");
+	if(!test) Com_Error(false, "Cause NTA said so!");
 	asset->unknowns = new char[asset->numBones * 28];
 	buf->read(asset->unknowns, 28, asset->numBones);
 

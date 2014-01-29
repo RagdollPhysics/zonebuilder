@@ -16,11 +16,42 @@ typedef struct
 	bool tempDefaultToCylinder;
 } PhysPreset;
 
-typedef struct
+struct cplane_t
 {
-	const char* name;
-	char pad[68];
-} PhysCollmap;
+	char pad[20];
+};
+
+struct cbrushside_t
+{
+	cplane_t* plane;
+	int pad;
+};
+
+struct BrushWrapper
+{
+	char pad[24];
+	short numPlaneSide;
+	short pad2;
+	cbrushside_t* side;
+	char* edge;
+	char pad3[24];
+	int numEdge;
+	cplane_t* plane;
+};
+
+struct PhysGeomInfo
+{
+	BrushWrapper* brush;
+	char pad[64];
+};
+
+struct PhysCollmap
+{
+	char* name;
+	int numInfo;
+	PhysGeomInfo* info;
+	char pad2[60];
+};
 
 typedef struct
 {
@@ -355,7 +386,7 @@ typedef struct XModel
 	XColSurf* colSurf; // +244
 	int numColSurfs; // +248
 	int pad6;
-	void* unknowns; // bone count, +256, element size 28
+	char* unknowns; // bone count, +256, element size 28
 	char pad5[36];
 	void* physPreset;
 	void* physCollmap;

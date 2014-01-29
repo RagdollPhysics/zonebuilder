@@ -70,6 +70,9 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 	case ASSET_TYPE_GAME_MAP_SP:
 		writeGameMap(info, buf, (GameMap_MP*)asset->data);
 		break;
+	case ASSET_TYPE_STRINGTABLE:
+		writeStringTable(info, buf, (StringTable*)asset->data);
+		break;
 	}
 	asset->written = true;
 	return asset->offset;

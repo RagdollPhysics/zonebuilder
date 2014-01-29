@@ -108,3 +108,7 @@ void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 void writeGameMap(zoneInfo_t* info, BUFFER* buf, GameMap_MP* data);
 void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// StringTableData
+void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data);
+void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

@@ -48,7 +48,6 @@ void BUFFER::resize(size_t newsize)
 	if(newsize == -1) newsize = _maxsize;
 	if(newsize < _maxsize) return;
 	char* newdata = new char[newsize];
-	memset(newdata, 0, newsize);
 	memcpy(newdata, _origin, newsize);
 	if(_freeOnDestroy)
 		delete[] _origin;
@@ -84,7 +83,12 @@ size_t BUFFER::write(const void * _str, size_t size, size_t count)
 }
 size_t BUFFER::write(int value, size_t count)
 {
-	return write(&value, 4, 1);
+	size_t ret = 0;
+	for(int i=0; i<count; i++)
+	{
+		ret += write(&value, 4, 1);
+	}
+	return ret;
 }
 
 size_t BUFFER::seek(size_t offset, size_t type)
@@ -164,7 +168,7 @@ BUFFER* BUFFER::compressZlib()
 	int ret;
 	memset(&strm, 0, sizeof(z_stream));
 	char* dest = (char*)malloc(_size*2); // WHY IS IT BIGGER!!!!!?
-	if(deflateInit(&strm, Z_BEST_COMPRESSION) != Z_OK) { Com_Error(false, "Failed to compress zlib buffer!"); return NULL; }
+	if(deflateInit(&strm, Z_BEST_COMPRESSION) != Z_OK) { Com_Error(false, "Failed to compress zlib buffer!"); free(dest); return NULL; }
 	strm.next_out = (Bytef*)dest;
 	strm.next_in = (Bytef*)_origin;
 	strm.avail_out = _size*2;

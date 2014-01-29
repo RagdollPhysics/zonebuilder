@@ -60,10 +60,13 @@ int containsScriptString(zoneInfo_t* info, const char* string)
 
 int addAsset(zoneInfo_t* info, int type, const char* name, void* data)
 {
-	if(info->scriptStringCount > MAX_ASSET_COUNT) Com_Error(true, "Tell Apadayo to increase MAX_ASSET_COUNT!");
+	if(info->scriptStringCount >= MAX_ASSET_COUNT) Com_Error(true, "Tell Apadayo to increase MAX_ASSET_COUNT!");
 	int a = containsAsset(info, type, name);
 	if(a >= 0) return a;
-	info->assets[info->assetCount].name= R_HashString(name);
+	// force data to have correct name
+	if(strcmp(*(char**)data, name))
+		*(char**)data = strdup(name);
+	info->assets[info->assetCount].name = R_HashString(name);
 	info->assets[info->assetCount].type = type;
 	info->assets[info->assetCount].data = data;
 	return info->assetCount++;
@@ -71,7 +74,7 @@ int addAsset(zoneInfo_t* info, int type, const char* name, void* data)
 
 int addScriptString(zoneInfo_t* info, string str)
 {
-	if(info->scriptStringCount > MAX_SCRIPT_STRINGS) Com_Error(true, "Tell Apadayo to increase MAX_SCRIPT_STRINGS!");
+	if(info->scriptStringCount >= MAX_SCRIPT_STRINGS) Com_Error(true, "Tell Apadayo to increase MAX_SCRIPT_STRINGS!");
 	int a = containsScriptString(info, str.c_str());	
 	if(a >= 0) return a;
 	info->scriptStrings[info->scriptStringCount] = str;

@@ -29,10 +29,12 @@ void writeMaterial(zoneInfo_t* info, BUFFER* buf, Material* data)
 		buf->write(data->maps[i].image, sizeof(GfxImage), 1);
 		buf->write(data->maps[i].image->name, strlen(data->maps[i].image->name) + 1, 1);
 		img->name = (char*)-1;
-		img->texture = (GfxImageLoadDef*)-1;
-
-		GfxImageLoadDef * def = (GfxImageLoadDef*)buf->at();
-		buf->write(data->maps[i].image->texture, sizeof(GfxImageLoadDef), 1);
+		if(img->texture)
+		{
+			GfxImageLoadDef * def = (GfxImageLoadDef*)buf->at();
+			buf->write(img->texture, sizeof(GfxImageLoadDef), 1);
+			img->texture = (GfxImageLoadDef*)-1;
+		}
 	}
 	dest->maps = (MaterialTextureDef*)-1;
 
@@ -90,7 +92,7 @@ int parseMatFile(char* data, size_t dataLen)
 		if(materialMapCount == 8) { Com_Error(false, "Exceeded max number of material maps. Ignoring extra.\n"); break; }
 
 		char line[128];
-		sscanf(at, "%s", line);
+		_snscanf(at, 128, "%s", line);
 		string l = string(line);
 		int split = l.find(',');
 		if(!strncmp("basemat", line, 7))
@@ -128,7 +130,7 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 	_IWI* buf = new _IWI;
 	int handle = 0;
 	FS_FOpenFileRead(fname, &handle, 1);
-	if(handle == 0) { Com_Error(1, "Image does not exist: %s!", fname); return NULL; }
+	if(handle == 0) { Com_Error(1, "Image does not exist: %s!", fname); delete buf; delete ret; return NULL; }
 	FS_Read(buf, sizeof(_IWI), handle);
 	FS_FCloseFile(handle);
 	ret->height = buf->xsize;
@@ -162,10 +164,32 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 {
 	if(dataLen == 0) {
 		Material* mat = (Material*)data;
-		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
-		return data;
+		strncpy(baseMatName, mat->name, 64);
+		materialMapCount = mat->numMaps;
+		for(int i=0; i<mat->numMaps; i++)
+		{
+			switch(mat->maps[i].firstCharacter)
+			{
+			case 'c':
+				materialMaps[i] = R_HashString("colorMap");
+				break;
+			case 'n':
+				materialMaps[i] = R_HashString("normalMap");
+				break;
+			case 's':
+				materialMaps[i] = R_HashString("specularMap");
+				break;
+			case 'd':
+				materialMaps[i] = R_HashString("detailMap");
+				break;
+			}
+			strncpy(materialTextureNames[i], mat->maps[i].image->name, 64);
+		}
 	}
-	parseMatFile(data, dataLen);
+	else
+	{
+		parseMatFile(data, dataLen);
+	}
 	Material* basemat = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, baseMatName);
 
 	// duplicate the material
@@ -184,6 +208,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 			if(mat->maps[i].typeHash == materialMaps[j])
 			{
 				wantedMap = i;
+				break;
 			}
 		}
 		if(wantedMap == -1) continue; // meh who cares
@@ -193,12 +218,6 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 	// add techset to our DB here
 	// this one is weird and is all handled internally cause of the shit it does
 	addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
-	//addTechset(info, "2d", (char*)DB_FindXAssetHeader(ASSET_TYPE_TECHSET, "2d"), -1);
 
-	if(!strcmp("weapon_mp44", mat->name))
-	{
-		mat->animationX = 10;
-		mat->animationY = 10;
-	}
 	return mat;
 }

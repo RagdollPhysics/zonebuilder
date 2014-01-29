@@ -86,8 +86,10 @@
   <ItemGroup>
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
+    <ClCompile Include="DumpStuff.cpp" />
     <ClCompile Include="GameMapData.cpp" />
     <ClCompile Include="ComWorldData.cpp" />
+    <ClCompile Include="GfxWorldData.cpp" />
     <ClCompile Include="Hooking.cpp" />
     <ClCompile Include="IW4Bridge.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -111,6 +113,7 @@
     <ClCompile Include="SteamRemoteStorage002.cpp" />
     <ClCompile Include="SteamUser012.cpp" />
     <ClCompile Include="SteamUtils005.cpp" />
+    <ClCompile Include="StringTableData.cpp" />
     <ClCompile Include="TechsetData.cpp" />
     <ClCompile Include="ToolMain.cpp" />
     <ClCompile Include="Util.cpp" />
