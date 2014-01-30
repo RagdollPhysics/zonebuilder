@@ -14,15 +14,20 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	Com_Debug("\n");
 
 	char* data;
-	int size = FS_ReadFile(filename, (void**)&data);
-	// non custom assets
-	if(size < 0)
+	int size;
+	if(strlen(filename) == 0) // stock asset
 	{
-		if(strlen(filename) == 0) // stock asset
-			data = (char*)DB_FindXAssetHeader(type, name);
-		else // renamed asset
-			data = (char*)DB_FindXAssetHeader(type, filename);
+		data = (char*)DB_FindXAssetHeader(type, name);
 		size = 0;
+	}
+	else
+	{
+		size = FS_ReadFile(filename, (void**)&data);
+		if(size < 0)
+		{
+			data = (char*)DB_FindXAssetHeader(type, filename);
+			size = 0;
+		}
 	}
 
 	void * asset;
@@ -58,6 +63,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 			break;
 		case ASSET_TYPE_STRINGTABLE:
 			asset = addStringTable(info, name, data, size);
+			break;
+		case ASSET_TYPE_SOUND:
+			asset = addSoundAlias(info, name, data, size);
 			break;
 	}
 	addAsset(info, type, name, asset);

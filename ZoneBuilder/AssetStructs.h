@@ -392,54 +392,83 @@ typedef struct XModel
 	void* physCollmap;
 } XModel; // total size 304
 
-typedef struct  
-{
-	char type;
-	char pad[3];
-	const char* folder;
-	const char* file;
-} StreamFile;
-
-typedef struct
-{
-	const char* name;
-	char pad[132];
-} sndcurve_t;
-
-typedef struct
+#pragma pack(push, 1)
+struct sndcurve
 {
 	char* name;
-	char pad[4];
-	int dataLength;
-	char pad2[24];
-	void* soundData;
-} mss_sound_t;
+	char field_4[132];
+};
+#pragma pack(pop)
 
-typedef struct
+#pragma pack(push, 1)
+struct SpeakerMap
 {
-	char pad[4];
+	int unk;
 	char* name;
-	char pad2[400];
-} speakermap_t;
+	char field_4[400];
+};
+#pragma pack(pop)
 
-typedef struct  
+#pragma pack(push, 1)
+struct StreamFile
 {
-	char* name; // +0
-	char* unkName1; // +4
-	char* unkName2; // +8
-	char* unkName3; // +12
-	char* unkName4; // +16
-	StreamFile* stream; // +20
-	char pad2[72];// + 24
-	void* speakerMap; // +96, sizeof 408
-} snd_alias_t;
+  char type;
+  char field_1;
+  char field_2;
+  char field_3;
+  char* folder;
+  char* file;
+};
+#pragma pack(push, 1)
+struct MssSound
+{
+  int name;
+  float field_4;
+  int dataLength;
+  char field_C[24];
+  int soundData;
+};
+#pragma pack(pop)
 
-typedef struct  
+#pragma pack(push, 1)
+struct snd_alias_t
 {
-	const char* name;
-	snd_alias_t* aliases;
-	int numAliases;
-} snd_alias_list_t;
+  char* name;
+  char* string1;
+  char* string2;
+  char* string3;
+  char* string4;
+  StreamFile *stream;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  int field_30;
+  int field_34;
+  int field_38;
+  int field_3C;
+  int field_40;
+  int field_44;
+  int field_48;
+  int field_4C;
+  sndcurve* sndCurve;
+  int field_54;
+  int field_58;
+  int field_5C;
+  SpeakerMap* speakerMap;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct snd_alias_list_t
+{
+  char* name;
+  snd_alias_t *aliases;
+  int numAliases;
+};
+#pragma pack(pop)
 
 struct MapEnts_Brushes
 {

@@ -112,3 +112,7 @@ void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t data
 // StringTableData
 void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data);
 void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// SoundAliasData
+void writeSoundAlias(zoneInfo_t* info, BUFFER* buf, snd_alias_list_t* data);
+void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
