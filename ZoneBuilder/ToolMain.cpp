@@ -120,18 +120,11 @@ void ZoneBuild(char* building)
     buf->writetofile(fp);
     fclose(fp);
 #endif
-	DWORD getLang = 0x45CBA0;
-	char* language;
-	__asm 
-	{
-		call getLang
-		mov language, eax
-	}
 	Com_Printf("Compressing Zone..... ");
 	BUFFER* compressed = buf->compressZlib();
 	Com_Printf("Writing to Disk..... ");
 	CreateDirectoryA("zone", NULL);
-	FILE* out = fopen(toBuild.insert(0, va("zone\\%s\\", language)).append(".ff").c_str(), "wb");
+	FILE* out = fopen(toBuild.insert(0, va("zone\\%s\\", ((char*(*)())0x45CBA0)())).append(".ff").c_str(), "wb");
 	_setmode( _fileno( out ), _O_BINARY ); // it was fucking up zlib output
 	FILETIME time;
 	GetSystemTimeAsFileTime(&time);
