@@ -20,4 +20,4 @@ for all assets
   asset type : int
   0xFFFFFFFF
 }
-last asset it a rawfile with the name of the fastfile
+last asset is a rawfile with the name of the fastfile
