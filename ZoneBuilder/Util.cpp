@@ -129,3 +129,12 @@ LPSTR* getArgs()
 	}
 	return pszArgVectorAnsi;
 }
+
+long flength(FILE* fp)
+{
+	long i = ftell(fp);
+	fseek(fp, 0, SEEK_END);
+	long ret = ftell(fp);
+	fseek(fp, i, SEEK_SET);
+	return ret;
+}

@@ -2,6 +2,7 @@
 
 #include "StdInc.h"
 #include "Buffers.h"
+#include "CSVFile.h"
 
 #define MAX_ASSET_COUNT 2048
 #define MAX_SCRIPT_STRINGS 2048
@@ -51,6 +52,7 @@ int getAssetTypeForString(const char* str);
 const char* getAssetStringForType(int type);
 int getArgc();
 LPSTR* getArgs();
+long flength(FILE* fp);
 
 // ZoneWriter
 //extern void writeZone(zoneInfo_t * info);

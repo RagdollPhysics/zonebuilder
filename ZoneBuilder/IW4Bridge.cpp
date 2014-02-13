@@ -313,7 +313,7 @@ void InitBridge()
 	// weapon entries stuff here
 	//doWeaponEntries();
 
-		// reallocate asset pools
+	// reallocate asset pools
 	ReallocateAssetPool(ASSET_TYPE_IMAGE, 7168);
 	ReallocateAssetPool(ASSET_TYPE_LOADED_SOUND, 2700);
 	ReallocateAssetPool(ASSET_TYPE_FX, 1200);
@@ -329,6 +329,7 @@ void InitBridge()
 	//ReallocateAssetPool(ASSET_TYPE_MATERIAL, 8192);
 	ReallocateAssetPool(ASSET_TYPE_VERTEXDECL, 196);
 	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
+	ReallocateAssetPool(ASSET_TYPE_WEAPON, 2000);
 }
 
 

@@ -75,23 +75,26 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 
 void loadAssetsFromFile(zoneInfo_t* info, const char* file)
 {
-	if(GetFileAttributesA(file) == INVALID_FILE_ATTRIBUTES) { Com_Error(false, "\nFile %s does not exist!", file); return; }
-	FILE* fp = fopen(file, "r");
-
-	char l[256];
-	while (fscanf(fp, "%256[^\n]\n", &l) != EOF)
+	if(GetFileAttributesA(file) == INVALID_FILE_ATTRIBUTES) { Com_Error(true, "\nInput file %s does not exist!", file); return; }
+	FILE* fp = fopen(file, "rb");
+	int csvLength = flength(fp);
+	char * buf = new char[csvLength];
+	fread(buf, 1, csvLength, fp);
+	CSVFile * csv = new CSVFile(buf, csvLength);
+	int row = 0;
+	char* typeStr = csv->getData(row, 0);
+	while(typeStr != NULL)
 	{
-		string line, assetType, realname, filename;
-		line = string(l);
-		int first = line.find(",");
-		int second = line.find(",", first + 1);
-		int endline = line.find("\n");
-		assetType = line.substr(0, first);
-		realname = line.substr(first + 1, second - first - 1);
-		filename = line.substr(second + 1, endline - second);
-		int type = getAssetTypeForString(assetType.c_str());
-		loadAsset(info, type, filename.c_str(), realname.c_str());
+		int type = getAssetTypeForString(typeStr);
+		char* realname = csv->getData(row, 1);
+		char* filename = csv->getData(row, 2);
+		loadAsset(info, type, filename, realname);
+
+		row++;
+		typeStr = csv->getData(row, 0);
 	}
+
+	delete[] buf;
 
 	fclose(fp);
 }

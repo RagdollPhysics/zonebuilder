@@ -81,37 +81,33 @@ int materialMaps[8];
 char materialTextureNames[8][64];
 char baseMatName [64];
 
+
+// finally went and made this one sane with our new class for csv files
 int parseMatFile(char* data, size_t dataLen)
 {
-	char* at = data;
 	materialMapCount = 0;
-	*baseMatName = 0;
-	*(data + dataLen) = 0x0;
-	while(at < data + dataLen)
+	CSVFile * file = new CSVFile(data, dataLen);
+	int curRow = 0;
+	char* param = file->getData(curRow, 0);
+	while(param != NULL)
 	{
-		if(materialMapCount == 8) { Com_Error(false, "Exceeded max number of material maps. Ignoring extra.\n"); break; }
-
-		char line[128];
-		_snscanf(at, 128, "%s", line);
-		string l = string(line);
-		int split = l.find(',');
-		if(!strncmp("basemat", line, 7))
+		if(!strcmp("basemat", param))
 		{
-			strncpy(baseMatName, l.substr(split + 1, strlen(line) - split).c_str(), 64);
-			at += strlen(line) + 2;
+			strncpy(baseMatName, file->getData(curRow, 1), sizeof(baseMatName));
+			curRow++;
+			param = file->getData(curRow, 0);
 			continue;
 		}
-		materialMaps[materialMapCount] = R_HashString(l.substr(0, split).c_str());
-		strncpy(materialTextureNames[materialMapCount], l.substr(split + 1, strlen(line) - split).c_str(), 64);
 
-		at += l.length() + 2; // len + /r/n
+		materialMaps[materialMapCount] = R_HashString(param);
+		strncpy(materialTextureNames[materialMapCount++], file->getData(curRow, 1), sizeof(materialTextureNames[0]));
+		curRow++;
+		param = file->getData(curRow, 0);
 
-		char fname [64 + 11];
-		sprintf(fname, "images/%s.iwi", materialTextureNames[materialMapCount]);
-		int size = FS_ReadFile(fname, NULL);
-		if(size < 0) { Com_Error(false, "File %s does not exist!", fname); return -1; }
-
-		materialMapCount++;
+		if(materialMapCount == 8) {
+			Com_Error(false, "Too many maps in material file! Ignoring extra.");
+			return 0;
+		}
 	}
 	return 0;
 }

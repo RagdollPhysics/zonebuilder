@@ -86,6 +86,7 @@
   <ItemGroup>
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
+    <ClCompile Include="CSVFile.cpp" />
     <ClCompile Include="DumpStuff.cpp" />
     <ClCompile Include="GameMapData.cpp" />
     <ClCompile Include="ComWorldData.cpp" />
@@ -127,6 +128,7 @@
   <ItemGroup>
     <ClInclude Include="AssetStructs.h" />
     <ClInclude Include="Buffers.h" />
+    <ClInclude Include="CSVFile.h" />
     <ClInclude Include="Hooking.h" />
     <ClInclude Include="MW2.h" />
     <ClInclude Include="s10e5.h" />

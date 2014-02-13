@@ -84,19 +84,22 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 					
 					for(int k=0;k<surf[j].numCT; k++)
 					{
-						XSurfaceCTEntry* entry = (XSurfaceCTEntry*)buf->at();
-						buf->write(ct[k].entry, 40, 1);
-						if(entry->node)
+						if(ct[k].entry)
 						{
-							buf->write(entry->node, 16, entry->numNode);
-							entry->node = (char*)-1;
+							XSurfaceCTEntry* entry = (XSurfaceCTEntry*)buf->at();
+							buf->write(ct[k].entry, 40, 1);
+							if(entry->node)
+							{
+								buf->write(entry->node, 16, entry->numNode);
+								entry->node = (char*)-1;
+							}
+							if(entry->leaf)
+							{
+								buf->write(entry->leaf, 2, entry->numLeaf);
+								entry->leaf = (short*)-1;
+							}
+							ct[k].entry = (XSurfaceCTEntry*)-1;
 						}
-						if(entry->leaf)
-						{
-							buf->write(entry->leaf, 2, entry->numLeaf);
-							entry->leaf = (short*)-1;
-						}
-						ct[k].entry = (XSurfaceCTEntry*)-1;
 					}
 					surf[j].ct = (XSurfaceCT*)-1;
 				}
