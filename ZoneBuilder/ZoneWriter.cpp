@@ -112,10 +112,6 @@ BUFFER* writeZone(zoneInfo_t * info)
     {
 		// NO
         //buf->write(info->assets[i].data, info->assets[i].length, 1);
-		if(i == 170)
-		{
-			printf("hey");
-		}
 		writeAsset(info, &info->assets[i], buf);
     }
 
