@@ -128,6 +128,19 @@ void RunTool()
 {
 	doInit();
 
+	if(verify)
+	{
+		useEntryNames = true;
+		XZoneInfo info;
+		info.name = zoneToBuild.c_str();
+		info.type1 = 3;
+		info.type2 = 0;
+		loadedFastfiles = false;
+		DB_LoadXAssets(&info, 1, 0);
+		while(!loadedFastfiles) Sleep(100);
+		return;
+	}
+
 	printf("Loading Source Zones...\n");
 	// load source files
 	XZoneInfo* info = new XZoneInfo[sources.size()];
@@ -147,19 +160,6 @@ void RunTool()
 		if(dumpType == ASSET_TYPE_XMODEL)
 			dumpModel((char*)toDump.c_str());
 		getchar();
-		return;
-	}
-
-	if(verify)
-	{
-		useEntryNames = true;
-		XZoneInfo info;
-		info.name = zoneToBuild.c_str();
-		info.type1 = 3;
-		info.type2 = 0;
-		loadedFastfiles = false;
-		DB_LoadXAssets(&info, 1, 0);
-		while(!loadedFastfiles) Sleep(100);
 		return;
 	}
 	ZoneBuild((char*)zoneToBuild.c_str());

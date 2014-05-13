@@ -122,7 +122,7 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 		buf->write(dest->colSurf, sizeof(XColSurf), dest->numColSurfs);
 		for(int i=0; i<dest->numColSurfs; i++)
 		{
-			buf->write(dest->colSurf[i].tris, 44, dest->colSurf[i].count);
+			buf->write(dest->colSurf[i].tris, 48, dest->colSurf[i].count);
 			dest->colSurf[i].tris = (void*)-1;
 		}
 		dest->colSurf = (XColSurf*)-1;

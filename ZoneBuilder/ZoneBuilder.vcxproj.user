@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Normal|Win32'">
-    <LocalDebuggerCommand>D:\Games\Activision\Modern Warfare 2\ZoneBuilder.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>D:\Activision\Modern Warfare 2\ZoneBuilder.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Normal|Win32'">
-    <LocalDebuggerCommandArguments>-smp_subbase team_seals_udt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-smp_subbase team_opforce_arctic</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>D:\Games\Activision\Modern Warfare 2</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>D:\Activision\Modern Warfare 2</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommand>D:\Games\Activision\Modern Warfare 2\zonebuilder.exe</LocalDebuggerCommand>

@@ -30,7 +30,12 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 {
 	if(asset->written) return asset->offset;
 	asset->offset = buf->tell() + 1; // WHY IS THIS +1 ??????
-	Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), asset->offset);
+	// hide the useless assets that we can't change
+	if(asset->type != ASSET_TYPE_TECHSET &&
+	   asset->type != ASSET_TYPE_PIXELSHADER &&
+	   asset->type != ASSET_TYPE_VERTEXSHADER &&
+	   asset->type != ASSET_TYPE_VERTEXDECL)
+		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), asset->offset);
 	switch(asset->type)
 	{
 	case ASSET_TYPE_RAWFILE:
