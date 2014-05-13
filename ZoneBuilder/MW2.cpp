@@ -74,6 +74,7 @@ SV_GameSendServerCommand_t SV_GameSendServerCommand = (SV_GameSendServerCommand_
 Sys_SendPacket_t Sys_SendPacket = (Sys_SendPacket_t)0x48F500;
 
 SL_ConvertToString_t SL_ConvertToString = (SL_ConvertToString_t)0x4EC1D0;
+SL_GetString_t SL_GetString = (SL_GetString_t)0x48F890;
 
 // other stuff
 CommandCB_t Cbuf_AddServerText_f = (CommandCB_t)0x4BB9B0;

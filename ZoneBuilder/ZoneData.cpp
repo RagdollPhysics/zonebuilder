@@ -78,12 +78,13 @@ int addScriptString(zoneInfo_t* info, string str)
 	int a = containsScriptString(info, str.c_str());	
 	if(a >= 0) return a;
 	info->scriptStrings[info->scriptStringCount] = str;
-	info->scriptStringCount++;
-	return 0;
+	return info->scriptStringCount++;
 }
 
 int addScriptString(zoneInfo_t* info, char* str)
 {
+	if(str == NULL) 
+		str = "DEFAULT_STRING";
 	return addScriptString(info, string(str));
 }
 

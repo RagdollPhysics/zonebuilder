@@ -14,37 +14,37 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 
-	if(dest->boneNames) {
-		buf->write(dest->boneNames, sizeof(short), dest->numBones);
+	if(data->boneNames) {
+		buf->write(data->boneNames, sizeof(short), dest->numBones);
 		dest->boneNames = (short*)-1;
 	}
 
-	if(dest->boneUnknown1) {
+	if(data->boneUnknown1) {
 		buf->write(dest->boneUnknown1, 1, dest->numBones - dest->numSubBones);
 		dest->boneUnknown1 = (char*)-1;
 	}
 
-	if(dest->tagAngles) {
+	if(data->tagAngles) {
 		buf->write(dest->tagAngles, sizeof(XModelAngle), dest->numBones - dest->numSubBones);
 		dest->tagAngles = (XModelAngle*)-1;
 	}
 
-	if(dest->tagPositions) {
+	if(data->tagPositions) {
 		buf->write(dest->tagPositions, sizeof(XModelTagPos), dest->numBones - dest->numSubBones);
 		dest->tagPositions = (XModelTagPos*)-1;
 	}
 
-	if(dest->boneUnknown4) {
+	if(data->boneUnknown4) {
 		buf->write(dest->boneUnknown4, 1, dest->numBones);
 		dest->boneUnknown4 = (char*)-1;
 	}
 
-	if(dest->animMatrix) {
+	if(data->animMatrix) {
 		buf->write(dest->animMatrix, 32, dest->numBones);
 		dest->animMatrix = (char*)-1;
 	}
 
-	if(dest->materials)
+	if(data->materials)
 	{
 		buf->write(materialOffs, sizeof(int), dest->numSurfaces); // should be just the offsets
 		dest->materials = (Material**)-1;
@@ -52,7 +52,7 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 
 	for(int i=0; i<4; i++)
 	{
-		if(!dest->lods[i].surfaces) continue;
+		if(!data->lods[i].surfaces) continue;
 		XModelSurfaces* surfs = (XModelSurfaces*)buf->at();
 		buf->write(dest->lods[i].surfaces, sizeof(XModelSurfaces), 1);
 		buf->write(dest->lods[i].surfaces->name, strlen(dest->lods[i].surfaces->name) + 1, 1);
@@ -117,7 +117,7 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 		}
 	}
 
-	if(dest->colSurf)
+	if(data->colSurf)
 	{
 		buf->write(dest->colSurf, sizeof(XColSurf), dest->numColSurfs);
 		for(int i=0; i<dest->numColSurfs; i++)
@@ -128,7 +128,7 @@ extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 		dest->colSurf = (XColSurf*)-1;
 	}
 
-	if(dest->unknowns)
+	if(data->unknowns)
 	{
 		buf->write(dest->unknowns, 28, dest->numBones);
 		dest->unknowns = (char*)-1;
@@ -186,12 +186,15 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	asset->lods[0].numSurfs = surf->numSurfaces;
 
 	asset->boneNames = new short[asset->numBones];
+	Com_Debug("\n");
 	for(int i=0; i<asset->numBones; i++)
 	{
 		char bone[64];
 		buf->readstr(bone, 64);
+		Com_Debug("%s, ", bone);
 		asset->boneNames[i] = addScriptString(info, bone);
 	}
+	Com_Debug("\n");
 	// allocate stuff and load it
 	if(asset->numBones - asset->numSubBones)
 	{

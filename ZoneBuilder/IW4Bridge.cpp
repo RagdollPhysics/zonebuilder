@@ -14,6 +14,7 @@
 void PatchMW2_Console();
 void PatchMW2_Fastfile();
 void PatchMW2_Load();
+void PatchMW2_StringList();
 void doWeaponEntries();
 
 DWORD init1 = 0x42F0A0;
@@ -31,6 +32,8 @@ DWORD init12 = 0x429080;
 
 bool loadedFastfiles = false;
 bool dumping = false;
+bool verify = false;
+bool useEntryNames = false;
 
 void ZoneBuild(char* toBuild);
 
@@ -146,6 +149,19 @@ void RunTool()
 		getchar();
 		return;
 	}
+
+	if(verify)
+	{
+		useEntryNames = true;
+		XZoneInfo info;
+		info.name = zoneToBuild.c_str();
+		info.type1 = 3;
+		info.type2 = 0;
+		loadedFastfiles = false;
+		DB_LoadXAssets(&info, 1, 0);
+		while(!loadedFastfiles) Sleep(100);
+		return;
+	}
 	ZoneBuild((char*)zoneToBuild.c_str());
 }
 
@@ -162,6 +178,10 @@ void CheckZoneLoad(char* name, int atype)
 	if(!strcmp(name, sources.back().c_str()))
 	{
 		printf("Done IW4 Initialization!\n");
+		loadedFastfiles = true;
+	}
+	if(!strcmp(name, zoneToBuild.c_str()))
+	{
 		loadedFastfiles = true;
 	}
 }
@@ -182,6 +202,13 @@ void parseArgs()
 	char** argv = getArgs();
 	int argc = getArgc();
 	if(argc == 1) printUsage();
+
+	if(!strncmp("-v", argv[1], 2))
+	{
+		verify = true;
+		zoneToBuild = string(argv[2]);
+		return;
+	}
 	for(int i=1; i<argc; i++)
 	{
 		if(!strncmp("-s", argv[i], 2))
@@ -225,6 +252,35 @@ void* ReallocateAssetPool(assetType_t type, unsigned int newSize)
 static DWORD gameWorldSP;
 static DWORD gameWorldMP;
 
+CallHook addEntryNameHook;
+DWORD addEntryNameHookLoc = 0x5BB697;
+
+void AddEntryNameHookFunc(int type, const char* name)
+{
+	if (!useEntryNames)
+	{
+		return;
+	}
+
+	char blah[1024];
+	_snprintf(blah, 1024, "%s,%s\n", getAssetStringForType(type), name);
+	OutputDebugString(blah);
+	printf(blah);
+}
+
+void __declspec(naked) AddEntryNameHookStub()
+{
+	__asm
+	{
+		push ecx
+		push eax
+		call AddEntryNameHookFunc
+		pop eax
+		pop ecx
+		jmp addEntryNameHook.pOriginal
+	}
+}
+
 void InitBridge()
 {
 	printf("Initializing IW4...\n");
@@ -239,7 +295,8 @@ void InitBridge()
 
 	PatchMW2_Console(); // redirect output
 	PatchMW2_Fastfile(); // let us load 277 fastfiles
-	//PatchMW2_Load(); // load fastfiles from dlc and alter
+	PatchMW2_Load(); // load fastfiles from dlc and alter
+	PatchMW2_StringList(); // for some reason the SL is messed up?
 
 	SetConsoleTitle("ZoneBuilder"); // branding
 
@@ -312,6 +369,9 @@ void InitBridge()
 
 	// weapon entries stuff here
 	//doWeaponEntries();
+
+	addEntryNameHook.initialize(addEntryNameHookLoc, AddEntryNameHookStub);
+	addEntryNameHook.installHook();
 
 	// reallocate asset pools
 	ReallocateAssetPool(ASSET_TYPE_IMAGE, 7168);

@@ -13,7 +13,6 @@ char zone_language[MAX_PATH];
 char* loadedPath = "";
 char* zonePath = "";
 
-
 dvar_t** fs_basepath = (dvar_t**)0x63D0CD4;
 
 char* GetZoneLocation(const char* name) {
@@ -83,6 +82,22 @@ void __declspec(naked) ZoneLoadHook2Stub() {
 	}
 }
 
+CallHook zoneTestHook;
+DWORD zoneTestHookLoc = 0x4CCE23;
+
+void ZoneTestHookFunc(char* buffer, int length, const char* format, const char* absPath, const char* zonePath, const char* zoneName)
+{
+	_snprintf(buffer, length, "%s%s.ff", zonePath, zoneName);
+}
+
+CallHook zoneSprintfHook;
+DWORD zoneSprintfHookLoc = 0x4B2F15;
+
+void ZoneSprintfHookFunc(char* buffer, int length, const char* format, const char* absPath, const char* zonePath, const char* zoneName)
+{
+	_snprintf(buffer, length, "%s%s", zonePath, zoneName);
+}
+
 void PatchMW2_Load()
 {
 	zoneLoadHook1.initialize(zoneLoadHook1Loc, ZoneLoadHook1Stub);
@@ -90,4 +105,11 @@ void PatchMW2_Load()
 
 	zoneLoadHook2.initialize(zoneLoadHook2Loc, ZoneLoadHook2Stub);
 	zoneLoadHook2.installHook();
+
+	// zone folders -> remove absolute stuff
+	zoneTestHook.initialize(zoneTestHookLoc, ZoneTestHookFunc);
+	zoneTestHook.installHook();
+
+	zoneSprintfHook.initialize(zoneSprintfHookLoc, ZoneSprintfHookFunc);
+	zoneSprintfHook.installHook();
 }

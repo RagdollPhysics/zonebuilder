@@ -15,8 +15,10 @@ void writeXAnim(zoneInfo_t* info, BUFFER* buf, XAnim* data)
 		buf->write(data->notetracks, data->notetrackCount * sizeof(Notetrack), 1);
 		dest->notetracks = (Notetrack*)-1;
 	}
-	// shouldnt be delta here unless we fucked up in IW3EXP
-	dest->delta = (XAnimDeltaPart*)0;  // just make sure it doesnt try to load anything
+	if(data->delta)
+	{
+		DebugBreak();		
+	}
 	if(data->dataByte) {
 		buf->write(data->dataByte, data->dataByteCount, 1);
 		dest->dataByte = (char*)-1;
@@ -43,13 +45,13 @@ void writeXAnim(zoneInfo_t* info, BUFFER* buf, XAnim* data)
 	}
 	if(data->indicies) 
 	{
-		if(data->indexcount < 256)
+		if(data->indexcount > 255)
 		{
-			buf->write(data->indicies, data->indexcount, 1);
+			buf->write(data->indicies, data->indexcount * 2, 1);
 		}
 		else
 		{
-			buf->write(data->indicies, data->indexcount * 2, 1);
+			buf->write(data->indicies, data->indexcount, 1);
 		}
 		data->indicies = (char*)-1;
 	}

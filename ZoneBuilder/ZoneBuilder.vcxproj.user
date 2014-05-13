@@ -4,7 +4,7 @@
     <LocalDebuggerCommand>D:\Games\Activision\Modern Warfare 2\ZoneBuilder.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Normal|Win32'">
-    <LocalDebuggerCommandArguments>weap_thompson</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-smp_subbase team_seals_udt</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>D:\Games\Activision\Modern Warfare 2</LocalDebuggerWorkingDirectory>
   </PropertyGroup>

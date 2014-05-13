@@ -634,6 +634,9 @@ extern DB_GetFFString_t DB_GetFFString;
 typedef char* (__cdecl * SL_ConvertToString_t)(unsigned short);
 extern SL_ConvertToString_t SL_ConvertToString;
 
+typedef short (__cdecl * SL_GetString_t)(const char* string);
+extern SL_GetString_t SL_GetString;
+
 // other stuff
 extern CommandCB_t Cbuf_AddServerText_f;
 

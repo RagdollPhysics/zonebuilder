@@ -36,7 +36,14 @@ void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data)
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	outST->name = (char*)-1;
 
-	buf->write(-1, data->columns * data->rows * 2);
+	for(int ri=0; ri<data->rows; ri++)
+	{
+		for(int ci=0; ci<data->columns; ci++)
+		{
+			buf->write(-1, 1);
+			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 1);
+		}
+	}
 	for(int ri=0; ri<data->rows; ri++)
 	{
 		for(int ci=0; ci<data->columns; ci++)

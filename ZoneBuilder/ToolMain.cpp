@@ -10,12 +10,12 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 {
 	if(containsAsset(info, type, name) > 0) return;
 	Com_Debug("Loading Asset %s of type %s", name, getAssetStringForType(type));
-	if(strlen(filename)) Com_Debug(" (%s)", filename);
+	if(filename != NULL) Com_Debug(" (%s)", filename);
 	Com_Debug("\n");
 
 	char* data;
 	int size;
-	if(strlen(filename) == 0) // stock asset
+	if(filename == NULL) // stock asset
 	{
 		data = (char*)DB_FindXAssetHeader(type, name);
 		size = 0;
@@ -23,9 +23,10 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	else
 	{
 		size = FS_ReadFile(filename, (void**)&data);
-		if(size < 0)
+		if(size < 0) // renamed stock asset
 		{
 			data = (char*)DB_FindXAssetHeader(type, filename);
+			((Rawfile*)data)->name = name;
 			size = 0;
 		}
 	}
