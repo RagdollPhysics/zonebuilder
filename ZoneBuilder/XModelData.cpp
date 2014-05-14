@@ -143,10 +143,12 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	if(dataLen == 0)
 	{
 		XModel * model = (XModel*)data;
+		short* boneNames = new short[model->numBones];
 		for(int i=0; i<model->numBones; i++)
 		{
-			model->boneNames[i] = addScriptString(info, SL_ConvertToString(model->boneNames[i]));
+			boneNames[i] = addScriptString(info, SL_ConvertToString(model->boneNames[i]));
 		}
+		model->boneNames = boneNames;
 		for(int i=0; i<model->numSurfaces; i++)
 		{
 			// allow material overriding

@@ -70,7 +70,7 @@
       <IgnoreSpecificDefaultLibraries>MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "$(TargetPath)" "D:\Activision\Modern Warfare 2\zonetool.dll"</Command>
+      <Command>copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
