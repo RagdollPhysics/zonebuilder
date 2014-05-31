@@ -34,14 +34,14 @@ void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data)
 
 	if(dest->stages)
 	{
-		MapEnts_Stage* stages = (MapEnts_Stage*)buf->at();
-		buf->write(data->stages, sizeof(MapEnts_Stage), data->stageCount);
+		Stage* stages = (Stage*)buf->at();
+		buf->write(data->stages, sizeof(Stage), data->stageCount);
 		for(int i=0; i<dest->stageCount; i++)
 		{
 			buf->write(data->stages[i].name, strlen(data->stages[i].name) + 1, 1);
 			stages[i].name = (const char*)-1;
 		}
-		dest->stages = (MapEnts_Stage*)-1;
+		dest->stages = (Stage*)-1;
 	}
 }
 
@@ -61,8 +61,8 @@ void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 	asset->name = strdup(name);
 	asset->entitystring = strdup(data);
 	asset->entitystrlen = dataLen;
-	asset->stageCount = 1;
-	//asset->stageNames = new char*[1];
-	//asset->stageNames[0] = "stage 0";
+	asset->stageCount = 0;
+	asset->stages = 0;
+
 	return asset;
 }

@@ -108,9 +108,6 @@
     <ClCompile Include="ColMapData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PatchMW2Fastfile.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="PatchMW2Load.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
@@ -140,6 +137,24 @@
     </ClCompile>
     <ClCompile Include="PatchMW2StringList.cpp">
       <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMW2CModels.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMW2CryptoFiles.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMW2CryptoZone.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMW2FifthInfinity.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMW2FilePointers.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="FxEffectDefData.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

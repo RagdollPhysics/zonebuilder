@@ -1,56 +1,82 @@
+// ==========================================================
+// IW4M project
+// 
+// Component: clientdll
+// Sub-component: steam_api
+// Purpose: Modern Warfare 2 patches: easier DB pointers
+//
+// Initial author: NTAuthority
+// Started: 2012-12-12
+// ==========================================================
+
 #include "StdInc.h"
 #include "Hooking.h"
 #include <unordered_map>
+//#include <google/dense_hash_map>
 
-void PatchMW2_FilePointers();
-void SetUseFilePointers(bool use);
-
-CallHook loadXFileVersionHook;
-DWORD loadXFileVersionHookLoc = 0x4158E7;
-
-void __declspec(naked) DB_LoadXFileInternal_VersionHookFunc()
+struct AssetRelocation
 {
-	__asm
+	DWORD start;
+	DWORD size;
+	DWORD newStart;
+};
+
+static std::list<AssetRelocation> _assetRelocations;
+static std::unordered_map<DWORD, DWORD> _assetNewRelocations;
+
+void DB_AddNewRelocation(DWORD oldPos, DWORD newPos)
+{
+	_assetNewRelocations[oldPos] = newPos;
+}
+
+void DB_AddRelocation(DWORD start, DWORD size, DWORD to)
+{
+	/*AssetRelocation rel;
+	rel.start = start;
+	rel.size = size;
+	rel.newStart = to;
+
+	_assetRelocations.push_front(rel);*/
+
+	for (DWORD i = 0; i < size; i += 4)
 	{
-		push 4
-		push eax
-		call loadXFileVersionHook.pOriginal
-		mov ecx, [esp] // previous value of eax
-		mov eax, [ecx] // dereference the pointer
-		add esp, 8h
-
-		cmp eax, 115h // IW4 'filepointers' version
-		je filePointers
-
-		// don't use filepointers
-		push eax
-		push 0
-		call SetUseFilePointers
-		add esp, 4h
-		pop eax
-
-		retn
-
-filePointers:
-		mov [ecx], 114h // patch version back
-
-		// use filepointers
-		push 1
-		call SetUseFilePointers
-		add esp, 4h
-
-		retn
+		DB_AddNewRelocation(start + i, to + i);
 	}
 }
 
-void PatchMW2_Fastfile()
-{
-	PatchMW2_FilePointers();
+static DWORD** streamPositions = (DWORD**)0x16E554C;
 
-	loadXFileVersionHook.initialize(loadXFileVersionHookLoc, DB_LoadXFileInternal_VersionHookFunc);
-	loadXFileVersionHook.installHook();
+static void OffsetToAliasRelocate(DWORD* offset)
+{
+	DWORD ptr = (*offset) - 1;
+	DWORD loc = ptr & 0xFFFFFFF;
+	char block = ptr >> 28;
+
+	DWORD startTarget = (*streamPositions)[block * 2] + loc;
+
+	auto it = _assetNewRelocations.find(startTarget);
+
+	if (it != _assetNewRelocations.end())
+	{
+		startTarget = it->second;
+	}
+	else
+	{
+		for (std::list<AssetRelocation>::const_iterator i = _assetRelocations.begin(); i != _assetRelocations.end(); i++)
+		{
+			if (startTarget >= i->start && startTarget < (i->start + i->size))
+			{
+				startTarget = (startTarget - i->start) + i->newStart;
+				break;
+			}
+		}
+	}
+
+	*offset = *(DWORD*)startTarget;
 }
 
+//static google::dense_hash_map<DWORD, void*> filePointers;
+//static google::dense_hash_map<void*, DWORD> filePointersReverse;
 static std::unordered_map<DWORD, void*> filePointers;
 static std::unordered_map<void*, DWORD> filePointersReverse;
 
@@ -124,7 +150,15 @@ void __declspec(naked) OffsetToAliasHookStub()
 		retn
 
 returnToSender:
-		jmp offsetToAliasHookRet
+		/*mov ecx, [esp + 4]
+
+		push ecx
+		call OffsetToAliasRelocate
+		add esp, 4
+
+		jmp offsetToAliasHookRet*/
+
+		jmp OffsetToAliasRelocate
 	}
 }
 
@@ -244,6 +278,9 @@ void SetUseFilePointers(bool use)
 {
 	filePointers.clear();
 	filePointersReverse.clear();
+
+	_assetRelocations.clear();
+	_assetNewRelocations.clear();
 
 	g_useFilePointers = use;
 }

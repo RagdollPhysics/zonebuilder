@@ -1,0 +1,11 @@
+ASSETS
+rawfiles - done
+xanim - done
+material - done
+techset - done
+shaders - done
+xmodel - work kinda
+xmodelsurfs - work kinda
+soundalias
+col_map_mp
+weapons

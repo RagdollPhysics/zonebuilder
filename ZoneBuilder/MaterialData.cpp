@@ -31,7 +31,6 @@ void writeMaterial(zoneInfo_t* info, BUFFER* buf, Material* data)
 		img->name = (char*)-1;
 		if(img->texture)
 		{
-			GfxImageLoadDef * def = (GfxImageLoadDef*)buf->at();
 			buf->write(img->texture, sizeof(GfxImageLoadDef), 1);
 			img->texture = (GfxImageLoadDef*)-1;
 		}

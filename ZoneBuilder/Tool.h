@@ -118,3 +118,7 @@ void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dat
 // SoundAliasData
 void writeSoundAlias(zoneInfo_t* info, BUFFER* buf, snd_alias_list_t* data);
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// FxEffectDefData
+void writeFxEffectDef(zoneInfo_t* info, BUFFER* buf, FxEffectDef* data);
+void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

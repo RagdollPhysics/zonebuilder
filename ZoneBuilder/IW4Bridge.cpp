@@ -12,9 +12,11 @@
 #pragma comment(linker,"/FIXED /BASE:0x8000000")
 
 void PatchMW2_Console();
-void PatchMW2_Fastfile();
 void PatchMW2_Load();
 void PatchMW2_StringList();
+void PatchMW2_CryptoFiles();
+void PatchMW2_FifthInfinity();
+void PatchMW2_FilePointers();
 void doWeaponEntries();
 
 DWORD init1 = 0x42F0A0;
@@ -128,6 +130,33 @@ void RunTool()
 {
 	doInit();
 
+	printf("Loading Source Zones...\n");
+	// load source files
+	XZoneInfo* info = new XZoneInfo[9];
+	int i=0;
+	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
+	{
+		info[i].name = strdup((*it).c_str());
+		info[i].type1 = 3;
+		info[i].type2 = 0;
+		if(i >= 8)
+		{
+			DB_LoadXAssets(info, i, 0);
+			i = 0;
+		}
+		i++;
+	}
+	DB_LoadXAssets(info, i, 0);
+	while(!loadedFastfiles) Sleep(100);
+	if(dumping)
+	{
+		printf("dumping stuff now");
+		if(dumpType == ASSET_TYPE_XMODEL)
+			dumpModel((char*)toDump.c_str());
+		getchar();
+		return;
+	}
+
 	if(verify)
 	{
 		useEntryNames = true;
@@ -141,27 +170,6 @@ void RunTool()
 		return;
 	}
 
-	printf("Loading Source Zones...\n");
-	// load source files
-	XZoneInfo* info = new XZoneInfo[sources.size()];
-	int i=0;
-	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
-	{
-		info[i].name = strdup((*it).c_str());
-		info[i].type1 = 3;
-		info[i].type2 = 0;
-		i++;
-	}
-	DB_LoadXAssets(info, sources.size(), 0);
-	while(!loadedFastfiles) Sleep(100);
-	if(dumping)
-	{
-		printf("dumping stuff now");
-		if(dumpType == ASSET_TYPE_XMODEL)
-			dumpModel((char*)toDump.c_str());
-		getchar();
-		return;
-	}
 	ZoneBuild((char*)zoneToBuild.c_str());
 }
 
@@ -262,6 +270,12 @@ void AddEntryNameHookFunc(int type, const char* name)
 		return;
 	}
 
+	if(type == ASSET_TYPE_PIXELSHADER ||
+		type == ASSET_TYPE_VERTEXSHADER ||
+		type == ASSET_TYPE_VERTEXDECL ||
+		type == ASSET_TYPE_TECHSET)
+		return;
+
 	char blah[1024];
 	_snprintf(blah, 1024, "%s,%s\n", getAssetStringForType(type), name);
 	OutputDebugString(blah);
@@ -294,9 +308,11 @@ void InitBridge()
 	}
 
 	PatchMW2_Console(); // redirect output
-	PatchMW2_Fastfile(); // let us load 277 fastfiles
 	PatchMW2_Load(); // load fastfiles from dlc and alter
-	PatchMW2_StringList(); // for some reason the SL is messed up?
+	//PatchMW2_StringList(); // for some reason the SL is messed up?
+	// no but why not
+	PatchMW2_CryptoFiles(); // let us pull from iw4c fastfiles
+	PatchMW2_FifthInfinity();
 
 	SetConsoleTitle("ZoneBuilder"); // branding
 
@@ -390,6 +406,7 @@ void InitBridge()
 	ReallocateAssetPool(ASSET_TYPE_VERTEXDECL, 196);
 	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
 	ReallocateAssetPool(ASSET_TYPE_WEAPON, 2000);
+	ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
 }
 
 

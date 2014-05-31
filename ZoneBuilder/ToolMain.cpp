@@ -1,9 +1,9 @@
 #include "StdInc.h"
 #include "Tool.h"
-int ffVersion = 277;
+int desiredFFVersion = 277;
 
 char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0', 
-	ffVersion, ffVersion >> 8, ffVersion >> 16, ffVersion >> 24, 
+	desiredFFVersion, desiredFFVersion >> 8, desiredFFVersion >> 16, desiredFFVersion >> 24, 
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name)
@@ -67,6 +67,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 			break;
 		case ASSET_TYPE_SOUND:
 			asset = addSoundAlias(info, name, data, size);
+			break;
+		case ASSET_TYPE_FX:
+			asset = addFxEffectDef(info, name, data, size);
 			break;
 	}
 	addAsset(info, type, name, asset);

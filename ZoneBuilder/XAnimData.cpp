@@ -107,7 +107,6 @@ void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	anim->tagnames = tagnames;
 	anim->notetracks = notetracks;
 
-	int header = buf->tell();
 	buf->seek(sizeof(XAnim), SEEK_CUR);
 	buf->seek(strlen(buf->at()) + 1, SEEK_CUR);
 	buf->seek(numTags * 2, SEEK_CUR); // skip the data to maintain compatibility

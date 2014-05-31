@@ -17,7 +17,6 @@ void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 {
 	if(dataLen == 0) return data; // no fixups needed here
 	z_stream strm;
-	int err;
 	memset(&strm, 0, sizeof(z_stream));
 	char* dest = new char[dataLen*2];
 	strm.next_out = (Bytef*)dest;

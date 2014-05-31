@@ -36,6 +36,8 @@
 #include <fcntl.h>
 #include <zlib\zlib.h>
 #include <time.h>
+#include <stdlib.h>
+#include <unordered_map>
 using namespace std;
 
 #include "Buffers.h"

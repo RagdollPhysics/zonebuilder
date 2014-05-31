@@ -81,6 +81,9 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 	case ASSET_TYPE_SOUND:
 		writeSoundAlias(info, buf, (snd_alias_list_t*)asset->data);
 		break;
+	case ASSET_TYPE_FX:
+		writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
+		break;
 	}
 	asset->written = true;
 	return asset->offset;

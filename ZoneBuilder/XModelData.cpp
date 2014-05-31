@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
+void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 {
 	int * materialOffs = new int[data->numSurfaces];
 	for(int i=0; i<data->numSurfaces;i++)
@@ -156,7 +156,8 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 			void* asset;
 			if(int len = FS_ReadFile(va("zonebuilder/materials/%s.txt", model->materials[i]->name), &file) > 0)
 			{
-				asset = addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
+				asset = addMaterial(info, model->materials[i]->name, (char*)file, len);
+				FS_FreeFile(file);
 			}
 			else
 			{
@@ -188,15 +189,12 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	asset->lods[0].numSurfs = surf->numSurfaces;
 
 	asset->boneNames = new short[asset->numBones];
-	Com_Debug("\n");
 	for(int i=0; i<asset->numBones; i++)
 	{
 		char bone[64];
 		buf->readstr(bone, 64);
-		Com_Debug("%s, ", bone);
 		asset->boneNames[i] = addScriptString(info, bone);
 	}
-	Com_Debug("\n");
 	// allocate stuff and load it
 	if(asset->numBones - asset->numSubBones)
 	{

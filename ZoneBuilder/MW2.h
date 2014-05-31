@@ -18,7 +18,7 @@ typedef enum assetType_e
 	ASSET_TYPE_PHYSPRESET = 0,
 	ASSET_TYPE_PHYS_COLLMAP = 1,
 	ASSET_TYPE_XANIM = 2,
-	ASSET_TYPE_XMODELSURFS = 3,
+	ASSET_TYPE_XModelSurfaces = 3,
 	ASSET_TYPE_XMODEL = 4,
 	ASSET_TYPE_MATERIAL = 5,
 	ASSET_TYPE_PIXELSHADER = 6,
@@ -469,7 +469,14 @@ int Party_NumPublicSlots();
 
 bool SV_IsClientIP(unsigned int ip);
 
-//Image* Image_Load(const char* name);
+#define FS_SEEK_CUR 0
+#define FS_SEEK_END 1
+#define FS_SEEK_SET 2
+
+// inline cmd functions
+extern DWORD* cmd_id;
+extern DWORD* cmd_argc;
+extern DWORD** cmd_argv;
 
 // types
 typedef void (__cdecl * CommandCB_t)(void);
@@ -636,6 +643,9 @@ extern SL_ConvertToString_t SL_ConvertToString;
 
 typedef short (__cdecl * SL_GetString_t)(const char* string);
 extern SL_GetString_t SL_GetString;
+
+typedef short (__cdecl * SL_GetString_system_t)(const char* string, int a2);
+extern SL_GetString_system_t SL_GetString_2;
 
 // other stuff
 extern CommandCB_t Cbuf_AddServerText_f;

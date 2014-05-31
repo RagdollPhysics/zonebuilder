@@ -54,7 +54,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -96,6 +96,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="ColMapData.cpp" />
     <ClCompile Include="CSVFile.cpp" />
     <ClCompile Include="DumpStuff.cpp" />
+    <ClCompile Include="FxEffectDefData.cpp" />
     <ClCompile Include="GameMapData.cpp" />
     <ClCompile Include="ComWorldData.cpp" />
     <ClCompile Include="GfxWorldData.cpp" />
@@ -105,8 +106,12 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="MapEntsData.cpp" />
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="MW2.cpp" />
+    <ClCompile Include="PatchMW2CModels.cpp" />
     <ClCompile Include="PatchMW2Console.cpp" />
-    <ClCompile Include="PatchMW2Fastfile.cpp" />
+    <ClCompile Include="PatchMW2CryptoFiles.cpp" />
+    <ClCompile Include="PatchMW2CryptoZone.cpp" />
+    <ClCompile Include="PatchMW2FilePointers.cpp" />
+    <ClCompile Include="PatchMW2FifthInfinity.cpp" />
     <ClCompile Include="PatchMW2Load.cpp" />
     <ClCompile Include="PatchMW2StringList.cpp" />
     <ClCompile Include="RawfileData.cpp" />
