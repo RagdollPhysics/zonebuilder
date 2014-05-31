@@ -25,6 +25,12 @@ Com_Error_t Com_Error_MW22 = (Com_Error_t)0x4B22D0;
 Com_Printf_t Com_Printf_MW22 = (Com_Printf_t)0x402500;
 Com_Milliseconds_t Com_Milliseconds = (Com_Milliseconds_t)0x42A660;
 Com_PrintError_t Com_PrintError = (Com_PrintError_t)0x4F8C70;
+Com_ParseExt_t Com_ParseExt = (Com_ParseExt_t)0x474D60;
+Com_BeginParseSession_t Com_BeginParseSession = (Com_BeginParseSession_t)0x4AAB80;
+Com_EndParseSession_t Com_EndParseSession = (Com_EndParseSession_t)0x4B80B0;
+Com_Parse_MatchToken_t Com_Parse_MatchToken = (Com_Parse_MatchToken_t)0x447130;
+Com_ParseInt_t Com_ParseInt = (Com_ParseInt_t)0x4EF770;
+Com_ParseFloat_t Com_ParseFloat = (Com_ParseFloat_t)0x424360;
 
 DB_FindXAssetHeader_t DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x407930;
 DB_LoadXAssets_t DB_LoadXAssets = (DB_LoadXAssets_t)0x4E5930;

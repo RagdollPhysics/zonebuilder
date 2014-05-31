@@ -16,7 +16,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -75,7 +75,7 @@
 ) 
 
 if "$(SolutionDir)" == "C:\dev\mw2dev\ZoneBuilder\" (
-    copy /y "$(TargetPath)" "D:\Program Files\Steam\steamapps\common\Call of Duty Modern Warfare 2\iw4m.dll"
+    copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"
 )
 
 echo $(SolutionDir)</Command>

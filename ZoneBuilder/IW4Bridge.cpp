@@ -134,6 +134,7 @@ void RunTool()
 	// load source files
 	XZoneInfo* info = new XZoneInfo[9];
 	int i=0;
+	if(sources.size() == 0) loadedFastfiles = true;
 	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
 	{
 		info[i].name = strdup((*it).c_str());
@@ -148,6 +149,7 @@ void RunTool()
 	}
 	DB_LoadXAssets(info, i, 0);
 	while(!loadedFastfiles) Sleep(100);
+
 	if(dumping)
 	{
 		printf("dumping stuff now");
@@ -214,6 +216,7 @@ void parseArgs()
 	if(!strncmp("-v", argv[1], 2))
 	{
 		verify = true;
+		//sources.clear();
 		zoneToBuild = string(argv[2]);
 		return;
 	}

@@ -515,6 +515,23 @@ extern Com_PrintError_t Com_PrintError;
 typedef int (__cdecl * Com_Milliseconds_t)(void);
 extern Com_Milliseconds_t Com_Milliseconds;
 
+typedef char* (__cdecl * Com_ParseExt_t)(char**);
+extern Com_ParseExt_t Com_ParseExt;
+
+typedef void (__cdecl * Com_BeginParseSession_t)(const char* why);
+extern Com_BeginParseSession_t Com_BeginParseSession;
+
+typedef void (__cdecl * Com_EndParseSession_t)();
+extern Com_EndParseSession_t Com_EndParseSession;
+
+typedef bool (__cdecl * Com_Parse_MatchToken_t)(char** file, char* token, bool die);
+extern Com_Parse_MatchToken_t Com_Parse_MatchToken;
+
+typedef int (__cdecl * Com_ParseInt_t)(char**file);
+extern Com_ParseInt_t Com_ParseInt;
+
+typedef float (__cdecl * Com_ParseFloat_t)(char**file);
+extern Com_ParseFloat_t Com_ParseFloat;
 
 typedef void (*DB_LoadXAssets_t)(XZoneInfo* data, int count, int unknown);
 extern DB_LoadXAssets_t DB_LoadXAssets;
