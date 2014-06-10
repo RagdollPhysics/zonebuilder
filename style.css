@@ -1,0 +1,66 @@
+body
+{
+	background-color: #2D3035;
+}
+h1
+{
+	color: #2D3035;
+	text-align: center;
+	font-family: Monospace;
+	background-image: url("images/gravity_sig.png");
+	height: 75px;
+	padding-top: 75px;
+}
+.content-area
+{
+	background-color: #ADADAD;
+    display: block;
+    height: 100%;
+    width: 75%;
+	margin-left: 12.5%;
+	font-family: "Arial", Arial, serif;
+	text-align: center;
+}
+
+.sidebar
+{
+	background-color: white;
+	display: block;
+	height: 100%;
+	width: 18%;
+	float: right;
+	margin-left: 0;
+	margin-top: -52%;
+}
+
+.sidebar-header
+{
+	color: #2D3035;
+	text-align: center;
+	margin-left: 24%;
+	font-family: Monospace;
+	font-size: 150%;
+}
+.navbar
+{
+	margin-left: 12.5%;
+}
+.navbar > a
+{
+	color: #FFFFFF;
+	font-size: 30px;
+	font-family: "Arial", Arial, sans-serif;
+	text-decoration: none;
+	margin-left: 5px;
+}
+.navbar > a:hover
+{
+	color: #C9C9C9;
+}
+
+iframe
+{
+	text-align:center;
+	margin: 0 auto;
+}
+
