@@ -51,6 +51,8 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
@@ -143,6 +145,7 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="AssetStructs.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CSVFile.h" />
+    <ClInclude Include="FxParsing.h" />
     <ClInclude Include="Hooking.h" />
     <ClInclude Include="MW2.h" />
     <ClInclude Include="s10e5.h" />

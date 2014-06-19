@@ -956,7 +956,7 @@ struct FxSparkFountain
 	float sparkFountainBounceFrac;
 	float sparkFountainBounceRand;
 	float sparkFountainSparkSpacing;
-	float sparkFountainLength;
+	float sparkFountainSparkLength;
 	int sparkFountainSparkCount;
 	float sparkFountainLoopTime;
 	float sparkFountainVelMin;
@@ -1041,8 +1041,8 @@ struct FxElemDef	// 0xFC
 	//If elemType is 0xB, then use markVisuals
 	//If elemType is not 0xB and visualCount == 1, then use visual
 	//If elemType is not 0xB and visualCount != 1, then use visualsArray
-	float collMins[3];
-	float collMaxs[3];
+	Vector3 collMins;
+	Vector3 collMaxs;
 	FxEffectDefRef *effectOnImpact;
 	FxEffectDefRef *effectOnDeath;
 	FxEffectDefRef *effectEmitted;

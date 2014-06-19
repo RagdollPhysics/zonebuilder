@@ -40,7 +40,7 @@ static int lastRefresh = 0;
 
 void Sys_Print(const char* message)
 {
-#ifdef _DEBUG
+#ifdef ZB_DEBUG
 	printf(message);
 #endif
 }

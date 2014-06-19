@@ -533,6 +533,9 @@ extern Com_ParseInt_t Com_ParseInt;
 typedef float (__cdecl * Com_ParseFloat_t)(char**file);
 extern Com_ParseFloat_t Com_ParseFloat;
 
+typedef float (__cdecl * Com_Parse_UngetToken_t)();
+extern Com_Parse_UngetToken_t Com_Parse_UngetToken;
+
 typedef void (*DB_LoadXAssets_t)(XZoneInfo* data, int count, int unknown);
 extern DB_LoadXAssets_t DB_LoadXAssets;
 

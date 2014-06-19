@@ -212,5 +212,8 @@
     <ClInclude Include="CSVFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FxParsing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

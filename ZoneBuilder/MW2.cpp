@@ -31,6 +31,7 @@ Com_EndParseSession_t Com_EndParseSession = (Com_EndParseSession_t)0x4B80B0;
 Com_Parse_MatchToken_t Com_Parse_MatchToken = (Com_Parse_MatchToken_t)0x447130;
 Com_ParseInt_t Com_ParseInt = (Com_ParseInt_t)0x4EF770;
 Com_ParseFloat_t Com_ParseFloat = (Com_ParseFloat_t)0x424360;
+Com_Parse_UngetToken_t Com_Parse_UngetToken = (Com_Parse_UngetToken_t)0x4AEC70;
 
 DB_FindXAssetHeader_t DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x407930;
 DB_LoadXAssets_t DB_LoadXAssets = (DB_LoadXAssets_t)0x4E5930;

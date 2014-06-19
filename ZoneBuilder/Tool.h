@@ -10,7 +10,7 @@
 #define ZONE_STREAM_VERTEX 8
 #define ZONE_STREAM_FACE 9
 
-#if _DEBUG
+#if ZB_DEBUG
 #define Com_Debug Com_Debug_
 #else
 #define Com_Debug
@@ -70,6 +70,8 @@ extern int addAsset(zoneInfo_t* info, int type, const char* name, void* data);
 extern int addScriptString(zoneInfo_t* info, string str);
 extern int addScriptString(zoneInfo_t* info, char* str);
 extern void doLastAsset(zoneInfo_t* info, const char* name);
+extern void* getAsset(zoneInfo_t* info, int type, const char* name);
+extern void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name);
 
 // XAnimData
 extern void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

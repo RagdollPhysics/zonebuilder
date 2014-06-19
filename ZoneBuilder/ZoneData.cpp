@@ -97,3 +97,21 @@ void doLastAsset(zoneInfo_t* info, const char* name)
 	data->sizeCompressed = strlen(data->compressedData) + 1;
 	addAsset(info, ASSET_TYPE_RAWFILE, name, data);
 }
+
+void* getAsset(zoneInfo_t* info, int type, const char* name)
+{
+	for(int i=0; i<info->assetCount; i++)
+	{
+		if(info->assets[i].type == type && info->assets[i].name == R_HashString(name))
+			return info->assets[i].data;
+	}
+	return NULL;
+}
+
+
+void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name)
+{
+	void* ret = getAsset(info, type, name);
+	if(ret) return ret;
+	return DB_FindXAssetHeader(type, name);
+}

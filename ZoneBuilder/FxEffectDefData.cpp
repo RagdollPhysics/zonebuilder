@@ -1,6 +1,8 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+#include "FxParsing.h"
+
 // do this one like NTA does cause it seems to be neater
 
 void writeFxElemVisuals(zoneInfo_t* info, BUFFER* buf, FxElemVisuals* data, int type)
@@ -378,29 +380,39 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 		return data;
 	}
 	
-	Com_BeginParseSession("efx");
+	Com_BeginParseSession(name);
 
 	char* parse = data;
 
 	FxEffectDef* ret = (FxEffectDef*)calloc(sizeof(FxEffectDef), 1);
 
 	Com_Parse_MatchToken(&parse, "iwfx", false);
-	int numSegments = Com_ParseInt(&parse);
-
-	ret->elemDefs = (FxElemDef*)calloc(sizeof(FxElemDef), numSegments);
+	Com_ParseInt(&parse);
+	ret->elemDefs = (FxElemDef*)calloc(sizeof(FxElemDef), 32);
 	
-	for(int i=0; i<numSegments; i++)
+	char token[64];
+	strncpy(token, Com_ParseExt(&parse), 64);
+	int i = 0;
+	while(*token != NULL)
 	{
-		Com_Parse_MatchToken(&parse, "{", false);
+		ret->elemDefs[i].elemType = -1;
+		if(*token != '{') Com_Error(true, "invalid efx file!");
 		while(true)
 		{
-			char* token = Com_ParseExt(&parse);
-			getFxFieldByName(token)->parse(&parse, ret);
+			strncpy(token, Com_ParseExt(&parse), 64);
+			Com_Debug("parsing field %s\n", token);
+			doParseFxEntry(info, &parse, token, ret, i);
 			if(*token == '}') break;
 		}
+		i++;
+		strncpy(token, Com_ParseExt(&parse), 64);
 	}
+
+	ret->elemDefCountOneShot = i;
+
+	ret->name = strdup(name);
 
 	Com_EndParseSession();
 	
-	return NULL;
+	return ret;
 }
