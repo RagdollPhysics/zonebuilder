@@ -666,12 +666,6 @@ typedef struct
 typedef struct
 {
 	const char* name;
-	char pad[624];
-} gfx_map_t;
-
-typedef struct
-{
-	const char* name;
 	char pad[14];
 } lightdef_t;
 

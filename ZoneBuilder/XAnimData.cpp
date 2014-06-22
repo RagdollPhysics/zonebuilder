@@ -11,14 +11,17 @@ void writeXAnim(zoneInfo_t* info, BUFFER* buf, XAnim* data)
 		buf->write(data->tagnames, data->tagCount * 2, 1); 
 		dest->tagnames = (short*)-1; 
 	}
+
 	if(data->notetracks) { 
 		buf->write(data->notetracks, data->notetrackCount * sizeof(Notetrack), 1);
 		dest->notetracks = (Notetrack*)-1;
 	}
+
 	if(data->delta)
 	{
-		DebugBreak();		
+		
 	}
+
 	if(data->dataByte) {
 		buf->write(data->dataByte, data->dataByteCount, 1);
 		dest->dataByte = (char*)-1;
