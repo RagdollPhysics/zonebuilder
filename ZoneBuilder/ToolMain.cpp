@@ -122,7 +122,7 @@ void ZoneBuild(char* building)
 
 	Com_Printf("Writing Zone...");
 	BUFFER* buf = writeZone(info);
-#ifdef ZB_DEBUG
+#if ZB_DEBUG
     FILE* fp = fopen("uncompressed_zone", "wb");
     buf->writetofile(fp);
     fclose(fp);

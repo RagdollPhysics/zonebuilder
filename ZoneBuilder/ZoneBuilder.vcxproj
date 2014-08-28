@@ -94,7 +94,6 @@ echo $(SolutionDir)</Command>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssetWriter.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
     <ClCompile Include="CSVFile.cpp" />
@@ -144,11 +143,9 @@ echo $(SolutionDir)</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetStructs.h" />
-    <ClInclude Include="AssetWriter.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CSVFile.h" />
     <ClInclude Include="FxParsing.h" />
-    <ClInclude Include="GfxWorldStruct.h" />
     <ClInclude Include="Hooking.h" />
     <ClInclude Include="MW2.h" />
     <ClInclude Include="s10e5.h" />
