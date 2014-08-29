@@ -145,9 +145,11 @@ void RunTool()
 			DB_LoadXAssets(info, i, 0);
 			i = 0;
 		}
-		i++;
+		else
+			i++;
 	}
-	DB_LoadXAssets(info, i, 0);
+	if(i > 0)
+		DB_LoadXAssets(info, i, 0);
 	while(!loadedFastfiles) Sleep(100);
 
 	if(dumping)

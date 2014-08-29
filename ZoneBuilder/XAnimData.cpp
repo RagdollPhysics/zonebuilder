@@ -1,60 +1,22 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+
+
 void writeXAnim(zoneInfo_t* info, BUFFER* buf, XAnim* data)
 {
-	XAnim* dest = (XAnim*)buf->at();
-	buf->write(data, sizeof(XAnim), 1); // header
-	buf->write(data->name, strlen(data->name) + 1, 1); // name
-	dest->name = (char*)-1;
-	if(data->tagnames) { 
-		buf->write(data->tagnames, data->tagCount * 2, 1); 
-		dest->tagnames = (short*)-1; 
-	}
-	if(data->notetracks) { 
-		buf->write(data->notetracks, data->notetrackCount * sizeof(Notetrack), 1);
-		dest->notetracks = (Notetrack*)-1;
-	}
-	if(data->delta)
-	{
-		DebugBreak();		
-	}
-	if(data->dataByte) {
-		buf->write(data->dataByte, data->dataByteCount, 1);
-		dest->dataByte = (char*)-1;
-	}
-	if(data->dataShort) {
-		buf->write(data->dataShort, data->dataShortCount * 2, 1);
-		dest->dataShort = (short*)-1;	
-	}
-	if(data->dataInt) {
-		buf->write(data->dataInt, data->dataIntCount * 4, 1);
-		dest->dataInt = (int*)-1;
-	}
-	if(data->randomDataShort) {
-		buf->write(data->randomDataShort, data->randomDataShortCount * 2, 1);
-		dest->randomDataShort = (short*)-1;
-	}
-	if(data->randomDataByte) {
-		buf->write(data->randomDataByte, data->randomDataByteCount, 1);
-		dest->randomDataByte = (char*)-1;
-	}
-	if(data->randomDataInt) {
-		buf->write(data->randomDataInt, data->randomDataIntCount * 4, 1);
-		dest->randomDataInt = (int*)-1;
-	}
-	if(data->indicies) 
-	{
-		if(data->indexcount > 255)
-		{
-			buf->write(data->indicies, data->indexcount * 2, 1);
-		}
-		else
-		{
-			buf->write(data->indicies, data->indexcount, 1);
-		}
-		data->indicies = (char*)-1;
-	}
+	WRITE_ASSET(data, XAnim);
+	WRITE_NAME(data);
+
+	WRITE_FIELD(data, tagnames,	short, tagCount);
+	WRITE_FIELD(data, notetracks, Notetrack, notetrackCount);
+	WRITE_FIELD(data, dataByte,	char, dataByteCount);
+	WRITE_FIELD(data, dataShort, short,	dataShortCount);
+	WRITE_FIELD(data, dataInt,	int, dataIntCount);
+	WRITE_FIELD(data, randomDataShort, short, randomDataShortCount);
+	WRITE_FIELD(data, randomDataByte, char, randomDataByteCount);
+	WRITE_FIELD(data, randomDataInt, int, randomDataIntCount);
+	WRITE_FIELD_ON_SIZE(data, indicies, char, indexcount);
 }
 
 void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen)

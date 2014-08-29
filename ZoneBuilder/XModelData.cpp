@@ -134,8 +134,16 @@ void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 		dest->unknowns = (char*)-1;
 	}
 
-	dest->physPreset = NULL;
-	dest->physCollmap = NULL;
+	if(dest->physPreset)
+	{
+		writePhysPreset(info, buf, dest->physPreset);
+		dest->physPreset = (PhysPreset*)-1;
+	}
+	if(dest->physCollmap)
+	{
+		writePhysCollmap(info, buf, dest->physCollmap);
+		dest->physCollmap = (PhysGeomList*)-1;
+	}
 }
 
 void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)

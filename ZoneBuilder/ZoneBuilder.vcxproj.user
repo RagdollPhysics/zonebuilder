@@ -4,7 +4,7 @@
     <LocalDebuggerCommand>D:\Games\Activision\Modern Warfare 2\ZoneBuilder.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Normal|Win32'">
-    <LocalDebuggerCommandArguments>test</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-senvironment_desert -senvironment_urban -senvironment_forest -steam_opforce_arctic -steam_opforce_airborne -steam_opforce_composite -steam_seals_udt -steam_socom_141_desert -steam_socom_141_forest -steam_us_army -smp_subbase -sw2_xmodels dependencies_mp</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>D:\Games\Activision\Modern Warfare 2</LocalDebuggerWorkingDirectory>
   </PropertyGroup>

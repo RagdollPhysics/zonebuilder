@@ -16,43 +16,6 @@ typedef struct
 	bool tempDefaultToCylinder;
 } PhysPreset;
 
-struct cplane_t
-{
-	char pad[20];
-};
-
-struct cbrushside_t
-{
-	cplane_t* plane;
-	int pad;
-};
-
-struct BrushWrapper
-{
-	char pad[24];
-	short numPlaneSide;
-	short pad2;
-	cbrushside_t* side;
-	char* edge;
-	char pad3[24];
-	int numEdge;
-	cplane_t* plane;
-};
-
-struct PhysGeomInfo
-{
-	BrushWrapper* brush;
-	char pad[64];
-};
-
-struct PhysCollmap
-{
-	char* name;
-	int numInfo;
-	PhysGeomInfo* info;
-	char pad2[60];
-};
-
 typedef struct
 {
 	int name; // use DB_GetFFString
@@ -388,8 +351,8 @@ typedef struct XModel
 	int pad6;
 	char* unknowns; // bone count, +256, element size 28
 	char pad5[36];
-	void* physPreset;
-	void* physCollmap;
+	PhysPreset* physPreset;
+	struct PhysGeomList* physCollmap;
 } XModel; // total size 304
 
 #pragma pack(push, 1)
@@ -535,7 +498,7 @@ struct cModel
 
 struct cBrush
 {
-	int unk;
+	int count;
 	cBrushSide * brushSide;
 	char * brushEdge;
 	char pad[24];
@@ -607,6 +570,44 @@ typedef struct
 	void* dynEntityColl_Brush; // +200
 	char pad3[52]; // +204
 } Col_Map; // +256
+
+
+struct PhysMass  //NOTE: PhysMass is used in DynEntityDef's in the collision map.
+{
+	float centerOfMass[3];
+	float momentsOfInertia[3];
+	float productsOfInertia[3];
+};
+ 
+#pragma pack(push, 4)
+struct BrushWrapper
+{
+	float mins[3];
+	float maxs[3];
+	cBrush brush;
+	int totalEdgeCount;
+	cPlane *planes;
+};
+#pragma pack(pop)
+ 
+struct PhysGeomInfo
+{
+	BrushWrapper *brush;
+	int type;
+	float orientation[3][3];
+	float offset[3];
+	float halfLengths[3];
+};
+ 
+struct PhysGeomList
+{
+	const char * name;
+	unsigned int count;
+	PhysGeomInfo *geoms;
+	char unknown[0x18];
+	PhysMass mass;
+};
+
 
 struct ComPrimaryLight
 {

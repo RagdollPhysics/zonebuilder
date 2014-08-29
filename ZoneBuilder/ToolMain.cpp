@@ -18,6 +18,10 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	if(filename == NULL) // stock asset
 	{
 		data = (char*)DB_FindXAssetHeader(type, name);
+		if(DB_IsAssetDefault(type, name)) {
+			Com_Error(false, "Missing asset %s!\n", name);
+			return;
+		}
 		size = 0;
 	}
 	else
@@ -26,10 +30,16 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		if(size < 0) // renamed stock asset
 		{
 			data = (char*)DB_FindXAssetHeader(type, filename);
+			if(DB_IsAssetDefault(type, filename)) {
+				Com_Error(false, "Missing asset %s!\n", filename);
+				return;
+			}
 			((Rawfile*)data)->name = name;
 			size = 0;
 		}
 	}
+
+	
 
 	void * asset;
 	switch(type)

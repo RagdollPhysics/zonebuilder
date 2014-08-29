@@ -116,6 +116,8 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="PatchMW2FifthInfinity.cpp" />
     <ClCompile Include="PatchMW2Load.cpp" />
     <ClCompile Include="PatchMW2StringList.cpp" />
+    <ClCompile Include="PhysCollMapData.cpp" />
+    <ClCompile Include="PhysPresetData.cpp" />
     <ClCompile Include="RawfileData.cpp" />
     <ClCompile Include="SoundAliasData.cpp" />
     <ClCompile Include="StdInc.cpp">
@@ -136,6 +138,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="ToolMain.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="WriteMacros.h" />
     <ClCompile Include="XAnimData.cpp" />
     <ClCompile Include="XModelData.cpp" />
     <ClCompile Include="ZoneData.cpp" />

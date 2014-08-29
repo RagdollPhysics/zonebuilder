@@ -3,6 +3,7 @@
 #include "StdInc.h"
 #include "Buffers.h"
 #include "CSVFile.h"
+#include "WriteMacros.h"
 
 #define MAX_ASSET_COUNT 2048
 #define MAX_SCRIPT_STRINGS 2048
@@ -124,3 +125,9 @@ void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t data
 // FxEffectDefData
 void writeFxEffectDef(zoneInfo_t* info, BUFFER* buf, FxEffectDef* data);
 void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// PhysPresetData
+void writePhysPreset(zoneInfo_t* info, BUFFER* buf, PhysPreset* data);
+
+void writePhysCollmap(zoneInfo_t* info, BUFFER* buf, PhysGeomList* data);
+void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
