@@ -38,17 +38,17 @@ void writeSoundAlias(zoneInfo_t* info, BUFFER* buf, snd_alias_list_t* data)
 
 		if(alias->stream)
 		{
-			StreamFile* file = (StreamFile*)buf->at();
+			StreamFile* stream = (StreamFile*)buf->at();
 			buf->write(alias->stream, sizeof(StreamFile), 1);
-			if(file->type == 1) Com_Error(true, "Cannot export soundAliases that aren't of type 0!");
-			if(file->folder) {
-				buf->write(file->folder, strlen(file->folder) + 1, 1);
-				file->folder = (char*)-1;
+			if(alias->stream->type != 2) Com_Error(true, "Cannot export soundAliases that aren't of type 2!");
+			if(alias->stream->folder) {
+				buf->write(alias->stream->folder, strlen(alias->stream->folder) + 1, 1);
+				stream->folder = (char*)-1;
 			}
-			if(file->file)
+			if(alias->stream->file)
 			{
-				buf->write(file->file, strlen(file->file) + 1, 1);
-				file->file = (char*)-1;
+				buf->write(alias->stream->file, strlen(alias->stream->file) + 1, 1);
+				stream->file = (char*)-1;
 			}
 			alias->stream = (StreamFile*)-1;
 		}
@@ -89,7 +89,7 @@ void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t data
 	}
 	else
 	{
-		folder = l.substr(0, slash + 1);
+		folder = l.substr(0, slash);
 		file = l.substr(slash + 1);
 		hasfolder = true;
 	}
@@ -100,10 +100,10 @@ void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t data
 	snd->name = strdup(name);
 	snd->aliases->name = snd->name;
 	if(hasfolder)
-		snd->aliases->stream->folder = (char*)folder.c_str();
+		snd->aliases->stream->folder = strdup((char*)folder.c_str());
 	else
 		snd->aliases->stream->folder = NULL;
-	snd->aliases->stream->file = (char*)file.c_str();
+	snd->aliases->stream->file = strdup((char*)file.c_str());
 
 	return snd;
 }
