@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data)
+void writeColMap(zoneInfo_t* info, ZStream* buf, Col_Map* data)
 {
 	int * modelOffset = new int[data->numStaticModels];
 	for(int i=0; i<data->numStaticModels; i++)

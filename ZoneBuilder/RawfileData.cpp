@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeRawfile(zoneInfo_t* info, BUFFER* buf, Rawfile* data)
+void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 {
 	Rawfile* dest = (Rawfile*)buf->at();
 	buf->write(data, sizeof(Rawfile), 1);

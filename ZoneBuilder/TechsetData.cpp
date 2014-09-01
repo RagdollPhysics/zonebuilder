@@ -20,7 +20,7 @@ void * addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 	addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
 }
 
-void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data)
+void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 {
 	// get all our pointers straight
 	int vshader[48];
@@ -66,7 +66,7 @@ void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data)
 
 }
 
-void writePixelShader(zoneInfo_t* info, BUFFER* buf, PixelShader* data)
+void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 {
 	PixelShader* dest = (PixelShader*)buf->at();
 	buf->write(data, sizeof(PixelShader), 1);
@@ -76,7 +76,7 @@ void writePixelShader(zoneInfo_t* info, BUFFER* buf, PixelShader* data)
 	dest->bytecode = (DWORD*)-1;
 }
 
-void writeVertexShader(zoneInfo_t* info, BUFFER* buf, VertexShader* data)
+void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
 {
 	VertexShader* dest = (VertexShader*)buf->at();
 	buf->write(data, sizeof(VertexShader), 1);
@@ -86,7 +86,7 @@ void writeVertexShader(zoneInfo_t* info, BUFFER* buf, VertexShader* data)
 	dest->bytecode = (DWORD*)-1;
 }
 
-void writeVertexDecl(zoneInfo_t* info, BUFFER* buf, VertexDecl* data)
+void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data)
 {
 	VertexDecl* dest = (VertexDecl*)buf->at();
 	buf->write(data, sizeof(VertexDecl), 1);

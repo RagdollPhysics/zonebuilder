@@ -1,6 +1,6 @@
 #include "StdInc.h"
 #include "Tool.h"
-int desiredFFVersion = 277;
+int desiredFFVersion = 276;
 
 char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0', 
 	desiredFFVersion, desiredFFVersion >> 8, desiredFFVersion >> 16, desiredFFVersion >> 24, 
@@ -131,7 +131,7 @@ void ZoneBuild(char* building)
 	doLastAsset(info, toBuild.c_str());
 
 	Com_Printf("Writing Zone...");
-	BUFFER* buf = writeZone(info);
+	ZStream* buf = writeZone(info);
 #if ZB_DEBUG
     FILE* fp = fopen("uncompressed_zone", "wb");
     buf->writetofile(fp);

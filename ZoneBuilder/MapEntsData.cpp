@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data)
+void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 {
 	MapEnts* dest = (MapEnts*)buf->at();
 	buf->write(data, sizeof(MapEnts), 1);

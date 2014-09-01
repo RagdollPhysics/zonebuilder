@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeSoundAlias(zoneInfo_t* info, BUFFER* buf, snd_alias_list_t* data)
+void writeSoundAlias(zoneInfo_t* info, ZStream* buf, snd_alias_list_t* data)
 {
 	snd_alias_list_t* list = (snd_alias_list_t*)buf->at();
 	buf->write(data, sizeof(snd_alias_list_t), 1);

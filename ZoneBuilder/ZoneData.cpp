@@ -108,6 +108,14 @@ void* getAsset(zoneInfo_t* info, int type, const char* name)
 	return NULL;
 }
 
+int getOffsetForWrite(zoneInfo_t* info, int stream, ZStream* buf)
+{
+	// these offset are as follows
+	// top 4 bits are the stream
+	// bottom 28 are the offset in that stream block
+	return ((stream & 0x0F) << 28) | (buf->getStreamOffset(stream) & 0x0FFFFFFF);
+}
+
 
 void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name)
 {

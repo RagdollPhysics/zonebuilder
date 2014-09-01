@@ -6,6 +6,9 @@
 //			 parsing utils
 //***************************************
 
+// this has been modified to specifically reflect the intrests of this particular project
+// you have been warned
+
 #include "StdInc.h"
 #include "Tool.h"
 
@@ -29,6 +32,7 @@ BUFFER::BUFFER(size_t size)
 	_maxsize = 0;
 	_freeOnDestroy = true;
 }
+
 BUFFER::~BUFFER()
 {
 	if(_freeOnDestroy)

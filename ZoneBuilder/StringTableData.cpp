@@ -28,7 +28,7 @@ int StringTableHash(char* data)
 	return hash;
 }
 
-void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data)
+void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 {
 	StringTable* outST = (StringTable*)buf->at();
 	buf->write(data, sizeof(StringTable), 1);
@@ -40,8 +40,8 @@ void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data)
 	{
 		for(int ci=0; ci<data->columns; ci++)
 		{
-			buf->write(-1, 1);
-			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 1);
+			buf->write(&pad, 4, 1);
+			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 4, 1);
 		}
 	}
 	for(int ri=0; ri<data->rows; ri++)

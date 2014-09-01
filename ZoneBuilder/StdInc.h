@@ -43,6 +43,7 @@
 using namespace std;
 
 #include "Buffers.h"
+#include "ZStream.h"
 
 // OSW headers
 #define NO_STEAM // to reduce header amount needed
@@ -100,3 +101,6 @@ void G_SayToAll(DWORD color, const char* name, const char* text);
 
 #undef strcpy_s
 #define strcpy_s StringCbCopy
+
+extern int zero;
+extern int pad;

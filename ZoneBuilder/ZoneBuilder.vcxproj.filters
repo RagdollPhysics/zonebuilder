@@ -165,6 +165,9 @@
     <ClCompile Include="WriteMacros.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SteamFriends005.h">
@@ -222,6 +225,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FxParsing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -285,6 +285,7 @@ void SetUseFilePointers(bool use)
 	g_useFilePointers = use;
 }
 
+// this is no longer needed but I'll leave it in so we can load from 277 zones as source
 void PatchMW2_FilePointers()
 {
 	//filePointers.set_empty_key(0);

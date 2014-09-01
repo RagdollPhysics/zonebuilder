@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeGameMap(zoneInfo_t* info, BUFFER* buf, GameMap_MP* data)
+void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data)
 {
 	GameMap_MP* dest = (GameMap_MP*)buf->at();
 	buf->write(data, sizeof(GameMap_MP), 1);

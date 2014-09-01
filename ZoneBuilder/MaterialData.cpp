@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeMaterial(zoneInfo_t* info, BUFFER* buf, Material* data)
+void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 {
 	// require this asset
 	int techsetOffset = requireAsset(info, ASSET_TYPE_TECHSET, (char*)data->techniqueSet->name, buf);

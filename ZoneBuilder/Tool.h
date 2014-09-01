@@ -8,9 +8,6 @@
 #define MAX_ASSET_COUNT 2048
 #define MAX_SCRIPT_STRINGS 2048
 
-#define ZONE_STREAM_VERTEX 8
-#define ZONE_STREAM_FACE 9
-
 #if ZB_DEBUG
 #define Com_Debug Com_Debug_
 #else
@@ -57,10 +54,9 @@ long flength(FILE* fp);
 
 // ZoneWriter
 //extern void writeZone(zoneInfo_t * info);
-extern BUFFER* writeZone(zoneInfo_t * info);
-extern int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf);
-extern int requireAsset(zoneInfo_t* info, int type, char* name, BUFFER* buf);
-extern void addXZoneMemory(int index, int num);
+extern ZStream* writeZone(zoneInfo_t * info);
+extern int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf);
+extern int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf);
 
 // ZoneData
 extern zoneInfo_t * getZoneInfo(const char * zoneName);
@@ -73,61 +69,62 @@ extern int addScriptString(zoneInfo_t* info, char* str);
 extern void doLastAsset(zoneInfo_t* info, const char* name);
 extern void* getAsset(zoneInfo_t* info, int type, const char* name);
 extern void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name);
+extern int getOffsetForWrite(zoneInfo_t* info, int stream, ZStream* buf);
 
 // XAnimData
 extern void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeXAnim(zoneInfo_t* info, BUFFER* buf, XAnim* data);
+extern void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data);
 
 // RawfileData
 extern void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeRawfile(zoneInfo_t* info, BUFFER* buf, Rawfile* data);
+extern void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data);
 
 // XModelData
 extern void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data);
+extern void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data);
 
 // MaterialData
 extern void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeMaterial(zoneInfo_t* info, BUFFER* buf, Material* data);
+extern void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data);
 
 // TechsetData
 extern void * addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data);
-extern void writePixelShader(zoneInfo_t* info, BUFFER* buf, PixelShader* data);
-extern void writeVertexShader(zoneInfo_t* info, BUFFER* buf, VertexShader* data);
-extern void writeVertexDecl(zoneInfo_t* info, BUFFER* buf, VertexDecl* data);
+extern void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data);
+extern void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data);
+extern void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data);
+extern void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data);
 
 // ColMapData
 extern void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data);
+extern void writeColMap(zoneInfo_t* info, ZStream* buf, Col_Map* data);
 
 // MapEntsData
 extern void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
-extern void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data);
+extern void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data);
 
 // ComWorldData
-void writeComWorld(zoneInfo_t* info, BUFFER* buf, ComWorld* data);
+void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data);
 void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // GameMapData
-void writeGameMap(zoneInfo_t* info, BUFFER* buf, GameMap_MP* data);
+void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data);
 void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // StringTableData
-void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data);
+void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data);
 void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // SoundAliasData
-void writeSoundAlias(zoneInfo_t* info, BUFFER* buf, snd_alias_list_t* data);
+void writeSoundAlias(zoneInfo_t* info, ZStream* buf, snd_alias_list_t* data);
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // FxEffectDefData
-void writeFxEffectDef(zoneInfo_t* info, BUFFER* buf, FxEffectDef* data);
+void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data);
 void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // PhysPresetData
-void writePhysPreset(zoneInfo_t* info, BUFFER* buf, PhysPreset* data);
+void writePhysPreset(zoneInfo_t* info, ZStream* buf, PhysPreset* data);
 
-void writePhysCollmap(zoneInfo_t* info, BUFFER* buf, PhysGeomList* data);
+void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data);
 void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

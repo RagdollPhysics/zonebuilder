@@ -3,7 +3,7 @@
 
 
 
-void writeXAnim(zoneInfo_t* info, BUFFER* buf, XAnim* data)
+void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 {
 	WRITE_ASSET(data, XAnim);
 	WRITE_NAME(data);

@@ -2,7 +2,7 @@
 #include "Tool.h"
 
 // easy
-void writePhysPreset(zoneInfo_t* info, BUFFER* buf, PhysPreset* data)
+void writePhysPreset(zoneInfo_t* info, ZStream* buf, PhysPreset* data)
 {
 	WRITE_ASSET(data, PhysPreset);
 	WRITE_NAME(data);

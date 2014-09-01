@@ -4,14 +4,21 @@
 int zero = 0;
 int pad = 0xFFFFFFFF;
 
-int zoneStreamSizes[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+typedef struct 
+{
+	int zoneSize;
+	int unk1;
+	int streams[8];
+} xZoneMemory;
+
+xZoneMemory memory = { 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 
 // must be called before you write anything in your asset!!!
-int requireAsset(zoneInfo_t* info, int type, char* name, BUFFER* buf)
+int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 {
 	int a = containsAsset(info, type, name);
 	if(a >= 0)
-	{
+	{		
 		return writeAsset(info, &info->assets[a], buf);
 	}
 	else
@@ -21,15 +28,10 @@ int requireAsset(zoneInfo_t* info, int type, char* name, BUFFER* buf)
 	return -1;
 }
 
-void addXZoneMemory(int index, int num)
-{
-	zoneStreamSizes[index] += num;
-}
-
-int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
+int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
-	asset->offset = buf->tell() + 1; // WHY IS THIS +1 ??????
+	asset->offset = getOffsetForWrite(info, 0, buf);
 	// hide the useless assets that we can't change
 	if(asset->type != ASSET_TYPE_TECHSET &&
 	   asset->type != ASSET_TYPE_PIXELSHADER &&
@@ -89,10 +91,10 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, BUFFER* buf)
 	return asset->offset;
 }
 
-BUFFER* writeZone(zoneInfo_t * info)
+ZStream* writeZone(zoneInfo_t * info)
 {
-    BUFFER* buf = new BUFFER(0x10000000);
-    buf->seek(40, SEEK_SET);
+    ZStream* buf = new ZStream(0x10000000);
+	buf->write(&memory, sizeof(xZoneMemory), 1);
 
     buf->write(&info->scriptStringCount, 4, 1);
     if(info->scriptStringCount > 0) buf->write(&pad, 4, 1);
@@ -113,28 +115,23 @@ BUFFER* writeZone(zoneInfo_t * info)
     for(int i=0; i<info->assetCount; i++)
     {
         buf->write(&info->assets[i].type, 4, 1);
-        buf->write(-1, 1);
+        buf->write(&pad, 4, 1);
     }
 
     for(int i=0; i<info->assetCount; i++)
     {
-		// NO
-        //buf->write(info->assets[i].data, info->assets[i].length, 1);
 		writeAsset(info, &info->assets[i], buf);
     }
 
     buf->resize(-1); // should be maxsize
 
-    // YAY... now we get to compute XZoneMemory sizes!
-    // got some nice values courtesy of IW4Tool
-    zoneStreamSizes[0] = buf->getsize() - 39; // data length
-    zoneStreamSizes[2] = (int)(buf->getsize() * 0.4);
-    zoneStreamSizes[5] = (int)(buf->getsize() * 1.3);
-	zoneStreamSizes[8] = (int)(zoneStreamSizes[8] * 1.2);
-	zoneStreamSizes[9] = (int)(zoneStreamSizes[9] * 1.2);
-
-    buf->seek(0, SEEK_SET);
-    buf->write(zoneStreamSizes, 40, 1);
+    // Grab the Stream sizes... should be different but who cares if we allocate a bit too much memory :)
+	xZoneMemory* mem = (xZoneMemory*)buf->data();
+    mem->zoneSize = buf->getsize() - 39; // data length
+    mem->streams[0] = (int)(buf->getsize() * 0.4);
+    mem->streams[3] = (int)(buf->getsize() * 1.3);
+	mem->streams[6] = (int)(buf->getStreamOffset(6) * 1.2);
+	mem->streams[7] = (int)(buf->getStreamOffset(7) * 1.2);
 
 	Com_Debug("\nWrote %d assets, and %d script strings\n", info->assetCount, info->scriptStringCount);
 

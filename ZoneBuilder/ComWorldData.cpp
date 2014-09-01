@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeComWorld(zoneInfo_t* info, BUFFER* buf, ComWorld* data)
+void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data)
 {
 	ComWorld* dest = (ComWorld*)buf->at();
 	buf->write(data, sizeof(ComWorld), 1);

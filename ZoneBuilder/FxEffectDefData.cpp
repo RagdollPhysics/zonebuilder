@@ -5,7 +5,7 @@
 
 // do this one like NTA does cause it seems to be neater
 
-void writeFxElemVisuals(zoneInfo_t* info, BUFFER* buf, FxElemVisuals* data, int type)
+void writeFxElemVisuals(zoneInfo_t* info, ZStream* buf, FxElemVisuals* data, int type)
 {
 	switch(type)
 	{
@@ -23,7 +23,7 @@ void writeFxElemVisuals(zoneInfo_t* info, BUFFER* buf, FxElemVisuals* data, int 
 	}
 }
 
-void writeFxElemDefVisuals(zoneInfo_t* info, BUFFER* buf, FxElemDefVisuals* data, int type, int count)
+void writeFxElemDefVisuals(zoneInfo_t* info, ZStream* buf, FxElemDefVisuals* data, int type, int count)
 {
 	if(type == 11)
 	{
@@ -46,7 +46,7 @@ void writeFxElemDefVisuals(zoneInfo_t* info, BUFFER* buf, FxElemDefVisuals* data
 	}
 }
 
-void writeFxElemDef(zoneInfo_t* info, BUFFER* buf, FxElemDef* def)
+void writeFxElemDef(zoneInfo_t* info, ZStream* buf, FxElemDef* def)
 {
 	if(def->velSamples)
 	{
@@ -119,7 +119,7 @@ void writeFxElemDef(zoneInfo_t* info, BUFFER* buf, FxElemDef* def)
 	}
 }
 
-void doRequireForFxDef(zoneInfo_t* info, BUFFER* buf, FxEffectDef* def)
+void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 {
 	for(int i=0; i<def->elemDefCountLooping + def->elemDefCountOneShot + def->elemDefCountEmission; i++)
 	{
@@ -214,7 +214,7 @@ void doRequireForFxDef(zoneInfo_t* info, BUFFER* buf, FxEffectDef* def)
 	}
 }
 
-void writeFxEffectDef(zoneInfo_t* info, BUFFER* buf, FxEffectDef* data)
+void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data)
 {
 	doRequireForFxDef(info, buf, data);
 

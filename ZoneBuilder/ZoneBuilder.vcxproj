@@ -143,6 +143,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="XModelData.cpp" />
     <ClCompile Include="ZoneData.cpp" />
     <ClCompile Include="ZoneWriter.cpp" />
+    <ClCompile Include="ZStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetStructs.h" />
@@ -164,6 +165,7 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="Tool.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="WeaponDef.h" />
+    <ClInclude Include="ZStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

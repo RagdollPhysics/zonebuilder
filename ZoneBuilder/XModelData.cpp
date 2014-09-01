@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
+void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 {
 	int * materialOffs = new int[data->numSurfaces];
 	for(int i=0; i<data->numSurfaces;i++)
@@ -72,9 +72,8 @@ void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 
 				if(surf[j].vertexBuffer)
 				{
-					buf->write(surf[j].vertexBuffer, 32, surf[j].numVertices);
+					buf->write(ZSTREAM_VERTEX, surf[j].vertexBuffer, 32, surf[j].numVertices);
 					surf[j].vertexBuffer = (GfxPackedVertex*)-1;
-					addXZoneMemory(ZONE_STREAM_VERTEX, 32 * surf[j].numVertices);
 				}
 
 				if(surf[j].ct)
@@ -106,9 +105,8 @@ void writeXModel(zoneInfo_t* info, BUFFER* buf, XModel* data)
 
 				if(surf[j].indexBuffer)
 				{
-					buf->write(surf[j].indexBuffer, 6, surf[j].numPrimitives);
+					buf->write(ZSTREAM_INDEX, surf[j].indexBuffer, 6, surf[j].numPrimitives);
 					surf[j].indexBuffer = (Face*)-1;
-					addXZoneMemory(ZONE_STREAM_FACE, 6 * surf[j].numPrimitives);
 				}
 			}
 			surfs->name = (char*)-1;
