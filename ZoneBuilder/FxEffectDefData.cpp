@@ -142,8 +142,8 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 				{
 					Material* m1 = def->elemDefs[i].visuals.markArray[j].data[0];
 					Material* m2 = def->elemDefs[i].visuals.markArray[j].data[1];
-					def->elemDefs[i].visuals.markArray[j].data[0] = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m1->name, buf) | 0xF0000000);
-					def->elemDefs[i].visuals.markArray[j].data[1] = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m2->name, buf) | 0xF0000000);
+					def->elemDefs[i].visuals.markArray[j].data[0] = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m1->name, buf));
+					def->elemDefs[i].visuals.markArray[j].data[1] = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m2->name, buf));
 				}
 			}
 			else if(def->elemDefs[i].visualCount > 1)
@@ -153,7 +153,7 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 				case 7:
 					{
 						XModel* m = def->elemDefs[i].visuals.array[j].xmodel;
-						def->elemDefs[i].visuals.array[j].xmodel = (XModel*)(requireAsset(info, ASSET_TYPE_XMODEL, m->name, buf) | 0xF0000000);
+						def->elemDefs[i].visuals.array[j].xmodel = (XModel*)(requireAsset(info, ASSET_TYPE_XMODEL, m->name, buf));
 						break;
 					}
 				case 12:
@@ -172,7 +172,7 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 						if(def->elemDefs[i].elemType != 8 && def->elemDefs[i].elemType != 9)
 						{
 							Material* m = def->elemDefs[i].visuals.array[j].material;
-							def->elemDefs[i].visuals.array[j].material = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m->name, buf) | 0xF0000000);
+							def->elemDefs[i].visuals.array[j].material = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m->name, buf));
 							break;
 						}
 					}
@@ -185,7 +185,7 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 				case 7:
 					{
 						XModel* m = def->elemDefs[i].visuals.instance.xmodel;
-						def->elemDefs[i].visuals.instance.xmodel = (XModel*)(requireAsset(info, ASSET_TYPE_XMODEL, m->name, buf) | 0xF0000000);
+						def->elemDefs[i].visuals.instance.xmodel = (XModel*)(requireAsset(info, ASSET_TYPE_XMODEL, m->name, buf));
 						break;
 					}
 				case 12:
@@ -204,7 +204,7 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 						if(def->elemDefs[i].elemType != 8 && def->elemDefs[i].elemType != 9)
 						{
 							Material* m = def->elemDefs[i].visuals.instance.material;
-							def->elemDefs[i].visuals.instance.material = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m->name, buf) | 0xF0000000);
+							def->elemDefs[i].visuals.instance.material = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m->name, buf));
 							break;
 						}
 					}

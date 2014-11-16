@@ -6,7 +6,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 	int * materialOffs = new int[data->numSurfaces];
 	for(int i=0; i<data->numSurfaces;i++)
 	{
-		materialOffs[i] = requireAsset(info, ASSET_TYPE_MATERIAL, (char*)data->materials[i]->name, buf) | 0xF0000000;
+		materialOffs[i] = requireAsset(info, ASSET_TYPE_MATERIAL, (char*)data->materials[i]->name, buf);
 	}
 
 	XModel* dest = (XModel*)buf->at();

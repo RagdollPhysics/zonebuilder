@@ -31,13 +31,13 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
-	asset->offset = getOffsetForWrite(info, 0, buf);
+	asset->offset = getOffsetForWrite(info, 3, buf);
 	// hide the useless assets that we can't change
 	if(asset->type != ASSET_TYPE_TECHSET &&
 	   asset->type != ASSET_TYPE_PIXELSHADER &&
 	   asset->type != ASSET_TYPE_VERTEXSHADER &&
 	   asset->type != ASSET_TYPE_VERTEXDECL)
-		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), asset->offset);
+		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), (asset->offset & 0xFFFFFFF));
 	switch(asset->type)
 	{
 	case ASSET_TYPE_RAWFILE:
@@ -112,10 +112,11 @@ ZStream* writeZone(zoneInfo_t * info)
         buf->write((void*)info->scriptStrings[i].c_str(), info->scriptStrings[i].length() + 1, 1);
     }
 
+	int neg2 = -2;
     for(int i=0; i<info->assetCount; i++)
     {
         buf->write(&info->assets[i].type, 4, 1);
-        buf->write(&pad, 4, 1);
+        buf->write(&neg2, 4, 1);
     }
 
     for(int i=0; i<info->assetCount; i++)

@@ -13,7 +13,7 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 
 	// write techset here
 	// we are just going to require it and use the offset
-	dest->techniqueSet = (MaterialTechniqueSet*)(techsetOffset | 0xF0000000);
+	dest->techniqueSet = (MaterialTechniqueSet*)(techsetOffset);
 
 	// write texturedefs here
 	for(int i=0; i<data->numMaps; i++)

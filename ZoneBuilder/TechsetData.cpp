@@ -49,9 +49,9 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 		if(!dest->techniques[i]) continue;
 		MaterialTechnique* tech = (MaterialTechnique*)buf->at();
 		buf->write(dest->techniques[i], sizeof(MaterialTechnique), 1);
-		tech->passes[0].vertexDecl = (VertexDecl*)(vdecl[i] | 0xF0000000);
-		tech->passes[0].vertexShader = (VertexShader*)(vshader[i] | 0xF0000000);
-		tech->passes[0].pixelShader = (PixelShader*)(pshader[i] | 0xF0000000);
+		tech->passes[0].vertexDecl = (VertexDecl*)(vdecl[i]);
+		tech->passes[0].vertexShader = (VertexShader*)(vshader[i]);
+		tech->passes[0].pixelShader = (PixelShader*)(pshader[i]);
 		for(int k=0; k<tech->passes[0].argCount1 + tech->passes[0].argCount2 + tech->passes[0].argCount3; k++)
 		{
 			buf->write(&tech->passes[0].argumentDef[k], sizeof(ShaderArgumentDef), 1);

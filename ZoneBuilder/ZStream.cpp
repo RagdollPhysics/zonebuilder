@@ -51,7 +51,7 @@ size_t ZStream::write(int stream, const void * _str, size_t size, size_t count)
 
 size_t ZStream::write(const void * _str, size_t size, size_t count)
 {
-	return write(0, _str, size, count);
+	return write(3, _str, size, count);
 }
 
 

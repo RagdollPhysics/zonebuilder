@@ -201,6 +201,7 @@ void CheckZoneLoad(char* name, int atype)
 void printUsage()
 {
 	printf("usage: ZoneBuilder.exe [zone name] -sSourceZones\n");
+	printf("\t\t\t\t\t   -v [zone name]\n");
 	TerminateProcess(GetCurrentProcess(), 0);
 }
 

@@ -10,7 +10,7 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, Col_Map* data)
 		modelOffset[i] = requireAsset(info, ASSET_TYPE_XMODEL, m->name, buf);
 	}
 
-	data->mapEnts = (MapEnts*)(0xF0000000 | requireAsset(info, ASSET_TYPE_MAP_ENTS, (char*)data->name, buf));
+	data->mapEnts = (MapEnts*)(requireAsset(info, ASSET_TYPE_MAP_ENTS, (char*)data->name, buf));
 
 	Col_Map* dest = (Col_Map*)buf->at();
 	buf->write(data, sizeof(Col_Map), 1);
