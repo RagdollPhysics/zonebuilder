@@ -11,7 +11,12 @@
 
 #pragma once
 
+#ifdef _DEBUG
 #define ZB_DEBUG 1
+#endif
+#ifndef _DEBUG
+#define ZB_DEBUG 0
+#endif
 
 #define KEY_DISABLED
 

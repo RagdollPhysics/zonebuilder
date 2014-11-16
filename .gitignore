@@ -1,3 +1,7 @@
 /ipch
 Normal
 /*.sdf
+/Debug
+/Release
+/ZoneBuilder/Debug
+/ZoneBuilder/Release
