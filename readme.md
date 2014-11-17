@@ -77,15 +77,7 @@ Coming Soon...
 Coming Soon...
 
 <h1>Command Line Options</h1>
-```zonebuilder.exe fastfile -sSourceZone```
-
-fastfile => the name of the fastfile you are building
-
-SourceZone => fastfiles to load to reference assets from. preceeded by -s to signify it is a source zone.
-
-You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool.
-
-```zonebuilder.exe -v fastfile```
--v => this option allows you to verify a created fastfile. Prints out every asset in the fastfile.
-
-fastfile => the fastfile to verify
+__-s__: Load a fastfile to be used as a source zone. You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool. *note: there is no space between the -s and the fastfile name!*
+__-v__: This option allows you to verify a created fastfile. Prints out every asset in the fastfile.
+__-d__: Dumps certain assets from the game to a format that can be rebuilt by this tool.
+__-b__: Change the value of fs_basegame. Defaults to "zonebulder".  Where you place all data the tool uses.

@@ -207,6 +207,8 @@ void printUsage()
 	TerminateProcess(GetCurrentProcess(), 0);
 }
 
+char* fs_basegame = "zonebuilder";
+
 void parseArgs()
 {
 	sources.push_back(string("code_pre_gfx_mp"));
@@ -239,6 +241,11 @@ void parseArgs()
 			dumpType = atoi(line);
 			toDump = string(argv[i] + 4);
 			dumping = true;
+		}
+		else if (!strncmp("-b", argv[i], 2))
+		{
+			i++;
+			fs_basegame = strdup(argv[i]);
 		}
 		else
 		{
@@ -386,7 +393,7 @@ void InitBridge()
 	memset((void *)0x51E5CB, 0x90, 5);
 
 	// fs_basegame
-	*(DWORD*)0x6431D1 = (DWORD)"zonebuilder";
+	*(DWORD*)0x6431D1 = (DWORD)fs_basegame;
 
 	// r_registerDvars hack
 	*(BYTE*)0x51B1CD = 0xC3;
