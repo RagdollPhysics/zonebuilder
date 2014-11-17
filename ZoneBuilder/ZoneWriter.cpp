@@ -31,7 +31,7 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
-	asset->offset = getOffsetForWrite(info, 3, buf);
+	asset->offset = getOffsetForWrite(info, 0x0F, buf);
 	// hide the useless assets that we can't change
 	if(asset->type != ASSET_TYPE_TECHSET &&
 	   asset->type != ASSET_TYPE_PIXELSHADER &&

@@ -130,6 +130,8 @@ void RunTool()
 {
 	doInit();
 
+	//if (verify) sources.clear();
+
 	printf("Loading Source Zones...\n");
 	// load source files
 	XZoneInfo* info = new XZoneInfo[9];
