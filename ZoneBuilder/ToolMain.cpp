@@ -151,8 +151,9 @@ void ZoneBuild(char* building)
 	compressed->writetofile(out);
 	fclose(out);
 	Com_Printf("Done!\n");
-
+#ifdef ZB_DEBUG
 	if(IsDebuggerPresent()) {
 		getchar();
 	}
+#endif
 }
