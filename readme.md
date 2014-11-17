@@ -85,3 +85,7 @@ SourceZone => fastfiles to load to reference assets from. preceeded by -s to sig
 
 You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool.
 
+```zonebuilder.exe -v fastfile```
+-v => this option allows you to verify a created fastfile. Prints out every asset in the fastfile.
+
+fastfile => the fastfile to verify
