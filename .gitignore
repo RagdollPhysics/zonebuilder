@@ -6,3 +6,4 @@ Normal
 /ZoneBuilder/Debug
 /ZoneBuilder/Release
 /*.opensdf
+*.suo

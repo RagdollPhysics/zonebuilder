@@ -58,6 +58,7 @@ These are files that define models, animations, and images respectively. They ar
 
 <h1>Building a custom Fastfile</h1>
 Custom Fastfiles are one of the ways that you can load custom assets into the game.  This process is fairly simple if you followed the setup process correctly.  I will refer to paths in reference to the base folder of your game installation.
+
 __Step 1:__
 First step is to create a .csv for your new fastfile.  Using the format described above, create a csv that includes all the assets that you wish to include in your fastfile.
 
@@ -78,6 +79,9 @@ Coming Soon...
 
 <h1>Command Line Options</h1>
 __-s__: Load a fastfile to be used as a source zone. You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool. *note: there is no space between the -s and the fastfile name!*
+
 __-v__: This option allows you to verify a created fastfile. Prints out every asset in the fastfile.
+
 __-d__: Dumps certain assets from the game to a format that can be rebuilt by this tool.
+
 __-b__: Change the value of fs_basegame. Defaults to "zonebulder".  Where you place all data the tool uses.
