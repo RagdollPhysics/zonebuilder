@@ -151,4 +151,7 @@ void debugChecks()
 	ASSERT(sizeof(SoundAlias) == 100);
 	ASSERT(sizeof(SpeakerMap) == 408);
 	ASSERT(sizeof(SoundFile) == 12);
+	Com_Printf("%d\n", DB_GetXAssetTypeSize(ASSET_TYPE_WEAPON));
+	ASSERT(sizeof(WeaponVariantDef) == 0x74);
+	ASSERT(sizeof(WeaponDef) == 0x684)
 }

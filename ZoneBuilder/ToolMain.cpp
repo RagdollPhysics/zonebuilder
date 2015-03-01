@@ -39,8 +39,6 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		}
 	}
 
-	
-
 	void * asset = NULL;
 	switch(type)
 	{
@@ -81,10 +79,13 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		case ASSET_TYPE_FX:
 			//asset = addFxEffectDef(info, name, data, size);
 			break;
+		case ASSET_TYPE_WEAPON:
+			asset = addWeaponVariantDef(info, name, (char*)filename, size);
+			break;
 	}
 	if (asset == NULL) Com_Error(false, "Error adding asset %s!\n", name);
 	else addAsset(info, type, name, asset);
-	if(size != 0)
+	if(size != 0 && type != ASSET_TYPE_WEAPON) // weapon loading destroys data for some reason
 		FS_FreeFile(data);
 }
 

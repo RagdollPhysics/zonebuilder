@@ -41,7 +41,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	   asset->type != ASSET_TYPE_PIXELSHADER &&
 	   asset->type != ASSET_TYPE_VERTEXSHADER &&
 	   asset->type != ASSET_TYPE_VERTEXDECL)
-		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), (asset->offset & 0xFFFFFFF));
+		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), (asset->offset));
 	switch(asset->type)
 	{
 	case ASSET_TYPE_RAWFILE:
@@ -89,6 +89,9 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		break;
 	case ASSET_TYPE_FX:
 		//writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
+		break;
+	case ASSET_TYPE_WEAPON:
+		writeWeaponVariantDef(info, buf, (WeaponVariantDef*)asset->data);
 		break;
 	}
 	asset->written = true;

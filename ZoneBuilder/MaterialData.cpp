@@ -157,6 +157,7 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 
 void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
+	if (data == NULL) return NULL;
 	if(dataLen == 0) {
 		Material* mat = (Material*)data;
 		strncpy(baseMatName, mat->name, 64);

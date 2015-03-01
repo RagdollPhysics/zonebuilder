@@ -131,3 +131,7 @@ void writePhysPreset(zoneInfo_t* info, ZStream* buf, PhysPreset* data);
 
 void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data);
 void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// WeaponData
+void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* data);
+void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

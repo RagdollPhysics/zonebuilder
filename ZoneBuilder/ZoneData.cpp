@@ -60,7 +60,7 @@ int containsScriptString(zoneInfo_t* info, const char* string)
 
 int addAsset(zoneInfo_t* info, int type, const char* name, void* data)
 {
-	if(info->scriptStringCount >= MAX_ASSET_COUNT) Com_Error(true, "Tell Apadayo to increase MAX_ASSET_COUNT!");
+	if(info->assetCount >= MAX_ASSET_COUNT) Com_Error(true, "Tell Apadayo to increase MAX_ASSET_COUNT!");
 	int a = containsAsset(info, type, name);
 	if(a >= 0) return a;
 	// force data to have correct name

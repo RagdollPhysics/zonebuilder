@@ -29,6 +29,7 @@ DWORD init9 = 0x60AD10;
 DWORD init10 = 0x5196C0;
 DWORD init11 = 0x4A62A0;
 DWORD init12 = 0x429080;
+DWORD setupWeaponDef = 0x4E1F30;
 
 bool loadedFastfiles = false;
 bool dumping = false;
@@ -151,6 +152,9 @@ void RunTool()
 	if(i > 0)
 		DB_LoadXAssets(info, i, 0);
 	while(!loadedFastfiles) Sleep(100);
+
+	// allow us to load weapons from disk
+	__asm call setupWeaponDef
 
 	if(dumping)
 	{
@@ -309,6 +313,33 @@ void __declspec(naked) AddEntryNameHookStub()
 	}
 }
 
+int weaponNamesprintfHook(char* dest, size_t len, const char* format, ...)
+{
+	int result;
+	va_list va;
+	va_start(va, format);
+	char* type = va_arg(va, char*);
+	char* name = va_arg(va, char*);
+	result = _snprintf(dest, len, "%s", name);
+	return result;
+}
+
+int __cdecl comErrorHook(int a1, char* format, ...)
+{
+	int result;
+	va_list va;
+	va_start(va, format);
+	char dest[1024];
+	result = _vsnprintf(dest, 1024, format + 1, va);
+	Com_Error(false, "%s\n", dest);
+	return 0;
+}
+
+const char* soundLoadingHook(const char* ptr)
+{
+	return strdup(ptr);
+}
+
 void InitBridge()
 {
 	printf("Initializing IW4...\n");
@@ -333,6 +364,17 @@ void InitBridge()
 	// add our entry point
 	call(0x6BABA1, RunTool, PATCH_CALL);
 	call(0x5BCA85, CheckZoneLoad, PATCH_CALL);
+
+	// redirect com_error so it doesn't longjmp
+	call(0x4B22D0, comErrorHook, PATCH_JUMP);
+
+	// redirect loading point of weapon files
+	call(0x57AEC1, weaponNamesprintfHook, PATCH_CALL);
+	call(0x57AF35, weaponNamesprintfHook, PATCH_CALL);
+	call(0x57B38F, weaponNamesprintfHook, PATCH_CALL);
+
+	// disable loading of sounds in weapon loading
+	call(0x64A8A1, soundLoadingHook, PATCH_CALL);
 
 	// fuck exceptions
 	memset((DWORD*)0x6114B1, 0x90, 10);
@@ -421,6 +463,8 @@ void InitBridge()
 	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
 	ReallocateAssetPool(ASSET_TYPE_WEAPON, 2000);
 	ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
+
+
 }
 
 

@@ -146,6 +146,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
+	if (data == NULL) return NULL;
 	if(dataLen == 0)
 	{
 		XModel * model = (XModel*)data;

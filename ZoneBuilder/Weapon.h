@@ -229,7 +229,7 @@ enum surfaceNames_t
 
 union snd_alias_list_name
 {
-	char * name;
+	const char * name;
 	SoundAliasList * asset;
 };
 
@@ -241,8 +241,8 @@ struct WeaponDef
 	const char * * szXAnimsR;        //Count = 37
 	const char * * szXAnimsL;        //Count = 37
 	char * szModeName;
-	short (*noteTrackSoundMap[2])[0x10];
-	short (*noteTrackRumbleMap[2])[0x10];
+	short *noteTrackSoundMap[2]; // Count = 16
+	short *noteTrackRumbleMap[2]; // Count = 16
 	playerAnimType_t playerAnimType;
 	weapType_t weaponType;
 	weapClass_t weaponClass;
@@ -253,54 +253,7 @@ struct WeaponDef
 	weapStance_t stance;
 	FxEffectDef * viewFlashEffect;
 	FxEffectDef * worldFlashEffect;
-	snd_alias_list_name pickUpSound;
-	snd_alias_list_name pickUpSoundPlayer;
-	snd_alias_list_name ammoPickupSound;
-	snd_alias_list_name ammoPickupSoundPlayer;
-	snd_alias_list_name projectileSound;
-	snd_alias_list_name pullbackSound;
-	snd_alias_list_name pullbackSoundPlayer;
-	snd_alias_list_name fireSound;
-	snd_alias_list_name fireSoundPlayer;
-	snd_alias_list_name fireSoundPlayerAkimbo;
-	snd_alias_list_name loopFireSound;
-	snd_alias_list_name loopFireSoundPlayer;
-	snd_alias_list_name stopFireSound;
-	snd_alias_list_name stopFireSoundPlayer;
-	snd_alias_list_name lastShotSound;
-	snd_alias_list_name lastShotSoundPlayer;
-	snd_alias_list_name emptyFireSound;
-	snd_alias_list_name emptyFireSoundPlayer;
-	snd_alias_list_name meleeSwipeSound;
-	snd_alias_list_name meleeSwipeSoundPlayer;
-	snd_alias_list_name meleeHitSound;
-	snd_alias_list_name meleeMissSound;
-	snd_alias_list_name rechamberSound;
-	snd_alias_list_name rechamberSoundPlayer;
-	snd_alias_list_name reloadSound;
-	snd_alias_list_name reloadSoundPlayer;
-	snd_alias_list_name reloadEmptySound;
-	snd_alias_list_name reloadEmptySoundPlayer;
-	snd_alias_list_name reloadStartSound;
-	snd_alias_list_name reloadStartSoundPlayer;
-	snd_alias_list_name reloadEndSound;
-	snd_alias_list_name reloadEndSoundPlayer;
-	snd_alias_list_name detonateSound;
-	snd_alias_list_name detonateSoundPlayer;
-	snd_alias_list_name nightVisionWearSound;
-	snd_alias_list_name nightVisionWearSoundPlayer;
-	snd_alias_list_name nightVisionRemoveSound;
-	snd_alias_list_name nightVisionRemoveSoundPlayer;
-	snd_alias_list_name altSwitchSound;
-	snd_alias_list_name altSwitchSoundPlayer;
-	snd_alias_list_name raiseSound;
-	snd_alias_list_name raiseSoundPlayer;
-	snd_alias_list_name firstRaiseSound;
-	snd_alias_list_name firstRaiseSoundPlayer;
-	snd_alias_list_name putawaySound;
-	snd_alias_list_name putawaySoundPlayer;
-	snd_alias_list_name scanSound;
-	snd_alias_list_name * bounceSound;
+	snd_alias_list_name sounds[48];
 	FxEffectDef * viewShellEjectEffect;
 	FxEffectDef * worldShellEjectEffect;
 	FxEffectDef * viewLastShotEjectEffect;
@@ -659,10 +612,10 @@ struct WeaponDef
 
 struct WeaponVariantDef
 {
-	char * szInternalName;
+	char * name;
 	WeaponDef * WeaponDef;
-	char * szDisplayName;
-	short (*hideTags)[0x20];
+	char * displayName;
+	short *hideTags; // Count = 32
 	const char * * szXAnims;        //Count = 37
 	float fAdsZoomFov;
 	int iAdsTransInTime;
@@ -674,7 +627,7 @@ struct WeaponVariantDef
 	float fPenetrateMultiplier;
 	float fAdsViewKickCenterSpeed;
 	float fHipViewKickCenterSpeed;
-	const char * szAltWeaponName;
+	const char * altWeaponName;
 	unsigned int altWeaponIndex;
 	int iAltRaiseTime;
 	Material * killIcon;
