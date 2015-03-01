@@ -36,6 +36,7 @@ Com_Parse_UngetToken_t Com_Parse_UngetToken = (Com_Parse_UngetToken_t)0x4AEC70;
 DB_FindXAssetHeader_t DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x407930;
 DB_LoadXAssets_t DB_LoadXAssets = (DB_LoadXAssets_t)0x4E5930;
 DB_IsAssetDefault_t DB_IsAssetDefault = (DB_IsAssetDefault_t)0x48E6A0;
+DB_GetXAssetTypeSize_t DB_GetXAssetTypeSize = (DB_GetXAssetTypeSize_t)0x491960;
 
 Dvar_RegisterBool_t Dvar_RegisterBool = (Dvar_RegisterBool_t)0x4CE1A0;
 Dvar_RegisterFloat_t Dvar_RegisterFloat = (Dvar_RegisterFloat_t)0x648440;

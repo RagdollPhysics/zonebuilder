@@ -1,6 +1,8 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+/*
+
 void writeColMap(zoneInfo_t* info, ZStream* buf, Col_Map* data)
 {
 	int * modelOffset = new int[data->numStaticModels];
@@ -185,3 +187,5 @@ void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	}
 	return data;
 }
+
+*/

@@ -109,3 +109,6 @@ void G_SayToAll(DWORD color, const char* name, const char* text);
 
 extern int zero;
 extern int pad;
+
+// custom assert stuff
+#define ASSERT(expr) if((expr) != true) { Com_Error(true, "Error in assertion at line %d in file %s\n\t" #expr "\n", __LINE__, __FILE__);}

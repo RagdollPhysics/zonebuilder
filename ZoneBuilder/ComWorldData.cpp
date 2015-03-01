@@ -1,6 +1,8 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+/*
+
 void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data)
 {
 	ComWorld* dest = (ComWorld*)buf->at();
@@ -36,3 +38,5 @@ void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 
 	return NULL;
 }
+
+*/

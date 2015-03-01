@@ -262,7 +262,7 @@ void CModel_Test_f()
 	}
 
 	char* cmodel = LoadCModel(Cmd_Argv(1));
-	char* xmodel = (char*)DB_FindXAssetHeader(ASSET_TYPE_XModelSurfaces, Cmd_Argv(1));
+	char* xmodel = (char*)DB_FindXAssetHeader(ASSET_TYPE_XMODELSURFS, Cmd_Argv(1));
 
 	if (!cmodel || !xmodel)
 	{
@@ -769,5 +769,5 @@ void ReloadCModel(void* varModel, int isRelease)
 
 void ReloadCModels()
 {
-	DB_EnumXAssets(ASSET_TYPE_XModelSurfaces, ReloadCModel, 0);
+	DB_EnumXAssets(ASSET_TYPE_XMODELSURFS, ReloadCModel, 0);
 }

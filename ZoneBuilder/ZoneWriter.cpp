@@ -65,13 +65,13 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeXModel(info, buf, (XModel*)asset->data);
 		break;
 	case ASSET_TYPE_COL_MAP_MP:
-		writeColMap(info, buf, (Col_Map*)asset->data);
+		//writeColMap(info, buf, (Col_Map*)asset->data);
 		break;
 	case ASSET_TYPE_MAP_ENTS:
 		writeMapEnts(info, buf, (MapEnts*)asset->data);
 		break;
 	case ASSET_TYPE_COM_MAP:
-		writeComWorld(info, buf, (ComWorld*)asset->data);
+		//writeComWorld(info, buf, (ComWorld*)asset->data);
 		break;
 	case ASSET_TYPE_GAME_MAP_MP:
 	case ASSET_TYPE_GAME_MAP_SP:
@@ -81,10 +81,10 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeStringTable(info, buf, (StringTable*)asset->data);
 		break;
 	case ASSET_TYPE_SOUND:
-		writeSoundAlias(info, buf, (snd_alias_list_t*)asset->data);
+		writeSoundAlias(info, buf, (SoundAliasList*)asset->data);
 		break;
 	case ASSET_TYPE_FX:
-		writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
+		//writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
 		break;
 	}
 	asset->written = true;

@@ -1,65 +1,65 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeSoundAlias(zoneInfo_t* info, ZStream* buf, snd_alias_list_t* data)
+void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 {
-	snd_alias_list_t* list = (snd_alias_list_t*)buf->at();
-	buf->write(data, sizeof(snd_alias_list_t), 1);
+	SoundAliasList* list = (SoundAliasList*)buf->at();
+	buf->write(data, sizeof(SoundAliasList), 1);
 
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	list->name = (char*)-1;
 
-	snd_alias_t* aliases = (snd_alias_t*)buf->at();
-	buf->write(data->aliases, sizeof(snd_alias_t), data->numAliases);
+	SoundAlias* aliases = (SoundAlias*)buf->at();
+	buf->write(data->head, sizeof(SoundAlias), data->count);
 
-	list->aliases = (snd_alias_t*)-1;
+	list->head = (SoundAlias*)-1;
 
-	for(int i=0; i<data->numAliases; i++)
+	for(int i=0; i<data->count; i++)
 	{
-		snd_alias_t* alias = &aliases[i];
+		SoundAlias* alias = &aliases[i];
 		buf->write(alias->name, strlen(alias->name) + 1, 1);
 		alias->name = (char*)-1;
-		if(alias->string1) {
-			buf->write(alias->string1, strlen(alias->string1) + 1, 1);
-			alias->string1 = (char*)-1;
+		if (alias->subtitle) {
+			buf->write(alias->subtitle, strlen(alias->subtitle) + 1, 1);
+			alias->subtitle = (char*)-1;
 		}
-		if(alias->string2) {
-			buf->write(alias->string2, strlen(alias->string2) + 1, 1);
-			alias->string2 = (char*)-1;
+		if (alias->secondaryAliasName) {
+			buf->write(alias->secondaryAliasName, strlen(alias->secondaryAliasName) + 1, 1);
+			alias->secondaryAliasName = (char*)-1;
 		}
-		if(alias->string3) {
-			buf->write(alias->string3, strlen(alias->string3) + 1, 1);
-			alias->string3 = (char*)-1;
+		if (alias->chainAliasName) {
+			buf->write(alias->chainAliasName, strlen(alias->chainAliasName) + 1, 1);
+			alias->chainAliasName = (char*)-1;
 		}
 		if(alias->string4) {
 			buf->write(alias->string4, strlen(alias->string4) + 1, 1);
 			alias->string4 = (char*)-1;
 		}
 
-		if(alias->stream)
+		if (alias->soundFile)
 		{
-			StreamFile* stream = (StreamFile*)buf->at();
-			buf->write(alias->stream, sizeof(StreamFile), 1);
-			if(alias->stream->type != 2) Com_Error(true, "Cannot export soundAliases that aren't of type 2!");
-			if(alias->stream->folder) {
-				buf->write(alias->stream->folder, strlen(alias->stream->folder) + 1, 1);
-				stream->folder = (char*)-1;
+			SoundFile* stream = (SoundFile*)buf->at();
+			buf->write(alias->soundFile, sizeof(SoundFile), 1);
+			if (alias->soundFile->type != SAT_STREAMED) Com_Error(true, "Cannot export soundAliases that aren't of type 2!");
+			if (alias->soundFile->dir) {
+				buf->write(alias->soundFile->dir, strlen(alias->soundFile->dir) + 1, 1);
+				stream->dir = (char*)-1;
 			}
-			if(alias->stream->file)
+			if (alias->soundFile->name)
 			{
-				buf->write(alias->stream->file, strlen(alias->stream->file) + 1, 1);
-				stream->file = (char*)-1;
+				buf->write(alias->soundFile->name, strlen(alias->soundFile->name) + 1, 1);
+				stream->name = (char*)-1;
 			}
-			alias->stream = (StreamFile*)-1;
+			alias->soundFile = (SoundFile*)-1;
 		}
 
-		if(alias->sndCurve)
+		if (alias->volumeFalloffCurve)
 		{
-			sndcurve* curve = (sndcurve*)buf->at();
-			buf->write(alias->sndCurve, sizeof(sndcurve), 1);
+			SndCurve* curve = (SndCurve*)buf->at();
+			buf->write(alias->volumeFalloffCurve, sizeof(SndCurve), 1);
 			buf->write(curve->name, strlen(curve->name) + 1, 1);
 			curve->name = (char*)-1;
-			alias->sndCurve = (sndcurve*)-1;
+			alias->volumeFalloffCurve = (SndCurve*)-1;
 		}
 
 		if(alias->speakerMap)
@@ -94,16 +94,16 @@ void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t data
 		hasfolder = true;
 	}
 
-	snd_alias_list_t* base = (snd_alias_list_t*)DB_FindXAssetHeader(ASSET_TYPE_SOUND, "AB_1mc_boost");
-	snd_alias_list_t* snd = new snd_alias_list_t;
-	memcpy(snd, base, sizeof(snd_alias_list_t));
+	SoundAliasList* base = (SoundAliasList*)DB_FindXAssetHeader(ASSET_TYPE_SOUND, "AB_1mc_boost");
+	SoundAliasList* snd = new SoundAliasList;
+	memcpy(snd, base, sizeof(SoundAliasList));
 	snd->name = strdup(name);
-	snd->aliases->name = snd->name;
+	snd->head->name = snd->name;
 	if(hasfolder)
-		snd->aliases->stream->folder = strdup((char*)folder.c_str());
+		snd->head->soundFile->dir = strdup((char*)folder.c_str());
 	else
-		snd->aliases->stream->folder = NULL;
-	snd->aliases->stream->file = strdup((char*)file.c_str());
+		snd->head->soundFile->dir = NULL;
+	snd->head->soundFile->name = strdup((char*)file.c_str());
 
 	return snd;
 }

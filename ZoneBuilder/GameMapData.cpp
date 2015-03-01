@@ -28,6 +28,7 @@ void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t data
 		asset->name = strdup(bspName);
 		return asset;
 	}
+	return NULL;
 }
 
 void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
@@ -41,4 +42,5 @@ void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t data
 		asset->data = ((GameMap_SP*)data)->data;
 		return asset;
 	}
+	return NULL;
 }

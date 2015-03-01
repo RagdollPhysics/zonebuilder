@@ -9,8 +9,6 @@
 #include "Tool.h"
 #include "WeaponDef.h"
 
-#pragma comment(linker,"/FIXED /BASE:0x8000000")
-
 void PatchMW2_Console();
 void PatchMW2_Load();
 void PatchMW2_StringList();

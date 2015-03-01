@@ -41,7 +41,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 
 	
 
-	void * asset;
+	void * asset = NULL;
 	switch(type)
 	{
 		case ASSET_TYPE_XANIM:
@@ -57,13 +57,13 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 			asset = addXModel(info, name, data, size);
 			break;
 		case ASSET_TYPE_COL_MAP_MP:
-			asset = addColMap(info, name, data, size);
+			//asset = addColMap(info, name, data, size);
 			break;
 		case ASSET_TYPE_MAP_ENTS:
 			asset = addMapEnts(info, name, data, size);
 			break;
 		case ASSET_TYPE_COM_MAP:
-			asset = addComWorld(info, name, data, size);
+			//asset = addComWorld(info, name, data, size);
 			break;
 		case ASSET_TYPE_GAME_MAP_MP:
 			asset = addGameMap_MP(info, name, data, size);
@@ -79,10 +79,11 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 			asset = addSoundAlias(info, name, data, size);
 			break;
 		case ASSET_TYPE_FX:
-			asset = addFxEffectDef(info, name, data, size);
+			//asset = addFxEffectDef(info, name, data, size);
 			break;
 	}
-	addAsset(info, type, name, asset);
+	if (asset == NULL) Com_Error(false, "Error adding asset %s!\n", name);
+	else addAsset(info, type, name, asset);
 	if(size != 0)
 		FS_FreeFile(data);
 }
@@ -115,6 +116,7 @@ void loadAssetsFromFile(zoneInfo_t* info, const char* file)
 
 void ZoneBuild(char* building)
 {
+	debugChecks();
 	string toBuild = string(building);
 #ifdef ZB_DEBUG
 	Com_Printf("----ZoneBuilder Startup----");

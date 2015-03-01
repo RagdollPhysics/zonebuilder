@@ -66,10 +66,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>StdInc.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
@@ -219,10 +220,14 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="AssetStructs.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CSVFile.h" />
+    <ClInclude Include="FX.h" />
     <ClInclude Include="FxParsing.h" />
     <ClInclude Include="Hooking.h" />
+    <ClInclude Include="Maps.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MW2.h" />
     <ClInclude Include="s10e5.h" />
+    <ClInclude Include="SoundAlias.h" />
     <ClInclude Include="StdInc.h" />
     <ClInclude Include="SteamFriends005.h" />
     <ClInclude Include="SteamGameServer009.h" />
@@ -234,7 +239,10 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="SteamUtils005.h" />
     <ClInclude Include="Tool.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponDef.h" />
+    <ClInclude Include="XAnim.h" />
+    <ClInclude Include="XModel.h" />
     <ClInclude Include="ZStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

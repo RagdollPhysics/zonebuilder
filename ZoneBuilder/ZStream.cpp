@@ -58,7 +58,7 @@ size_t ZStream::write(const void * _str, size_t size, size_t count)
 size_t ZStream::write(int stream, int value, size_t count)
 {
 	size_t ret = 0;
-	for(int i=0; i<count; i++)
+	for(size_t i=0; i<count; i++)
 	{
 		ret += write(stream, &value, 4, 1);
 	}

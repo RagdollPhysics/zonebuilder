@@ -88,7 +88,7 @@ size_t BUFFER::write(const void * _str, size_t size, size_t count)
 size_t BUFFER::write(int value, size_t count)
 {
 	size_t ret = 0;
-	for(int i=0; i<count; i++)
+	for(size_t i=0; i<count; i++)
 	{
 		ret += write(&value, 4, 1);
 	}
@@ -155,7 +155,7 @@ void BUFFER::writetofile(FILE * file)
 
 bool BUFFER::find(char* _str, size_t len)
 {
-	int at = _offset;
+	size_t at = _offset;
 	while(at < _size) {
 		if(!memcmp(_str, _origin+at, len)) {
 			_offset = at;

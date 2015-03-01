@@ -3,9 +3,9 @@
 
 // NOTE: None of these assets can be added... only exported
 
-void * addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen != -1) { Com_Error(false, "How did we get a non bulitin techset?"); return NULL; }
+	if(dataLen != -1) { Com_Error(false, "How did we get a non bulitin techset?"); return; }
 	MaterialTechniqueSet* asset = (MaterialTechniqueSet*)data;
 	for(int i=0; i<48; i++)
 	{

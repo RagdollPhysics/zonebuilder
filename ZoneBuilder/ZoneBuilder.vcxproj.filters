@@ -25,6 +25,9 @@
     <Filter Include="Header Files\Base">
       <UniqueIdentifier>{bf84b951-ab36-49c2-8261-7cd08d24444c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AssetStructures">
+      <UniqueIdentifier>{0019f166-98f7-4e1b-9899-6b12dcb653b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SteamAPI.cpp">
@@ -215,9 +218,6 @@
     <ClInclude Include="Buffers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AssetStructs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WeaponDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -229,6 +229,30 @@
     </ClInclude>
     <ClInclude Include="ZStream.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetStructs.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="XAnim.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="XModel.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundAlias.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="FX.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Maps.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

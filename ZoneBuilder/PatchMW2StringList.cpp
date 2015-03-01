@@ -14,7 +14,7 @@
 #include "Hooking.h"
 #include <google/dense_hash_map>
 
-#define MAX_SCRIPT_STRINGS 65535
+#define MAX_SCRIPT_STRINGS_NTA 65535
 
 #define VA_BUFFER_COUNT		4
 #define VA_BUFFER_SIZE		32768
@@ -63,7 +63,7 @@ struct ScriptStringData
 
 static uint32_t slFirstFree; // might need to be optimized to be a linked list of free blocks?
 static CRITICAL_SECTION slCritSec;
-static ScriptStringData slStrings[MAX_SCRIPT_STRINGS];
+static ScriptStringData slStrings[MAX_SCRIPT_STRINGS_NTA];
 static google::dense_hash_map<std::string, uint16_t> slHashMap;
 
 void SL_Init()
@@ -115,7 +115,7 @@ int SL_GetStringOfSize(const char* string, int system, int size)
 	data->data->users = system;
 
 	// find the next free string
-	for (int i = slFirstFree; i < MAX_SCRIPT_STRINGS; i++)
+	for (int i = slFirstFree; i < MAX_SCRIPT_STRINGS_NTA; i++)
 	{
 		if (!slStrings[i].string)
 		{
@@ -315,7 +315,7 @@ void SL_ShutdownSystem(int system)
 
 	SL_Debug("SL_ShutdownSystem: %i\n", system);
 
-	for (int i = 0; i < MAX_SCRIPT_STRINGS; i++)
+	for (int i = 0; i < MAX_SCRIPT_STRINGS_NTA; i++)
 	{
 		if (slStrings[i].data)
 		{
@@ -342,7 +342,7 @@ void SL_TransferSystem(int oldSystem, int newSystem)
 {
 	EnterCriticalSection(&slCritSec);
 
-	for (int i = 0; i < MAX_SCRIPT_STRINGS; i++)
+	for (int i = 0; i < MAX_SCRIPT_STRINGS_NTA; i++)
 	{
 		if (slStrings[i].data)
 		{

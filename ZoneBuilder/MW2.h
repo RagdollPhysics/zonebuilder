@@ -18,7 +18,7 @@ typedef enum assetType_e
 	ASSET_TYPE_PHYSPRESET = 0,
 	ASSET_TYPE_PHYS_COLLMAP = 1,
 	ASSET_TYPE_XANIM = 2,
-	ASSET_TYPE_XModelSurfaces = 3,
+	ASSET_TYPE_XMODELSURFS = 3,
 	ASSET_TYPE_XMODEL = 4,
 	ASSET_TYPE_MATERIAL = 5,
 	ASSET_TYPE_PIXELSHADER = 6,
@@ -544,6 +544,9 @@ extern DB_FindXAssetHeader_t DB_FindXAssetHeader;
 
 typedef void* (__cdecl * DB_IsAssetDefault_t)(int type, const char* filename);
 extern DB_IsAssetDefault_t DB_IsAssetDefault;
+
+typedef int (__cdecl * DB_GetXAssetTypeSize_t)(int type);
+extern DB_GetXAssetTypeSize_t DB_GetXAssetTypeSize;
 
 typedef dvar_t* (__cdecl * Dvar_RegisterBool_t)(const char* name, bool default, int flags, const char* description);
 extern Dvar_RegisterBool_t Dvar_RegisterBool;
