@@ -19,11 +19,15 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 	int a = containsAsset(info, type, name);
 	if(a >= 0)
 	{		
-		return writeAsset(info, &info->assets[a], buf);
+		writeAsset(info, &info->assets[a], buf);
+		// this will make no sense... just let it
+		// we are returning the offset to the pointer in the asset index which isn't generated until load time
+		// go figure
+		return (3 << 28) | ((info->index_start + 6 + (8 * a)) & 0x0FFFFFFF);
 	}
 	else
 	{
-		Com_Error(false, "Missing required asset %s (%d). Export may fail!", name, type);
+		Com_Error(false, "Missing required asset %s (%d). Export may (and probably will) fail!", name, type);
 	}
 	return -1;
 }
@@ -31,7 +35,7 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
-	asset->offset = getOffsetForWrite(info, 0x0F, buf);
+	asset->offset = getOffsetForWrite(info, 0x03, buf);
 	// hide the useless assets that we can't change
 	if(asset->type != ASSET_TYPE_TECHSET &&
 	   asset->type != ASSET_TYPE_PIXELSHADER &&
@@ -112,11 +116,13 @@ ZStream* writeZone(zoneInfo_t * info)
         buf->write((void*)info->scriptStrings[i].c_str(), info->scriptStrings[i].length() + 1, 1);
     }
 
-	int neg2 = -2;
+	info->index_start = buf->getStreamOffset(3);
+
+	int neg1 = -1;
     for(int i=0; i<info->assetCount; i++)
     {
         buf->write(&info->assets[i].type, 4, 1);
-        buf->write(&neg2, 4, 1);
+        buf->write(&neg1, 4, 1);
     }
 
     for(int i=0; i<info->assetCount; i++)

@@ -80,6 +80,7 @@ The definition for the sound alias is a text file which contains JUST the filena
 Sounds must be placed in the /sound subdirectory.
 an example of the corresponding csv line for a sound alias called "explosion3" with a sound file of "sound/explosions/expl3.wav" would be:
 ```sound,explosion3,sound/expl3.txt```
+
 and the contents of sound/expl3.txt would be:
 ```sound/explosions/expl3.wav```
 

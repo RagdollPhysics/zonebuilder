@@ -163,6 +163,7 @@ void RunTool()
 
 	if(verify)
 	{
+		//__asm int 3
 		useEntryNames = true;
 		XZoneInfo info;
 		info.name = zoneToBuild.c_str();

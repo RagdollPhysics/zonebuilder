@@ -285,7 +285,8 @@ void SetUseFilePointers(bool use)
 	g_useFilePointers = use;
 }
 
-// this is no longer needed but I'll leave it in so we can load from 277 zones as source
+// leave these in to support loading of legacy 277 files
+// also its weird calling a newer ff version 'legacy'
 void PatchMW2_FilePointers()
 {
 	//return;

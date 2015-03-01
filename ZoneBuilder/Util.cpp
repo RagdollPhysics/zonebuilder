@@ -148,7 +148,7 @@ void debugChecks()
 	ASSERT(sizeof(XModel) == DB_GetXAssetTypeSize(ASSET_TYPE_XMODEL));
 	ASSERT(sizeof(Material) == DB_GetXAssetTypeSize(ASSET_TYPE_MATERIAL));
 	ASSERT(sizeof(SoundAliasList) == DB_GetXAssetTypeSize(ASSET_TYPE_SOUND));
-	ASSERT(sizeof(SoundAlias) == 64);
+	ASSERT(sizeof(SoundAlias) == 100);
 	ASSERT(sizeof(SpeakerMap) == 408);
 	ASSERT(sizeof(SoundFile) == 12);
 }

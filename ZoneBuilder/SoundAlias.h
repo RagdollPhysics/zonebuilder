@@ -68,6 +68,7 @@ struct SoundAlias
 	float lfePercentage;
 	float centerPercentage;
 	int startDelay;
+	int pad;
 	SndCurve *volumeFalloffCurve;
 	float envelopMin;
 	float envelopMax;

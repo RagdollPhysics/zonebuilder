@@ -30,6 +30,7 @@ typedef struct
 	string * scriptStrings;
 	int assetCount;
 	asset_t * assets;
+	int index_start;
 } zoneInfo_t;
 
 // sscanline ish
