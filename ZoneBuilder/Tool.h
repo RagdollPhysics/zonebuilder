@@ -129,9 +129,14 @@ void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t data
 // PhysPresetData
 void writePhysPreset(zoneInfo_t* info, ZStream* buf, PhysPreset* data);
 
+// PhysCollMapData
 void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data);
 void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // WeaponData
 void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* data);
 void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// TracerData
+void writeTracer(zoneInfo_t* info, ZStream* buf, Tracer* data);
+void * addTracer(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

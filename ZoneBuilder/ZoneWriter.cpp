@@ -93,6 +93,8 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	case ASSET_TYPE_WEAPON:
 		writeWeaponVariantDef(info, buf, (WeaponVariantDef*)asset->data);
 		break;
+	case ASSET_TYPE_TRACER:
+		writeTracer(info, buf, (Tracer*)asset->data);
 	}
 	asset->written = true;
 	return asset->offset;

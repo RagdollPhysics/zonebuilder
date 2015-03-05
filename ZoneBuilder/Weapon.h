@@ -253,7 +253,8 @@ struct WeaponDef
 	weapStance_t stance;
 	FxEffectDef * viewFlashEffect;
 	FxEffectDef * worldFlashEffect;
-	snd_alias_list_name sounds[48];
+	snd_alias_list_name sounds[47];
+	snd_alias_list_name *bounceSound;
 	FxEffectDef * viewShellEjectEffect;
 	FxEffectDef * worldShellEjectEffect;
 	FxEffectDef * viewLastShotEjectEffect;
@@ -408,7 +409,7 @@ struct WeaponDef
 	float adsSwayVertScale;
 	float adsViewErrorMin;
 	float adsViewErrorMax;
-	PhysCollmap * collisions;
+	PhysGeomList * collisions;
 	float dualWieldViewModelOffset;
 	weaponIconRatioType_t killIconRatio;
 	int iReloadAmmoAdd;

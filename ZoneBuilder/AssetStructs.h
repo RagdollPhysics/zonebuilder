@@ -2,7 +2,7 @@
 #pragma once
 
 struct PhysPreset;
-struct PhysCollmap;
+struct PhysGeomList;
 struct XAnim;
 struct XModelSurfaces;
 struct XModel;
@@ -157,15 +157,15 @@ struct StructuredDataDef
 
 struct Tracer
 {
-	const char* name;
-	char * ptr1;
-	int unkcount1;
-	float range;
-	float length;
-	float width;
-	float depth;
-	float color[3];
-	float unkval[18];
+	const char * name;
+	Material * material;
+	unsigned int drawInterval;
+	float speed;
+	float beamLength;
+	float beamWidth;
+	float screwRadius;
+	float screwDist;
+	float colors[5][4];
 };
 
 struct Vehicle

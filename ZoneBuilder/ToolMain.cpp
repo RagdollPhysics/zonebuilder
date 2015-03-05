@@ -82,6 +82,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		case ASSET_TYPE_WEAPON:
 			asset = addWeaponVariantDef(info, name, (char*)filename, size);
 			break;
+		case ASSET_TYPE_TRACER:
+			asset = addTracer(info, name, data, size);
+			break;
 	}
 	if (asset == NULL) Com_Error(false, "Error adding asset %s!\n", name);
 	else addAsset(info, type, name, asset);

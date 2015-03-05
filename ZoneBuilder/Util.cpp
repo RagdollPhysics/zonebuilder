@@ -143,6 +143,11 @@ long flength(FILE* fp)
 
 void debugChecks()
 {
+	ASSERT(sizeof(PhysGeomList) == 0x48);
+	ASSERT(sizeof(PhysGeomInfo) == 0x44);
+	ASSERT(sizeof(BrushWrapper) == 0x44);
+	ASSERT(sizeof(cPlane) == 0x14);
+	ASSERT(sizeof(cBrushSide) == 8);
 	ASSERT(sizeof(XAnim) == DB_GetXAssetTypeSize(ASSET_TYPE_XANIM));
 	ASSERT(sizeof(XModelSurfaces) == DB_GetXAssetTypeSize(ASSET_TYPE_XMODELSURFS));
 	ASSERT(sizeof(XModel) == DB_GetXAssetTypeSize(ASSET_TYPE_XMODEL));
@@ -151,7 +156,6 @@ void debugChecks()
 	ASSERT(sizeof(SoundAlias) == 100);
 	ASSERT(sizeof(SpeakerMap) == 408);
 	ASSERT(sizeof(SoundFile) == 12);
-	Com_Printf("%d\n", DB_GetXAssetTypeSize(ASSET_TYPE_WEAPON));
 	ASSERT(sizeof(WeaponVariantDef) == 0x74);
 	ASSERT(sizeof(WeaponDef) == 0x684)
 }

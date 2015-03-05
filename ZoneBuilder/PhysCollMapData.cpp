@@ -3,7 +3,6 @@
 
 void writecbrushside_t(ZStream* buf, cBrushSide* data, int num)
 {
-	static_assert(sizeof(cBrushSide) == 8, "struct wrong size");
 	WRITE_ASSET_NUM(data, cBrushSide, num);
 	
 	for(int i=0; i<num; i++)
@@ -26,18 +25,15 @@ void writeBrush(ZStream* buf, BrushWrapper * data, BrushWrapper* dest)
 
 void writeBrushWrapper(ZStream* buf, BrushWrapper* data)
 {
-	static_assert(sizeof(BrushWrapper) == 0x44, "struct wrong size");
 	WRITE_ASSET(data, BrushWrapper);
 
 	writeBrush(buf, data, dest);
 
-	static_assert(sizeof(cPlane) == 0x14, "struct wrong size");
 	WRITE_FIELD(data, planes, cPlane, brush.count);
 }
 
 void writePhysGeomInfo(ZStream* buf, PhysGeomInfo* data, int num)
 {
-	static_assert(sizeof(PhysGeomInfo) == 0x44, "struct wrong size");
 	WRITE_ASSET_NUM(data, PhysGeomInfo, num);
 
 	for(int i=0; i<num; i++)
@@ -51,7 +47,6 @@ void writePhysGeomInfo(ZStream* buf, PhysGeomInfo* data, int num)
 
 void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data)
 {
-	static_assert(sizeof(PhysGeomList) == 0x48, "struct wrong size");
 	WRITE_ASSET(data, PhysGeomList);
 	WRITE_NAME(data);
 

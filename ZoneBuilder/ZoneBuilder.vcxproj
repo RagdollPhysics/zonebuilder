@@ -207,6 +207,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="StringTableData.cpp" />
     <ClCompile Include="TechsetData.cpp" />
     <ClCompile Include="ToolMain.cpp" />
+    <ClCompile Include="TracerData.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="WeaponData.cpp" />

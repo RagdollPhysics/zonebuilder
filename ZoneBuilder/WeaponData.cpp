@@ -1,12 +1,6 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void sndAliasToName(snd_alias_list_name* alias)
-{
-	if ((*alias).asset == NULL) return;
-	(*alias).name = (*alias).asset->name;
-}
-
 void doRequires(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* def)
 {
 #define save_material(mat) if(mat) mat = (Material*)requireAsset(info, ASSET_TYPE_MATERIAL, (char*)mat->name, buf);
@@ -43,16 +37,309 @@ void doRequires(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* def)
 	save_model(def->WeaponDef->projectileModel);
 #undef save_model
 
+	if (def->WeaponDef->collisions) def->WeaponDef->collisions = (PhysGeomList*)requireAsset(info, ASSET_TYPE_PHYS_COLLMAP, (char*)def->WeaponDef->collisions->name, buf);
+	if (def->WeaponDef->tracer) def->WeaponDef->tracer = (Tracer*)requireAsset(info, ASSET_TYPE_TRACER, (char*)def->WeaponDef->tracer->name, buf);
+
 }
 
-void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* def)
+void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 {
+	WeaponDef* def = (WeaponDef*)buf->at();
+	buf->write(data, sizeof(WeaponDef), 1);
+
+	buf->write(data->szInternalName, strlen(data->szInternalName) + 1, 1);
+	def->szInternalName = (char*)-1;
+
+	
+	if (data->gunXModel)
+	{
+		// data in the array is already stored primed
+		buf->write(data->gunXModel, sizeof(XModel*), 16);
+		data->gunXModel = (XModel**)-1;
+	}
+
+	// already stored and primed by the require function
+	// handXModel
+
+	if (data->szXAnimsR) {
+		int* ptrs = (int*)buf->at();
+		buf->write(3, -1, 37);
+		for (int i = 0; i < 37; i++)
+		{
+			if (!data->szXAnimsR[i]) {
+				ptrs[i] = 0; continue;
+			} // there is no text
+			buf->write(data->szXAnimsR[i], strlen(data->szXAnimsR[i]) + 1, 1);
+		}
+		def->szXAnimsR = (const char**)-1;
+	}
+
+	if (data->szXAnimsL) {
+		int* ptrs = (int*)buf->at();
+		buf->write(3, -1, 37);
+		for (int i = 0; i < 37; i++)
+		{
+			if (!data->szXAnimsL[i]) {
+				ptrs[i] = 0; continue;
+			} // there is no text
+			buf->write(data->szXAnimsL[i], strlen(data->szXAnimsL[i]) + 1, 1);
+		}
+		def->szXAnimsL = (const char**)-1;
+	}
+
+	buf->write(data->szModeName, strlen(data->szModeName) + 1, 1);
+	def->szModeName = (char*)-1;
+
+	if (data->noteTrackSoundMap[0]) {
+		buf->write(data->noteTrackSoundMap[0], 2, 16);
+		def->noteTrackSoundMap[0] = (short*)-1;
+	}
+
+	if (data->noteTrackSoundMap[1]) {
+		buf->write(data->noteTrackSoundMap[0], 2, 16);
+		def->noteTrackSoundMap[1] = (short*)-1;
+	}
+
+	if (data->noteTrackRumbleMap[0]) {
+		buf->write(data->noteTrackRumbleMap[0], 2, 16);
+		def->noteTrackRumbleMap[0] = (short*)-1;
+	}
+
+	if (data->noteTrackRumbleMap[1]) {
+		buf->write(data->noteTrackRumbleMap[0], 2, 16);
+		def->noteTrackRumbleMap[1] = (short*)-1;
+	}
+
+	// already stored and primed by the require function
+	// viewFlashEffect
+	// worldFlashEffect
+
+	for (int i = 0; i < 47; i++)
+	{
+		if (!data->sounds[i].name) continue;
+
+		buf->write(data->sounds[i].name, strlen(data->sounds[i].name) + 1, 1);
+		def->sounds[i].name = (char*)-1;
+	}
+
+	if (data->bounceSound) {
+		int* ptrs = (int*)buf->at();
+		buf->write(3, -1, 37);
+		for (int i = 0; i < 37; i++)
+		{
+			if (!data->bounceSound[i].name) {
+				ptrs[i] = 0; continue;
+			} // there is no text
+			buf->write(data->bounceSound[i].name, strlen(data->bounceSound[i].name) + 1, 1);
+		}
+		def->bounceSound = (snd_alias_list_name*)-1;
+	}
+
+	// already stored and primed by the require function
+	// viewShellEjectEffect
+	// worldShellEjectEffect
+	// viewShellLastShotEjectEffect
+	// worldShellLastShotEjectEffect
+	// reticleCenter
+	// reticleSide
+
+	if (data->worldModel)
+	{
+		// data in the array is already stored primed
+		buf->write(data->worldModel, sizeof(XModel*), 16);
+		data->worldModel = (XModel**)-1;
+	}
+
+	// already stored and primed by the require function
+	// worldClipModel
+	// rocketModel
+	// knifeModel
+	// worldKnifeModel
+	// hudIcon
+	// pickupIcon
+	// ammoCounterIcon
+
+	if (data->szAmmoName)
+	{
+		buf->write(data->szAmmoName, strlen(data->szAmmoName) + 1, 1);
+		def->szAmmoName = (char*)-1;
+	}
+
+	if (data->szClipName)
+	{
+		buf->write(data->szClipName, strlen(data->szClipName) + 1, 1);
+		def->szClipName = (char*)-1;
+	}
+
+	if (data->szSharedAmmoCapName)
+	{
+		buf->write(data->szSharedAmmoCapName, strlen(data->szSharedAmmoCapName) + 1, 1);
+		def->szSharedAmmoCapName = (char*)-1;
+	}
+
+	// already stored and primed by the require function
+	// AdsOverlayShader
+	// AdsOverlayShaderLowRes
+	// AdsOverlayShaderEMP
+	// AdsOverlayShaderEMPLowRes
+	// collisions
+	// projectileModel
+	// projExplosionEffect
+	// projDudEffect
+
+	if (data->projExplosionSound.name)
+	{
+		buf->write(data->projExplosionSound.name, strlen(data->projExplosionSound.name) + 1, 1);
+		def->projExplosionSound.name = (char*)-1;
+	}
+
+	if (data->projDudSound.name)
+	{
+		buf->write(data->projDudSound.name, strlen(data->projDudSound.name) + 1, 1);
+		def->projDudSound.name = (char*)-1;
+	}
+
+	if (data->parallelBounce)
+	{
+		buf->write(data->parallelBounce, sizeof(float), 31);
+		data->parallelBounce = (float*)-1;
+	}
+
+	if (data->perpendicularBounce)
+	{
+		buf->write(data->perpendicularBounce, sizeof(float), 31);
+		data->perpendicularBounce = (float*)-1;
+	}
+
+	// already stored and primed by the require function
+	// projTrailEffect
+	// projBeaconEffect
+	// projIgnitionEffect
+
+	if (data->projIgnitionSound.name)
+	{
+		buf->write(data->projIgnitionSound.name, strlen(data->projIgnitionSound.name) + 1, 1);
+		def->projIgnitionSound.name = (char*)-1;
+	}
+
+	if (data->accuracyGraphName[0])
+	{
+		buf->write(data->accuracyGraphName[1], strlen(data->accuracyGraphName[0]) + 1, 1);
+		def->accuracyGraphName[0] = (char*)-1;
+	}
+
+	if (data->accuracyGraphKnots)
+	{
+		buf->write(data->accuracyGraphKnots, sizeof(vec2_t), data->accuracyGraphKnotCount);
+		data->accuracyGraphKnots = (vec2_t*)-1;
+	}
+
+	if (data->accuracyGraphName[1])
+	{
+		buf->write(data->accuracyGraphName[1], strlen(data->accuracyGraphName[1]) + 1, 1);
+		def->accuracyGraphName[1] = (char*)-1;
+	}
+
+	if (data->originalAccuracyGraphKnots)
+	{
+		buf->write(data->originalAccuracyGraphKnots, sizeof(vec2_t), data->originalAccuracyGraphKnotCount);
+		data->originalAccuracyGraphKnots = (vec2_t*)-1;
+	}
+
+	if (data->szUseHintString)
+	{
+		buf->write(data->szUseHintString, strlen(data->szUseHintString) + 1, 1);
+		def->szUseHintString = (char*)-1;
+	}
+
+	if (data->dropHintString)
+	{
+		buf->write(data->dropHintString, strlen(data->dropHintString) + 1, 1);
+		def->dropHintString = (char*)-1;
+	}
+
+	if (data->szScript)
+	{
+		buf->write(data->szScript, strlen(data->szScript) + 1, 1);
+		def->szScript = (char*)-1;
+	}
+
+	if (data->locationDamageMultipliers)
+	{
+		buf->write(data->locationDamageMultipliers, sizeof(float), 20);
+		data->locationDamageMultipliers = (float*)-1;
+	}
+
+	if (data->fireRumble)
+	{
+		buf->write(data->fireRumble, strlen(data->fireRumble) + 1, 1);
+		def->fireRumble = (char*)-1;
+	}
+
+	if (data->meleeImpactRumble)
+	{
+		buf->write(data->meleeImpactRumble, strlen(data->meleeImpactRumble) + 1, 1);
+		def->meleeImpactRumble = (char*)-1;
+	}
+
+	// already stored and primed by the require function
+	// tracer
+
+	if (data->turretOverheatSound.name)
+	{
+		buf->write(data->turretOverheatSound.name, strlen(data->turretOverheatSound.name) + 1, 1);
+		def->turretOverheatSound.name = (char*)-1;
+	}
+
+	// already stored and primed by the require function
+	// turretOverheatEffect
+
+	if (data->turretBarrelSpinRumble)
+	{
+		buf->write(data->turretBarrelSpinRumble, strlen(data->turretBarrelSpinRumble) + 1, 1);
+		def->turretBarrelSpinRumble = (char*)-1;
+	}
+
+	if (data->turretBarrelSpinMaxSnd.name)
+	{
+		buf->write(data->turretBarrelSpinMaxSnd.name, strlen(data->turretBarrelSpinMaxSnd.name) + 1, 1);
+		def->turretBarrelSpinMaxSnd.name = (char*)-1;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (!data->turretBarrelSpinUpSnds[i].name) continue;
+
+		buf->write(data->turretBarrelSpinUpSnds[i].name, strlen(data->turretBarrelSpinUpSnds[i].name) + 1, 1);
+		def->turretBarrelSpinUpSnds[i].name = (char*)-1;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (!data->turretBarrelSpinDownSnds[i].name) continue;
+
+		buf->write(data->turretBarrelSpinDownSnds[i].name, strlen(data->turretBarrelSpinDownSnds[i].name) + 1, 1);
+		def->turretBarrelSpinDownSnds[i].name = (char*)-1;
+	}
+
+	if (data->missileConeSoundAlias.name)
+	{
+		buf->write(data->missileConeSoundAlias.name, strlen(data->missileConeSoundAlias.name) + 1, 1);
+		def->missileConeSoundAlias.name = (char*)-1;
+	}
+
+	if (data->missileConeSoundAliasAtBase.name)
+	{
+		buf->write(data->missileConeSoundAliasAtBase.name, strlen(data->missileConeSoundAliasAtBase.name) + 1, 1);
+		def->missileConeSoundAliasAtBase.name = (char*)-1;
+	}
 
 }
 
 void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* data)
 {
 	doRequires(info, buf, data);
+
 	WeaponVariantDef* def = (WeaponVariantDef*)buf->at();
 	buf->write(data, sizeof(WeaponVariantDef), 1);
 
@@ -61,9 +348,8 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 
 	if (data->WeaponDef)
 	{
-		//writeWeaponDef(info, buf, data->WeaponDef);
-		//def->WeaponDef = (WeaponDef*)-1;
-		def->WeaponDef = (WeaponDef*)0;
+		writeWeaponDef(info, buf, data->WeaponDef);
+		def->WeaponDef = (WeaponDef*)-1;
 	}
 
 	buf->write(data->displayName, strlen(data->displayName) + 1, 1);
@@ -184,6 +470,14 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 	save_model(ret->WeaponDef->worldKnifeModel);
 	save_model(ret->WeaponDef->projectileModel);
 #undef save_model
+
+	if (ret->WeaponDef->collisions) 
+		addAsset(info, ASSET_TYPE_PHYS_COLLMAP, ret->WeaponDef->collisions->name, 
+		addPhysCollmap(info, ret->WeaponDef->collisions->name, (char*)ret->WeaponDef->collisions, 0));
+
+	if (ret->WeaponDef->tracer)
+		addAsset(info, ASSET_TYPE_TRACER, ret->WeaponDef->tracer->name,
+		addTracer(info, ret->WeaponDef->tracer->name, (char*)ret->WeaponDef->tracer, 0));
 
 	// fx
 	// null these for now because I'm not certain effect writing works
