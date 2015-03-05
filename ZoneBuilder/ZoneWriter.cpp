@@ -23,7 +23,7 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 		// this will make no sense... just let it
 		// we are returning the offset to the pointer in the asset index which isn't generated until load time
 		// go figure
-		return (3 << 28) | ((info->index_start + 6 + (8 * a)) & 0x0FFFFFFF);
+		return (3 << 28) | ((info->index_start + (8 * (a + 1))) & 0x0FFFFFFF);
 	}
 	else
 	{
@@ -119,7 +119,7 @@ ZStream* writeZone(zoneInfo_t * info)
         buf->write((void*)info->scriptStrings[i].c_str(), info->scriptStrings[i].length() + 1, 1);
     }
 
-	info->index_start = buf->getStreamOffset(3);
+	info->index_start = buf->getStreamOffset(3) - 56;
 
 	int neg1 = -1;
     for(int i=0; i<info->assetCount; i++)
