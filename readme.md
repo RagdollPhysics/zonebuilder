@@ -79,10 +79,10 @@ In order to make a custom sound you must have a compatable sound file (mp3 or wa
 The definition for the sound alias is a text file which contains JUST the filename of the sound.
 Sounds must be placed in the /sound subdirectory.
 an example of the corresponding csv line for a sound alias called "explosion3" with a sound file of "sound/explosions/expl3.wav" would be:
-```sound,explosion3,sound/expl3.txt```
-
+```sound,explosion3,sound/expl3.txt ```
 and the contents of sound/expl3.txt would be:
-```sound/explosions/expl3.wav```
+```sound/explosions/expl3.wav ```
+
 
 <h1>Command Line Options</h1>
 __-s__: Load a fastfile to be used as a source zone. You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool. *note: there is no space between the -s and the fastfile name!*
