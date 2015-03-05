@@ -85,8 +85,24 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		case ASSET_TYPE_TRACER:
 			asset = addTracer(info, name, data, size);
 			break;
+		case ASSET_TYPE_TECHSET:
+		case ASSET_TYPE_PIXELSHADER:
+		case ASSET_TYPE_VERTEXSHADER:
+		case ASSET_TYPE_VERTEXDECL:
+		case ASSET_TYPE_IMAGE:
+		case ASSET_TYPE_LOADED_SOUND:
+		case ASSET_TYPE_SNDCURVE:
+		case ASSET_TYPE_MPTYPE:
+		case ASSET_TYPE_AITYPE:
+		case ASSET_TYPE_CHARACTER:
+		case ASSET_TYPE_XMODELALIAS:
+		case ASSET_TYPE_ADDON_MAP_ENTS:
+		case ASSET_TYPE_SNDDRIVERGLOBALS:
+		case ASSET_TYPE_LEADERBOARDDEF:
+			Com_Error(0, "Cannot define a new asset of type %s! Ignoring asset and continuing...\n");
+			return;
 	}
-	if (asset == NULL) Com_Error(false, "Error adding asset %s!\n", name);
+	if (asset == NULL) Com_Error(false, "Failed to add asset %s!\n", name);
 	else addAsset(info, type, name, asset);
 	if(size != 0 && type != ASSET_TYPE_WEAPON) // weapon loading destroys data for some reason
 		FS_FreeFile(data);

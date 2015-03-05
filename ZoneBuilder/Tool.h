@@ -123,8 +123,8 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data);
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // FxEffectDefData
-//void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data);
-//void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data);
+void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // PhysPresetData
 void writePhysPreset(zoneInfo_t* info, ZStream* buf, PhysPreset* data);

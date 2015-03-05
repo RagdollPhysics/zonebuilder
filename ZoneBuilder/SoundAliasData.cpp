@@ -40,15 +40,16 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 		{
 			SoundFile* stream = (SoundFile*)buf->at();
 			buf->write(alias->soundFile, sizeof(SoundFile), 1);
-			if (alias->soundFile->type != SAT_STREAMED) Com_Error(true, "Cannot export soundAliases that aren't of type 2!");
-			if (alias->soundFile->dir) {
-				buf->write(alias->soundFile->dir, strlen(alias->soundFile->dir) + 1, 1);
-				stream->dir = (char*)-1;
-			}
-			if (alias->soundFile->name)
-			{
-				buf->write(alias->soundFile->name, strlen(alias->soundFile->name) + 1, 1);
-				stream->name = (char*)-1;
+			if (alias->soundFile->type != SAT_STREAMED){
+				if (alias->soundFile->data.stream.dir) {
+					buf->write(alias->soundFile->data.stream.dir, strlen(alias->soundFile->data.stream.dir) + 1, 1);
+					stream->data.stream.dir = (char*)-1;
+				}
+				if (alias->soundFile->data.stream.name)
+				{
+					buf->write(alias->soundFile->data.stream.name, strlen(alias->soundFile->data.stream.name) + 1, 1);
+					stream->data.stream.name = (char*)-1;
+				}
 			}
 			alias->soundFile = (SoundFile*)-1;
 		}
@@ -76,7 +77,15 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == 0) return data; // no fixups needed
+	if (dataLen == 0) {
+		SoundAliasList* lst = (SoundAliasList*)data;
+		if (lst->head->soundFile->type != SAT_STREAMED)
+		{
+			Com_Error(0, "Can't export sounds that aren't type SAT_STREAMED!\n");
+			return NULL;
+		}
+		return data; // no fixups needed
+	}
 	// why the hell can't I fucking do string parsing?
 	string l = string(data);
 	int slash = l.find_last_of('/');
@@ -100,10 +109,10 @@ void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t data
 	snd->name = strdup(name);
 	snd->head->name = snd->name;
 	if(hasfolder)
-		snd->head->soundFile->dir = strdup((char*)folder.c_str());
+		snd->head->soundFile->data.stream.dir = strdup((char*)folder.c_str());
 	else
-		snd->head->soundFile->dir = NULL;
-	snd->head->soundFile->name = strdup((char*)file.c_str());
+		snd->head->soundFile->data.stream.dir = NULL;
+	snd->head->soundFile->data.stream.name = strdup((char*)file.c_str());
 
 	return snd;
 }

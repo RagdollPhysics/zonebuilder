@@ -39,7 +39,22 @@ void doRequires(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* def)
 
 	if (def->WeaponDef->collisions) def->WeaponDef->collisions = (PhysGeomList*)requireAsset(info, ASSET_TYPE_PHYS_COLLMAP, (char*)def->WeaponDef->collisions->name, buf);
 	if (def->WeaponDef->tracer) def->WeaponDef->tracer = (Tracer*)requireAsset(info, ASSET_TYPE_TRACER, (char*)def->WeaponDef->tracer->name, buf);
-
+/*
+#define save_fx(fx) if(fx) fx = (FxEffectDef*)requireAsset(info, ASSET_TYPE_FX, (char*)fx->name, buf);
+	save_fx(def->WeaponDef->viewFlashEffect);
+	save_fx(def->WeaponDef->worldFlashEffect);
+	save_fx(def->WeaponDef->viewShellEjectEffect);
+	save_fx(def->WeaponDef->worldShellEjectEffect);
+	save_fx(def->WeaponDef->viewLastShotEjectEffect);
+	save_fx(def->WeaponDef->worldLastShotEjectEffect);
+	save_fx(def->WeaponDef->projExplosionEffect);
+	save_fx(def->WeaponDef->projDudEffect);
+	save_fx(def->WeaponDef->projTrailEffect);
+	save_fx(def->WeaponDef->projBeaconEffect);
+	save_fx(def->WeaponDef->projIgnitionEffect);
+	save_fx(def->WeaponDef->turretOverheatEffect);
+#undef save_fx
+*/
 }
 
 void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
@@ -494,6 +509,23 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 
 	// fx
 	// null these for now because I'm not certain effect writing works
+/*
+#define save_fx(model) if (model) addAsset(info, ASSET_TYPE_FX, model->name, addFxEffectDef(info, model->name, (char*)model, 0));
+	
+	save_fx(ret->WeaponDef->viewFlashEffect);
+	save_fx(ret->WeaponDef->worldFlashEffect);
+	save_fx(ret->WeaponDef->viewShellEjectEffect);
+	save_fx(ret->WeaponDef->worldShellEjectEffect);
+	save_fx(ret->WeaponDef->viewLastShotEjectEffect);
+	save_fx(ret->WeaponDef->worldLastShotEjectEffect);
+	save_fx(ret->WeaponDef->projExplosionEffect);
+	save_fx(ret->WeaponDef->projDudEffect);
+	save_fx(ret->WeaponDef->projTrailEffect);
+	save_fx(ret->WeaponDef->projBeaconEffect);
+	save_fx(ret->WeaponDef->projIgnitionEffect);
+	save_fx(ret->WeaponDef->turretOverheatEffect);
+#undef save_fx
+*/
 	ret->WeaponDef->viewFlashEffect = NULL;
 	ret->WeaponDef->worldFlashEffect = NULL;
 	ret->WeaponDef->viewShellEjectEffect = NULL;

@@ -38,13 +38,31 @@ enum snd_alias_type_t : char
 	SAT_COUNT = 0x4,
 };
 
-// this is a very over-simplified version that lets us be easy with it
-struct SoundFile	// 0x10
+struct LoadedSound
+{
+	const char *name;
+	int size;
+	char unknown[0x10];
+	char *data;
+};
+
+struct StreamedSound
+{
+	const char *dir;
+	const char *name;
+};
+
+union SoundData
+{
+	LoadedSound* loaded;
+	StreamedSound stream;
+};
+
+struct SoundFile	// 0xC
 {
 	snd_alias_type_t type;
 	bool exists;
-	const char *dir;
-	const char *name;
+	SoundData data;
 };
 
 struct SoundAlias

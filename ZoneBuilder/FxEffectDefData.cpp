@@ -1,11 +1,9 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-/*
 #include "FxParsing.h"
 
 // do this one like NTA does cause it seems to be neater
-
 
 void writeFxElemVisuals(zoneInfo_t* info, ZStream* buf, FxElemVisuals* data, int type)
 {
@@ -381,6 +379,9 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 		}
 		return data;
 	}
+
+	Com_Error(0, "Can't load custom effects!\n");
+	return NULL;
 	
 	Com_BeginParseSession(name);
 
@@ -418,5 +419,3 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 	
 	return ret;
 }
-
-*/
