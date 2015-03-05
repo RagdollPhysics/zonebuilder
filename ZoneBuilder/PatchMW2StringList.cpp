@@ -12,12 +12,17 @@
 #include "StdInc.h"
 #include "Tool.h"
 #include "Hooking.h"
-#include <google/dense_hash_map>
 
 #define MAX_SCRIPT_STRINGS_NTA 65535
 
 #define VA_BUFFER_COUNT		4
 #define VA_BUFFER_SIZE		32768
+
+// idk why the code uses these
+#define int32_t int
+#define uint32_t unsigned int
+#define int16_t short
+#define uint16_t unsigned short
 
 static char g_vaBuffer[VA_BUFFER_COUNT][VA_BUFFER_SIZE];
 static int g_vaNextBufferIndex = 0;
@@ -64,7 +69,7 @@ struct ScriptStringData
 static uint32_t slFirstFree; // might need to be optimized to be a linked list of free blocks?
 static CRITICAL_SECTION slCritSec;
 static ScriptStringData slStrings[MAX_SCRIPT_STRINGS_NTA];
-static google::dense_hash_map<std::string, uint16_t> slHashMap;
+static unordered_map<std::string, uint16_t> slHashMap;
 
 void SL_Init()
 {
@@ -86,7 +91,7 @@ int SL_GetStringOfSize(const char* string, int system, int size)
 
 	// try to find the string first
 	std::string str(string, size);
-	google::dense_hash_map<std::string, uint16_t>::const_iterator iter = slHashMap.find(str);
+	unordered_map<std::string, uint16_t>::const_iterator iter = slHashMap.find(str);
 
 	if (iter != slHashMap.end())
 	{
@@ -139,7 +144,7 @@ int FindStringOfSize(const char* string, int size)
 
 	std::string str(string, size);
 
-	google::dense_hash_map<std::string, uint16_t>::const_iterator iter = slHashMap.find(str);
+	unordered_map<std::string, uint16_t>::const_iterator iter = slHashMap.find(str);
 
 	if (iter != slHashMap.end())
 	{
@@ -367,9 +372,6 @@ const char* SL_ConvertToString_(uint16_t string)
 
 void PatchMW2_StringList()
 {
-	slHashMap.set_empty_key("*DUMMYDUMMY*");
-	slHashMap.set_deleted_key("*DUMMYDUMM*");
-
 	call(0x4D2280, SL_Init, PATCH_JUMP);
 	call(0x436B40, SL_GetStringOfSize, PATCH_JUMP);
 	call(0x4EC1D0, SL_ConvertToString_, PATCH_JUMP);
@@ -391,3 +393,8 @@ void PatchMW2_StringList()
 	// path_node_constant_t marking function; has some terrible string references
 	*(BYTE*)0x4F74B0 = 0xC3;
 }
+
+#undef int32_t
+#undef uint32_t
+#undef int16_t
+#undef uint16_t
