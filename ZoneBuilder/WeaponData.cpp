@@ -55,7 +55,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	{
 		// data in the array is already stored primed
 		buf->write(data->gunXModel, sizeof(XModel*), 16);
-		data->gunXModel = (XModel**)-1;
+		def->gunXModel = (XModel**)-1;
 	}
 
 	// already stored and primed by the require function
@@ -87,8 +87,10 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->szXAnimsL = (const char**)-1;
 	}
 
-	buf->write(data->szModeName, strlen(data->szModeName) + 1, 1);
-	def->szModeName = (char*)-1;
+	if (data->szModeName) {
+		buf->write(data->szModeName, strlen(data->szModeName) + 1, 1);
+		def->szModeName = (char*)-1;
+	}
 
 	if (data->noteTrackSoundMap[0]) {
 		buf->write(data->noteTrackSoundMap[0], 2, 16);
@@ -118,6 +120,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	{
 		if (!data->sounds[i].name) continue;
 
+		buf->write(3, -1, 1);
 		buf->write(data->sounds[i].name, strlen(data->sounds[i].name) + 1, 1);
 		def->sounds[i].name = (char*)-1;
 	}
@@ -130,6 +133,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 			if (!data->bounceSound[i].name) {
 				ptrs[i] = 0; continue;
 			} // there is no text
+			buf->write(3, -1, 1);
 			buf->write(data->bounceSound[i].name, strlen(data->bounceSound[i].name) + 1, 1);
 		}
 		def->bounceSound = (snd_alias_list_name*)-1;
@@ -147,7 +151,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	{
 		// data in the array is already stored primed
 		buf->write(data->worldModel, sizeof(XModel*), 16);
-		data->worldModel = (XModel**)-1;
+		def->worldModel = (XModel**)-1;
 	}
 
 	// already stored and primed by the require function
@@ -189,12 +193,14 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 
 	if (data->projExplosionSound.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->projExplosionSound.name, strlen(data->projExplosionSound.name) + 1, 1);
 		def->projExplosionSound.name = (char*)-1;
 	}
 
 	if (data->projDudSound.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->projDudSound.name, strlen(data->projDudSound.name) + 1, 1);
 		def->projDudSound.name = (char*)-1;
 	}
@@ -202,13 +208,13 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	if (data->parallelBounce)
 	{
 		buf->write(data->parallelBounce, sizeof(float), 31);
-		data->parallelBounce = (float*)-1;
+		def->parallelBounce = (float*)-1;
 	}
 
 	if (data->perpendicularBounce)
 	{
 		buf->write(data->perpendicularBounce, sizeof(float), 31);
-		data->perpendicularBounce = (float*)-1;
+		def->perpendicularBounce = (float*)-1;
 	}
 
 	// already stored and primed by the require function
@@ -218,6 +224,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 
 	if (data->projIgnitionSound.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->projIgnitionSound.name, strlen(data->projIgnitionSound.name) + 1, 1);
 		def->projIgnitionSound.name = (char*)-1;
 	}
@@ -231,7 +238,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	if (data->accuracyGraphKnots)
 	{
 		buf->write(data->accuracyGraphKnots, sizeof(vec2_t), data->accuracyGraphKnotCount);
-		data->accuracyGraphKnots = (vec2_t*)-1;
+		def->accuracyGraphKnots = (vec2_t*)-1;
 	}
 
 	if (data->accuracyGraphName[1])
@@ -243,7 +250,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	if (data->originalAccuracyGraphKnots)
 	{
 		buf->write(data->originalAccuracyGraphKnots, sizeof(vec2_t), data->originalAccuracyGraphKnotCount);
-		data->originalAccuracyGraphKnots = (vec2_t*)-1;
+		def->originalAccuracyGraphKnots = (vec2_t*)-1;
 	}
 
 	if (data->szUseHintString)
@@ -267,7 +274,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	if (data->locationDamageMultipliers)
 	{
 		buf->write(data->locationDamageMultipliers, sizeof(float), 20);
-		data->locationDamageMultipliers = (float*)-1;
+		def->locationDamageMultipliers = (float*)-1;
 	}
 
 	if (data->fireRumble)
@@ -287,6 +294,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 
 	if (data->turretOverheatSound.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->turretOverheatSound.name, strlen(data->turretOverheatSound.name) + 1, 1);
 		def->turretOverheatSound.name = (char*)-1;
 	}
@@ -302,6 +310,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 
 	if (data->turretBarrelSpinMaxSnd.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->turretBarrelSpinMaxSnd.name, strlen(data->turretBarrelSpinMaxSnd.name) + 1, 1);
 		def->turretBarrelSpinMaxSnd.name = (char*)-1;
 	}
@@ -310,6 +319,7 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	{
 		if (!data->turretBarrelSpinUpSnds[i].name) continue;
 
+		buf->write(3, -1, 1);
 		buf->write(data->turretBarrelSpinUpSnds[i].name, strlen(data->turretBarrelSpinUpSnds[i].name) + 1, 1);
 		def->turretBarrelSpinUpSnds[i].name = (char*)-1;
 	}
@@ -318,18 +328,21 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	{
 		if (!data->turretBarrelSpinDownSnds[i].name) continue;
 
+		buf->write(3, -1, 1);
 		buf->write(data->turretBarrelSpinDownSnds[i].name, strlen(data->turretBarrelSpinDownSnds[i].name) + 1, 1);
 		def->turretBarrelSpinDownSnds[i].name = (char*)-1;
 	}
 
 	if (data->missileConeSoundAlias.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->missileConeSoundAlias.name, strlen(data->missileConeSoundAlias.name) + 1, 1);
 		def->missileConeSoundAlias.name = (char*)-1;
 	}
 
 	if (data->missileConeSoundAliasAtBase.name)
 	{
+		buf->write(3, -1, 1);
 		buf->write(data->missileConeSoundAliasAtBase.name, strlen(data->missileConeSoundAliasAtBase.name) + 1, 1);
 		def->missileConeSoundAliasAtBase.name = (char*)-1;
 	}
