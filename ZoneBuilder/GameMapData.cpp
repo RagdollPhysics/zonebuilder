@@ -11,10 +11,16 @@ void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data)
 	if(data->data)
 	{
 		buf->write(data->data, sizeof(GameMap_Data), 1);
-		if(data->data->unk1)
+
+		if (data->data->unk1)
+		{
 			DebugBreak();
-		if(data->data->unk2)
+		}
+
+		if (data->data->unk2)
+		{
 			DebugBreak();
+		}
 	}
 }
 
@@ -23,11 +29,15 @@ void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t data
 	if(dataLen == 0)
 	{
 		GameMap_MP* asset =(GameMap_MP*)data;
-		char bspName[256];
-		_snprintf(bspName, 256, "maps/mp/%s.d3dbsp", info->name);
+
+		char bspName[256] = { 0 };
+		_snprintf(bspName, sizeof(bspName), "maps/mp/%s.d3dbsp", info->name);
+
 		asset->name = strdup(bspName);
+
 		return asset;
 	}
+
 	return NULL;
 }
 
@@ -36,11 +46,15 @@ void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t data
 	if(dataLen == 0)
 	{
 		GameMap_MP* asset = new GameMap_MP;
-		char bspName[256];
-		_snprintf(bspName, 256, "maps/mp/%s.d3dbsp", info->name);
+
+		char bspName[256] = { 0 };
+		_snprintf(bspName, sizeof(bspName), "maps/mp/%s.d3dbsp", info->name);
+
 		asset->name = strdup(bspName);
 		asset->data = ((GameMap_SP*)data)->data;
+
 		return asset;
 	}
+
 	return NULL;
 }

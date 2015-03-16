@@ -14,32 +14,38 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 
-	if(data->boneNames) {
+	if(data->boneNames)
+	{
 		buf->write(data->boneNames, sizeof(short), dest->numBones);
 		dest->boneNames = (short*)-1;
 	}
 
-	if(data->boneUnknown1) {
+	if(data->boneUnknown1) 
+	{
 		buf->write(dest->boneUnknown1, 1, dest->numBones - dest->numSubBones);
 		dest->boneUnknown1 = (char*)-1;
 	}
 
-	if(data->tagAngles) {
+	if(data->tagAngles) 
+	{
 		buf->write(dest->tagAngles, sizeof(XModelAngle), dest->numBones - dest->numSubBones);
 		dest->tagAngles = (XModelAngle*)-1;
 	}
 
-	if(data->tagPositions) {
+	if(data->tagPositions)
+	{
 		buf->write(dest->tagPositions, sizeof(XModelTagPos), dest->numBones - dest->numSubBones);
 		dest->tagPositions = (XModelTagPos*)-1;
 	}
 
-	if(data->boneUnknown4) {
+	if(data->boneUnknown4) 
+	{
 		buf->write(dest->boneUnknown4, 1, dest->numBones);
 		dest->boneUnknown4 = (char*)-1;
 	}
 
-	if(data->animMatrix) {
+	if(data->animMatrix) 
+	{
 		buf->write(dest->animMatrix, 32, dest->numBones);
 		dest->animMatrix = (char*)-1;
 	}
@@ -53,6 +59,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 	for(int i=0; i<4; i++)
 	{
 		if(!data->lods[i].surfaces) continue;
+
 		XModelSurfaces* surfs = (XModelSurfaces*)buf->at();
 		buf->write(dest->lods[i].surfaces, sizeof(XModelSurfaces), 1);
 		buf->write(dest->lods[i].surfaces->name, strlen(dest->lods[i].surfaces->name) + 1, 1);
@@ -61,6 +68,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 		{
 			XSurface* surf = (XSurface*)buf->at();
 			buf->write(dest->lods[i].surfaces->surfaces, sizeof(XSurface) * surfs->numSurfaces, 1);
+
 			for(int j=0; j<surfs->numSurfaces; j++)
 			{
 				if(surf[j].blendInfo)
@@ -87,19 +95,23 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 						{
 							XSurfaceCTEntry* entry = (XSurfaceCTEntry*)buf->at();
 							buf->write(ct[k].entry, 40, 1);
+
 							if(entry->node)
 							{
 								buf->write(entry->node, 16, entry->numNode);
 								entry->node = (char*)-1;
 							}
+
 							if(entry->leaf)
 							{
 								buf->write(entry->leaf, 2, entry->numLeaf);
 								entry->leaf = (short*)-1;
 							}
+
 							ct[k].entry = (XSurfaceCTEntry*)-1;
 						}
 					}
+
 					surf[j].ct = (XSurfaceCT*)-1;
 				}
 
@@ -109,6 +121,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 					surf[j].indexBuffer = (Face*)-1;
 				}
 			}
+
 			surfs->name = (char*)-1;
 			dest->lods[i].surfaces = (XModelSurfaces*)-1;
 			surfs->surfaces = (XSurface*)-1;
@@ -118,11 +131,13 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 	if(data->colSurf)
 	{
 		buf->write(dest->colSurf, sizeof(XColSurf), dest->numColSurfs);
+
 		for(int i=0; i<dest->numColSurfs; i++)
 		{
 			buf->write(dest->colSurf[i].tris, 48, dest->colSurf[i].count);
 			dest->colSurf[i].tris = (void*)-1;
 		}
+
 		dest->colSurf = (XColSurf*)-1;
 	}
 
@@ -137,6 +152,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 		writePhysPreset(info, buf, dest->physPreset);
 		dest->physPreset = (PhysPreset*)-1;
 	}
+
 	if(dest->physCollmap)
 	{
 		writePhysCollmap(info, buf, dest->physCollmap);
@@ -144,23 +160,28 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 	}
 }
 
-void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
 	if (data == NULL) return NULL;
+
 	if(dataLen == 0)
 	{
 		XModel * model = (XModel*)data;
 		short* boneNames = new short[model->numBones];
+
 		for(int i=0; i<model->numBones; i++)
 		{
 			boneNames[i] = addScriptString(info, SL_ConvertToString(model->boneNames[i]));
 		}
+
 		model->boneNames = boneNames;
+
 		for(int i=0; i<model->numSurfaces; i++)
 		{
 			// allow material overriding
 			void* file;
 			void* asset;
+
 			if(int len = FS_ReadFile(va("zonebuilder/materials/%s.txt", model->materials[i]->name), &file) > 0)
 			{
 				asset = addMaterial(info, model->materials[i]->name, (char*)file, len);
@@ -170,14 +191,17 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 			{
 				asset = addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
 			}
+
 			addAsset(info, ASSET_TYPE_MATERIAL, model->materials[i]->name, asset);
 		}
+
 		return data;
 	}
 
 	// copy stuff over
 	XModel * base = (XModel*)DB_FindXAssetHeader(ASSET_TYPE_XMODEL, "viewmodel_mp5k");
 	XModel * asset = new XModel;
+
 	memcpy(asset, base, sizeof(XModel));
 	asset->lods[0].surfaces = new XModelSurfaces;
 	memcpy(asset->lods[0].surfaces, base->lods[0].surfaces, sizeof(XModelSurfaces));
@@ -196,18 +220,21 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	asset->lods[0].numSurfs = surf->numSurfaces;
 
 	asset->boneNames = new short[asset->numBones];
+
 	for(int i=0; i<asset->numBones; i++)
 	{
 		char bone[64];
 		buf->readstr(bone, 64);
 		asset->boneNames[i] = addScriptString(info, bone);
 	}
+
 	// allocate stuff and load it
 	if(asset->numBones - asset->numSubBones)
 	{
 		asset->boneUnknown1 = new char[asset->numBones - asset->numSubBones];
 		asset->tagAngles = new XModelAngle[asset->numBones - asset->numSubBones];
 		asset->tagPositions = new XModelTagPos[asset->numBones - asset->numSubBones];
+
 		buf->read(asset->boneUnknown1, sizeof(char), asset->numBones - asset->numSubBones);
 		buf->read(asset->tagAngles, sizeof(XModelAngle), asset->numBones - asset->numSubBones);
 		buf->read(asset->tagPositions, sizeof(XModelTagPos), asset->numBones - asset->numSubBones);
@@ -217,6 +244,7 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	{
 		asset->boneUnknown4 = new char[asset->numBones];
 		asset->animMatrix = new char[32 * asset->numBones];
+
 		buf->read(asset->boneUnknown4, sizeof(char), asset->numBones);
 		buf->read(asset->animMatrix, 32, asset->numBones);
 	}
@@ -233,7 +261,9 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		buf->read(&s->blendNum2, 4, 1);
 		buf->read(&s->blendNum3, 4, 1);
 		buf->read(&s->blendNum4, 4, 1);
+
 		int blendCount = (s->blendNum4 * 7) + (s->blendNum3 * 5) + (s->blendNum2 * 3) + s->blendNum1;
+
 		if(blendCount)
 		{
 			s->blendInfo = new char[blendCount * 2];
@@ -249,10 +279,12 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 
 		int ct = 0;
 		buf->read(&ct, 4, 1);
+
 		if(ct)
 		{
 			buf->read(&s->numCT, 4, 1);
 			s->ct = new XSurfaceCT[s->numCT];
+
 			for(int j=0; j<s->numCT; j++)
 			{
 				XSurfaceCT* ct = &s->ct[j];
@@ -262,6 +294,7 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 				buf->read(ct->entry, 24, 1);
 				buf->read(&ct->entry->numNode, 4, 1);
 				buf->read(&ct->entry->numLeaf, 4, 1);
+
 				if(ct->entry->numNode)
 				{
 					ct->entry->node = new char[ct->entry->numNode * 16];
@@ -298,9 +331,10 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	// read the material stuff and load a material if we need it
 	for(int i=0; i<asset->numSurfaces; i++)
 	{
-		char * matName = new char[64];
-		char * matFileName = new char[78];
-		char * techName = new char[64];
+		char matName[64] = { 0 };
+		char techName[64] = { 0 };
+		char matFileName[78] = { 0 };
+
 		buf->readstr(matName, 50);
 		buf->readstr(techName, 64);
 
@@ -308,10 +342,11 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 
 		if(!strncmp("mc/", matName, 3)) filename = matName + 3;
 
-		_snprintf(matFileName, 78, "materials/%s.txt", filename);
+		_snprintf(matFileName, sizeof(matFileName), "materials/%s.txt", filename);
 
 		void* matBuf;
 		int len = FS_ReadFile(matFileName, &matBuf);
+
 		if(len > 0)
 		{
 			asset->materials[i] = (Material*)addMaterial(info, matName, (char*)matBuf, len);
@@ -322,14 +357,19 @@ void * addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 			asset->materials[i] = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, matName);
 			addMaterial(info, matName, (char*)asset->materials[i], 0);
 		}
+
 		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);		
 	}
 
 	int test = 0;
 	buf->read(&test, 4, 1);
+
 	if(test) Com_Error(false, "Cause NTA said so!");
+
 	buf->read(&test, 4, 1);
+
 	if(!test) Com_Error(false, "Cause NTA said so!");
+
 	asset->unknowns = new char[asset->numBones * 28];
 	buf->read(asset->unknowns, 28, asset->numBones);
 

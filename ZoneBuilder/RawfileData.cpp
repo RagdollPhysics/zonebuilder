@@ -16,9 +16,11 @@ void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
 	if(dataLen == 0) return data; // no fixups needed here
+
 	z_stream strm;
 	memset(&strm, 0, sizeof(z_stream));
 	char* dest = new char[dataLen*2];
+
 	strm.next_out = (Bytef*)dest;
 	strm.next_in = (Bytef*)data;
 	strm.avail_out = dataLen*2;
@@ -33,5 +35,6 @@ void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 	ret->sizeCompressed = strm.total_out;
 	ret->sizeUnCompressed = dataLen;
 	ret->compressedData = dest;
+
 	return ret;
 }

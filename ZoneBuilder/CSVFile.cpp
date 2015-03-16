@@ -54,8 +54,13 @@ char* CSVFile::getData(int row, int col)
 {
 	map<pair<int,int>,string>::iterator it;
 	it = _data.find(make_pair(row,col));
-	if(it == _data.end())
+
+	if (it == _data.end())
+	{
 		return NULL;
+	}
 	else
+	{
 		return (char*)_data[make_pair(row, col)].c_str();
+	}
 }
