@@ -2,6 +2,19 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+ZStream::ZStream()
+{
+	int size = 0x100000;
+
+	_origin = new char[size];
+	memset(_origin, 0, size);
+	_location = _origin;
+	_size = size;
+	_offset = 0;
+	_maxsize = 0;
+	memset(_streamOffsets, 0, sizeof(_streamOffsets));
+}
+
 ZStream::ZStream(size_t size)
 {
 	_origin = new char[size];
