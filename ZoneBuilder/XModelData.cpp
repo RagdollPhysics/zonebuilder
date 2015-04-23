@@ -207,7 +207,7 @@ void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	memcpy(asset->lods[0].surfaces, base->lods[0].surfaces, sizeof(XModelSurfaces));
 
 	XModelSurfaces * surf = asset->lods[0].surfaces;
-	surf->name = new char[strlen(name + 6)];
+	surf->name = new char[strlen(name) + 6];
 	sprintf((char*)surf->name, "%s_surf", name);
 
 	BUFFER * buf = new BUFFER(data, dataLen);
