@@ -115,10 +115,7 @@ LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 
 	Com_Error(true, "Fatal error (0x%08x) at 0x%08x.\n%s", ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionAddress, error);	
 
-	__asm
-	{
-		mov esp, origStack
-	}
+	__asm mov esp, origStack
 
 	delete[] tempStack;
 
@@ -136,21 +133,29 @@ void RunTool()
 	XZoneInfo* info = new XZoneInfo[9];
 	int i=0;
 	if(sources.size() == 0) loadedFastfiles = true;
+
 	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
 	{
 		info[i].name = strdup((*it).c_str());
 		info[i].type1 = 3;
 		info[i].type2 = 0;
+
 		if(i >= 8)
 		{
 			DB_LoadXAssets(info, i, 0);
 			i = 0;
 		}
 		else
+		{
 			i++;
+		}
 	}
-	if(i > 0)
+
+	if (i > 0)
+	{
 		DB_LoadXAssets(info, i, 0);
+	}
+
 	while(!loadedFastfiles) Sleep(100);
 
 	// allow us to load weapons from disk
@@ -159,8 +164,12 @@ void RunTool()
 	if(dumping)
 	{
 		printf("dumping stuff now");
-		if(dumpType == ASSET_TYPE_XMODEL)
+
+		if (dumpType == ASSET_TYPE_XMODEL)
+		{
 			dumpModel((char*)toDump.c_str());
+		}
+
 		getchar();
 		return;
 	}
@@ -174,6 +183,7 @@ void RunTool()
 		info.type2 = 0;
 		loadedFastfiles = false;
 		DB_LoadXAssets(&info, 1, 0);
+
 		while(!loadedFastfiles) Sleep(100);
 		return;
 	}
@@ -185,17 +195,20 @@ DWORD LoadFFDBThread = 0x5BC800;
 
 void CheckZoneLoad(char* name, int atype)
 {
-	__asm {
+	__asm 
+	{
 		push atype
 		push name
 		call LoadFFDBThread
 		add esp, 8
 	}
+
 	if(!strcmp(name, sources.back().c_str()))
 	{
 		printf("Done IW4 Initialization!\n");
 		loadedFastfiles = true;
 	}
+
 	if(!strcmp(name, zoneToBuild.c_str()))
 	{
 		loadedFastfiles = true;
@@ -218,6 +231,7 @@ void parseArgs()
 	sources.push_back(string("code_post_gfx_mp"));
 	sources.push_back(string("localized_code_post_gfx_mp"));
 	sources.push_back(string("common_mp"));
+
 	char** argv = getArgs();
 	int argc = getArgc();
 	if(argc == 1) printUsage();
@@ -229,6 +243,7 @@ void parseArgs()
 		zoneToBuild = string(argv[2]);
 		return;
 	}
+
 	for(int i=1; i<argc; i++)
 	{
 		if(!strncmp("-s", argv[i], 2))
@@ -255,6 +270,7 @@ void parseArgs()
 			zoneToBuild = string(argv[i]);
 		}
 	}
+
 	if(!strlen(zoneToBuild.c_str()) && !dumping) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 }
 
@@ -287,14 +303,15 @@ void AddEntryNameHookFunc(int type, const char* name)
 		return;
 	}
 
-	if(type == ASSET_TYPE_PIXELSHADER ||
+	if (type == ASSET_TYPE_PIXELSHADER ||
 		type == ASSET_TYPE_VERTEXSHADER ||
 		type == ASSET_TYPE_VERTEXDECL ||
 		type == ASSET_TYPE_TECHSET)
 		return;
 
-	char blah[1024];
-	_snprintf(blah, 1024, "%s,%s\n", getAssetStringForType(type), name);
+	char blah[1024] = { 0 };
+	_snprintf(blah, sizeof(blah), "%s,%s\n", getAssetStringForType(type), name);
+
 	OutputDebugString(blah);
 	printf(blah);
 }
@@ -314,13 +331,13 @@ void __declspec(naked) AddEntryNameHookStub()
 
 int weaponNamesprintfHook(char* dest, size_t len, const char* format, ...)
 {
-	int result;
 	va_list va;
 	va_start(va, format);
+
 	char* type = va_arg(va, char*);
 	char* name = va_arg(va, char*);
-	result = _snprintf(dest, len, "%s", name);
-	return result;
+
+	return _snprintf(dest, len, "%s", name);
 }
 
 int __cdecl comErrorHook(int a1, char* format, ...)
@@ -328,8 +345,10 @@ int __cdecl comErrorHook(int a1, char* format, ...)
 	int result;
 	va_list va;
 	va_start(va, format);
-	char dest[1024];
-	result = _vsnprintf(dest, 1024, format + 1, va);
+
+	char dest[1024] = { 0 };
+	result = _vsnprintf(dest, sizeof(dest), format + 1, va);
+
 	Com_Error(false, "%s\n", dest);
 	return 0;
 }

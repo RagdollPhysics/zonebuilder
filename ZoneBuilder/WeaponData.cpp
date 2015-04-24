@@ -24,12 +24,14 @@ void doRequires(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* def)
 	{
 		save_model(def->WeaponDef->gunXModel[i]);
 	}
+
 	save_model(def->WeaponDef->handXModel);
 
 	for (int i = 0; i < 16; i++)
 	{
 		save_model(def->WeaponDef->worldModel[i]);
 	}
+
 	save_model(def->WeaponDef->worldClipModel);
 	save_model(def->WeaponDef->rocketModel);
 	save_model(def->WeaponDef->knifeModel);
@@ -65,7 +67,6 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	buf->write(data->szInternalName, strlen(data->szInternalName) + 1, 1);
 	def->szInternalName = (char*)-1;
 
-	
 	if (data->gunXModel)
 	{
 		// data in the array is already stored primed
@@ -76,53 +77,68 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	// already stored and primed by the require function
 	// handXModel
 
-	if (data->szXAnimsR) {
+	if (data->szXAnimsR) 
+	{
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
+
 		for (int i = 0; i < 37; i++)
 		{
-			if (!data->szXAnimsR[i]) {
+			if (!data->szXAnimsR[i]) 
+			{
 				ptrs[i] = 0; continue;
 			} // there is no text
+
 			buf->write(data->szXAnimsR[i], strlen(data->szXAnimsR[i]) + 1, 1);
 		}
+
 		def->szXAnimsR = (const char**)-1;
 	}
 
-	if (data->szXAnimsL) {
+	if (data->szXAnimsL) 
+	{
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
+
 		for (int i = 0; i < 37; i++)
 		{
-			if (!data->szXAnimsL[i]) {
+			if (!data->szXAnimsL[i]) 
+			{
 				ptrs[i] = 0; continue;
 			} // there is no text
+
 			buf->write(data->szXAnimsL[i], strlen(data->szXAnimsL[i]) + 1, 1);
 		}
+
 		def->szXAnimsL = (const char**)-1;
 	}
 
-	if (data->szModeName) {
+	if (data->szModeName) 
+	{
 		buf->write(data->szModeName, strlen(data->szModeName) + 1, 1);
 		def->szModeName = (char*)-1;
 	}
 
-	if (data->noteTrackSoundMap[0]) {
+	if (data->noteTrackSoundMap[0]) 
+	{
 		buf->write(data->noteTrackSoundMap[0], 2, 16);
 		def->noteTrackSoundMap[0] = (short*)-1;
 	}
 
-	if (data->noteTrackSoundMap[1]) {
+	if (data->noteTrackSoundMap[1]) 
+	{
 		buf->write(data->noteTrackSoundMap[0], 2, 16);
 		def->noteTrackSoundMap[1] = (short*)-1;
 	}
 
-	if (data->noteTrackRumbleMap[0]) {
+	if (data->noteTrackRumbleMap[0])
+	{
 		buf->write(data->noteTrackRumbleMap[0], 2, 16);
 		def->noteTrackRumbleMap[0] = (short*)-1;
 	}
 
-	if (data->noteTrackRumbleMap[1]) {
+	if (data->noteTrackRumbleMap[1]) 
+	{
 		buf->write(data->noteTrackRumbleMap[0], 2, 16);
 		def->noteTrackRumbleMap[1] = (short*)-1;
 	}
@@ -140,17 +156,22 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->sounds[i].name = (char*)-1;
 	}
 
-	if (data->bounceSound) {
+	if (data->bounceSound) 
+	{
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
+
 		for (int i = 0; i < 37; i++)
 		{
-			if (!data->bounceSound[i].name) {
+			if (!data->bounceSound[i].name) 
+			{
 				ptrs[i] = 0; continue;
 			} // there is no text
+
 			buf->write(3, -1, 1);
 			buf->write(data->bounceSound[i].name, strlen(data->bounceSound[i].name) + 1, 1);
 		}
+
 		def->bounceSound = (snd_alias_list_name*)-1;
 	}
 
@@ -383,21 +404,27 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 	buf->write(data->displayName, strlen(data->displayName) + 1, 1);
 	def->displayName = (char*)-1;
 
-	if (data->hideTags) {
+	if (data->hideTags) 
+	{
 		buf->write(data->hideTags, 2, 32);
 		def->hideTags = (short*)-1;
 	}
 
-	if (data->szXAnims) {
+	if (data->szXAnims) 
+	{
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
+
 		for (int i = 0; i < 37; i++)
 		{
-			if (!data->szXAnims[i]) {
+			if (!data->szXAnims[i]) 
+			{
 				ptrs[i] = 0; continue;
 			} // there is no text
+
 			buf->write(data->szXAnims[i], strlen(data->szXAnims[i]) + 1, 1);
 		}
+
 		def->szXAnims = (const char**)-1;
 	}
 
@@ -413,6 +440,7 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 		buf->write(data->accuracyGraphKnots, 8, data->accuracyGraphKnotCount);
 		def->accuracyGraphKnots = (vec2_t*)-1;
 	}
+
 	if (data->originalAccuracyGraphKnots)
 	{
 		buf->write(data->originalAccuracyGraphKnots, 8, data->originalAccuracyGraphKnotCount);
@@ -440,12 +468,14 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 		if (ret->hideTags[i] == NULL) break; // no more tags
 		ret->hideTags[i] = addScriptString(info, SL_ConvertToString(ret->hideTags[i]));
 	}
+
 	// notetrackSounds
 	for (int i = 0; i < 16; i++)
 	{
 		if (ret->WeaponDef->noteTrackSoundMap[0][i] == NULL) break; // no more tags
 		ret->WeaponDef->noteTrackSoundMap[0][i] = addScriptString(info, SL_ConvertToString(ret->WeaponDef->noteTrackSoundMap[0][i]));
 	}
+
 	for (int i = 0; i < 16; i++)
 	{
 		if (ret->WeaponDef->noteTrackSoundMap[1][i] == NULL) break; // no more tags
@@ -458,6 +488,7 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 		if (ret->WeaponDef->noteTrackRumbleMap[0][i] == NULL) break; // no more tags
 		ret->WeaponDef->noteTrackRumbleMap[0][i] = addScriptString(info, SL_ConvertToString(ret->WeaponDef->noteTrackRumbleMap[0][i]));
 	}
+
 	for (int i = 0; i < 16; i++)
 	{
 		if (ret->WeaponDef->noteTrackSoundMap[1][i] == NULL) break; // no more tags
@@ -486,12 +517,14 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 	{
 		save_model(ret->WeaponDef->gunXModel[i]);
 	}
+
 	save_model(ret->WeaponDef->handXModel);
 
 	for (int i = 0; i < 16; i++)
 	{
 		save_model(ret->WeaponDef->worldModel[i]);
 	}
+
 	save_model(ret->WeaponDef->worldClipModel);
 	save_model(ret->WeaponDef->rocketModel);
 	save_model(ret->WeaponDef->knifeModel);
@@ -499,13 +532,17 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 	save_model(ret->WeaponDef->projectileModel);
 #undef save_model
 
-	if (ret->WeaponDef->collisions) 
-		addAsset(info, ASSET_TYPE_PHYS_COLLMAP, ret->WeaponDef->collisions->name, 
+	if (ret->WeaponDef->collisions)
+	{
+		addAsset(info, ASSET_TYPE_PHYS_COLLMAP, ret->WeaponDef->collisions->name,
 		addPhysCollmap(info, ret->WeaponDef->collisions->name, (char*)ret->WeaponDef->collisions, 0));
+	}
 
 	if (ret->WeaponDef->tracer)
+	{
 		addAsset(info, ASSET_TYPE_TRACER, ret->WeaponDef->tracer->name,
 		addTracer(info, ret->WeaponDef->tracer->name, (char*)ret->WeaponDef->tracer, 0));
+	}
 
 	// fx
 	// null these for now because I'm not certain effect writing works

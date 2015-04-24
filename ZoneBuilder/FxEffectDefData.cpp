@@ -41,7 +41,6 @@ void writeFxElemDefVisuals(zoneInfo_t* info, ZStream* buf, FxElemDefVisuals* dat
 	}
 	else
 	{
-
 		writeFxElemVisuals(info, buf, &data->instance, type);
 	}
 }
@@ -87,16 +86,19 @@ void writeFxElemDef(zoneInfo_t* info, ZStream* buf, FxElemDef* def)
 			if(def->trailDef->trailDef)
 			{
 				buf->write(def->trailDef->trailDef, sizeof(FxTrailDef), 1);
+
 				if(def->trailDef->trailDef->verts)
 				{
 					buf->write(def->trailDef->trailDef->verts, sizeof(FxTrailVertex) * def->trailDef->trailDef->vertCount, 1);
 					def->trailDef->trailDef->verts = (FxTrailVertex*)-1;
 				}
+
 				if(def->trailDef->trailDef->inds)
 				{
 					buf->write(def->trailDef->trailDef->inds, sizeof(unsigned short) * def->trailDef->trailDef->indCount, 1);
 					def->trailDef->trailDef->inds = (unsigned short*)-1;
 				}
+
 				def->trailDef->trailDef = (FxTrailDef*)-1;
 			}
 		} 
@@ -126,14 +128,17 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 		if(def->elemDefs[i].effectEmitted) {
 			requireAsset(info, ASSET_TYPE_FX, (char*)def->elemDefs[i].effectEmitted->name, buf);
 		}
+
 		if(def->elemDefs[i].effectOnImpact)
 		{
 			requireAsset(info, ASSET_TYPE_FX, (char*)def->elemDefs[i].effectOnImpact->name, buf);
 		}
+
 		if(def->elemDefs[i].effectOnDeath)
 		{
 			requireAsset(info, ASSET_TYPE_FX, (char*)def->elemDefs[i].effectOnDeath->name, buf);
 		}
+
 		for(int j=0; j<def->elemDefs[i].visualCount; j++)
 		{
 			if(def->elemDefs[i].elemType == 11)
@@ -142,6 +147,7 @@ void doRequireForFxDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* def)
 				{
 					Material* m1 = def->elemDefs[i].visuals.markArray[j].data[0];
 					Material* m2 = def->elemDefs[i].visuals.markArray[j].data[1];
+
 					def->elemDefs[i].visuals.markArray[j].data[0] = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m1->name, buf));
 					def->elemDefs[i].visuals.markArray[j].data[1] = (Material*)(requireAsset(info, ASSET_TYPE_MATERIAL, (char*)m2->name, buf));
 				}
@@ -228,18 +234,23 @@ void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data)
 	{
 		FxElemDef* elem = (FxElemDef*)buf->at();
 		buf->write(def->elemDefs, sizeof(FxElemDef) * (def->elemDefCountLooping + def->elemDefCountOneShot + def->elemDefCountEmission), 1);
+
 		for(int i=0; i<def->elemDefCountLooping + def->elemDefCountOneShot + def->elemDefCountEmission; i++)
 		{
 			writeFxElemDef(info, buf, &elem[i]);
 		}
+
 		def->elemDefs = (FxElemDef*)-1;
 	}
 }
 
 FxEffectDef * getEffectFromRef(FxEffectDefRef* ref)
 {
-	if(strlen(ref->name) > 5)
+	if (strlen(ref->name) > 5)
+	{
 		return (FxEffectDef*)DB_FindXAssetHeader(ASSET_TYPE_FX, ref->name);
+	}
+
 	return ref->handle;
 }
 
@@ -269,26 +280,33 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 		// add nested effects
 		for(int i =0; i<def->elemDefCountLooping + def->elemDefCountOneShot + def->elemDefCountEmission; i++)
 		{
-			if(def->elemDefs[i].effectEmitted) {
+			if(def->elemDefs[i].effectEmitted) 
+			{
 				FxEffectDef* e = getEffectFromRef(def->elemDefs[i].effectEmitted);
 				void * a = addFxEffectDef(info, e->name, (char*)e, 0);
+
 				addAsset(info, ASSET_TYPE_FX, e->name, a);
 				def->elemDefs[i].effectEmitted->name = e->name;
 			}
+
 			if(def->elemDefs[i].effectOnImpact)
 			{
 				FxEffectDef* e = getEffectFromRef(def->elemDefs[i].effectOnImpact);
 				void * a = addFxEffectDef(info, e->name, (char*)e, 0);
+
 				addAsset(info, ASSET_TYPE_FX, e->name, a);
 				def->elemDefs[i].effectOnImpact->name = e->name;
 			}
+
 			if(def->elemDefs[i].effectOnDeath)
 			{
 				FxEffectDef* e = getEffectFromRef(def->elemDefs[i].effectOnDeath);
 				void * a = addFxEffectDef(info, e->name, (char*)e, 0);
+
 				addAsset(info, ASSET_TYPE_FX, e->name, a);
 				def->elemDefs[i].effectOnDeath->name = e->name;
 			}
+
 			for(int j=0; j<def->elemDefs[i].visualCount; j++)
 			{
 				if(def->elemDefs[i].elemType == 11)
@@ -297,8 +315,10 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 					{
 						Material* m1 = def->elemDefs[i].visuals.markArray[j].data[0];
 						Material* m2 = def->elemDefs[i].visuals.markArray[j].data[1];
+
 						void* m1data = addMaterial(info, m1->name, (char*)m1, 0);
 						void* m2data = addMaterial(info, m2->name, (char*)m2, 0);
+
 						addAsset(info, ASSET_TYPE_MATERIAL, m1->name, m1data);
 						addAsset(info, ASSET_TYPE_MATERIAL, m2->name, m2data);
 					}
@@ -311,6 +331,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 						{
 							XModel* m = def->elemDefs[i].visuals.array[j].xmodel;
 							void *a = addXModel(info, m->name, (char*)m, 0);
+
 							addAsset(info, ASSET_TYPE_XMODEL, m->name, a);
 							break;
 						}
@@ -318,6 +339,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 						{
 							FxEffectDef* fx = getEffectFromRef(def->elemDefs[i].visuals.array[j].effectDef);
 							void * a =  addFxEffectDef(info, fx->name, (char*)fx, 0);
+
 							addAsset(info, ASSET_TYPE_FX, fx->name, a);
 							def->elemDefs[i].visuals.array[j].effectDef->name = fx->name;
 							break;
@@ -333,6 +355,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 							{
 								Material* m = def->elemDefs[i].visuals.array[j].material;
 								void * a = addMaterial(info, m->name, (char*)m, 0);
+
 								addAsset(info, ASSET_TYPE_MATERIAL, m->name, a);
 								break;
 							}
@@ -347,6 +370,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 						{
 							XModel* m = def->elemDefs[i].visuals.instance.xmodel;
 							void *a = addXModel(info, m->name, (char*)m, 0);
+
 							addAsset(info, ASSET_TYPE_XMODEL, m->name, a);
 							break;
 						}
@@ -354,6 +378,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 						{
 							FxEffectDef* fx = getEffectFromRef(def->elemDefs[i].visuals.instance.effectDef);
 							void * a =  addFxEffectDef(info, fx->name, (char*)fx, 0);
+
 							addAsset(info, ASSET_TYPE_FX, fx->name, a);
 							def->elemDefs[i].visuals.instance.effectDef->name = fx->name;
 							break;
@@ -369,6 +394,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 							{
 								Material* m = def->elemDefs[i].visuals.instance.material;
 								void * a = addMaterial(info, m->name, (char*)m, 0);
+
 								addAsset(info, ASSET_TYPE_MATERIAL, m->name, a);
 								break;
 							}
@@ -396,10 +422,12 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 	char token[64];
 	strncpy(token, Com_ParseExt(&parse), 64);
 	int i = 0;
+
 	while(*token != NULL)
 	{
 		ret->elemDefs[i].elemType = -1;
 		if(*token != '{') Com_Error(true, "invalid efx file!");
+
 		while(true)
 		{
 			strncpy(token, Com_ParseExt(&parse), 64);
@@ -407,6 +435,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 			doParseFxEntry(info, &parse, token, ret, i);
 			if(*token == '}') break;
 		}
+
 		i++;
 		strncpy(token, Com_ParseExt(&parse), 64);
 	}

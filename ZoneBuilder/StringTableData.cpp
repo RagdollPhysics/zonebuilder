@@ -44,6 +44,7 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 4, 1);
 		}
 	}
+
 	for(int ri=0; ri<data->rows; ri++)
 	{
 		for(int ci=0; ci<data->columns; ci++)
@@ -51,6 +52,7 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 			buf->write(data->data[((ri * data->columns) + ci) * 2], strlen(data->data[((ri * data->columns) + ci) * 2]) + 1, 1);
 		}
 	}
+
 	outST->data = (char**)-1;
 }
 

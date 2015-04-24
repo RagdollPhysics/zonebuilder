@@ -14,7 +14,7 @@ private:
 	int _streamOffsets[8];
 
 public:
-	ZStream() { ZStream(0x100000); }
+	ZStream();
 	ZStream(size_t size);
 	~ZStream();
 	void resize(size_t newsize);

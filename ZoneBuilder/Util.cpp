@@ -3,9 +3,11 @@
 
 void Com_Printf(const char* format, ...)
 {
-	static char buffer[32768];
+	static char buffer[32768] = { 0 };
+
 	va_list va;
 	va_start(va, format);
+
 	//vprintf(format, va);
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
@@ -15,12 +17,15 @@ void Com_Printf(const char* format, ...)
 
 void Com_Debug_(const char* format, ...)
 {
-	static char buffer[32768];
+	static char buffer[32768] = { 0 };
+
 	va_list va;
 	va_start(va, format);
+
 	//vprintf(format, va);
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
+
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
 	printf("%s", buffer);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
@@ -28,19 +33,26 @@ void Com_Debug_(const char* format, ...)
 
 void Com_Error(bool exit, const char* format, ...)
 {
-	static char buffer[32768];
+	static char buffer[32768] = { 0 };
+
 	va_list va;
 	va_start(va, format);
+
 	//vprintf(format, va);
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
+
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
 	printf("ERROR: %s\n", buffer);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	if(exit)
+
+	if (exit)
 	{
-		if(IsDebuggerPresent())
+		if (IsDebuggerPresent())
+		{
 			DebugBreak();
+		}
+
 		TerminateProcess(GetCurrentProcess(), -1);
 	}
 }
@@ -94,11 +106,13 @@ const char* assetTypeStrings [] = {
 int getAssetTypeForString(const char* str)
 {
 	int i = 42;
+
 	while(i > 0)
 	{
 		if(!strcmp(assetTypeStrings[i], str)) return i;
 		i--;
 	}
+
 	return -1;
 }
 
@@ -122,6 +136,7 @@ LPSTR* getArgs()
 
 	// Convert the wide string array into an ANSI array (input is ASCII-7)
 	LPSTR * pszArgVectorAnsi = new LPSTR [iArgCount];
+
 	for (iIdx = 0; iIdx < iArgCount; ++iIdx)
 	{
 		 size_t qStrLen = wcslen(pszArgVectorWide[iIdx]), qConverted = 0;
@@ -129,6 +144,7 @@ LPSTR* getArgs()
 		 wcstombs_s(&qConverted,pszArgVectorAnsi[iIdx],qStrLen+1,
 		 pszArgVectorWide [iIdx],qStrLen+1);
 	}
+
 	return pszArgVectorAnsi;
 }
 

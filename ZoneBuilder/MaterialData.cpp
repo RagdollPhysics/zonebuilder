@@ -26,22 +26,28 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 	for(int i=0; i<data->numMaps; i++)
 	{
 		GfxImage * img = (GfxImage*)buf->at();
+
 		buf->write(data->maps[i].image, sizeof(GfxImage), 1);
 		buf->write(data->maps[i].image->name, strlen(data->maps[i].image->name) + 1, 1);
 		img->name = (char*)-1;
+
 		if(img->texture)
 		{
 			buf->write(img->texture, sizeof(GfxImageLoadDef), 1);
 			img->texture = (GfxImageLoadDef*)-1;
 		}
 	}
+
 	dest->maps = (MaterialTextureDef*)-1;
 
-	if(data->unknown8) {
+	if(data->unknown8) 
+	{
 		buf->write((char*)data->unknown8, data->unknown5 * 32, 1);
 		dest->unknown8 = -1;
 	}
-	if(data->stateMap) {
+
+	if(data->stateMap) 
+	{
 		buf->write(data->stateMap, data->stateMapCount * 8, 1);	
 		dest->stateMap = (void*)-1;
 	}
@@ -88,6 +94,7 @@ int parseMatFile(char* data, size_t dataLen)
 	CSVFile * file = new CSVFile(data, dataLen);
 	int curRow = 0;
 	char* param = file->getData(curRow, 0);
+
 	while(param != NULL)
 	{
 		if(!strcmp("basemat", param))
@@ -100,10 +107,12 @@ int parseMatFile(char* data, size_t dataLen)
 
 		materialMaps[materialMapCount] = R_HashString(param);
 		strncpy(materialTextureNames[materialMapCount++], file->getData(curRow, 1), sizeof(materialTextureNames[0]));
+
 		curRow++;
 		param = file->getData(curRow, 0);
 
-		if(materialMapCount == 8) {
+		if(materialMapCount == 8) 
+		{
 			Com_Error(false, "Too many maps in material file! Ignoring extra.");
 			return 0;
 		}
@@ -120,17 +129,29 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 	ret->texture->dataSize = 0;
 	ret->name = name;
 
-	char fname[64];
-	_snprintf(fname, 64, "images/%s.iwi", name);
+	char fname[64] = { 0 };
+	_snprintf(fname, sizeof(fname), "images/%s.iwi", name);
+
 	_IWI* buf = new _IWI;
 	int handle = 0;
+
 	FS_FOpenFileRead(fname, &handle, 1);
-	if(handle == 0) { Com_Error(1, "Image does not exist: %s!", fname); delete buf; delete ret; return NULL; }
+
+	if (handle == 0)
+	{
+		Com_Error(1, "Image does not exist: %s!", fname);
+		delete buf;
+		delete ret;
+		return NULL;
+	}
+
 	FS_Read(buf, sizeof(_IWI), handle);
 	FS_FCloseFile(handle);
+
 	ret->height = buf->xsize;
 	ret->width = buf->ysize;
 	ret->depth = buf->depth;
+
 	switch(buf->format)
 	{
 	case IWI_ARGB:
@@ -149,19 +170,24 @@ GfxImage* LoadImageFromBase(char* name, GfxImage* base)
 		ret->texture->format = 0x35545844;
 		break;
 	}
+
 	ret->dataLen1 = buf->mipAddr4 - 32;
 	ret->dataLen2 = buf->mipAddr4 - 32;
 	ret->name = strdup(name);
+
 	return ret;
 }
 
 void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
 	if (data == NULL) return NULL;
-	if(dataLen == 0) {
+
+	if(dataLen == 0) 
+	{
 		Material* mat = (Material*)data;
 		strncpy(baseMatName, mat->name, 64);
 		materialMapCount = mat->numMaps;
+
 		for(int i=0; i<mat->numMaps; i++)
 		{
 			switch(mat->maps[i].firstCharacter)
@@ -179,6 +205,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 				materialMaps[i] = R_HashString("detailMap");
 				break;
 			}
+
 			strncpy(materialTextureNames[i], mat->maps[i].image->name, 64);
 		}
 	}
@@ -186,6 +213,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 	{
 		parseMatFile(data, dataLen);
 	}
+
 	Material* basemat = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, baseMatName);
 
 	// duplicate the material
@@ -196,9 +224,11 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 
 	// new info
 	mat->name = strdup(name);
+
 	for(int j=0; j<materialMapCount; j++)
 	{
 		int wantedMap = -1;
+
 		for(int i=0; i<mat->numMaps; i++)
 		{
 			if(mat->maps[i].typeHash == materialMaps[j])
@@ -207,6 +237,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 				break;
 			}
 		}
+
 		if(wantedMap == -1) continue; // meh who cares
 		mat->maps[wantedMap].image = LoadImageFromBase(materialTextureNames[j], mat->maps[wantedMap].image);
 	}

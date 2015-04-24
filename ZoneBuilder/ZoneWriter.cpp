@@ -17,6 +17,7 @@ xZoneMemory memory = { 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 {
 	int a = containsAsset(info, type, name);
+
 	if(a >= 0)
 	{		
 		writeAsset(info, &info->assets[a], buf);
@@ -29,6 +30,7 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 	{
 		Com_Error(false, "Missing required asset %s (%d). Export may (and probably will) fail!", name, type);
 	}
+
 	return -1;
 }
 
@@ -36,12 +38,16 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
 	asset->offset = getOffsetForWrite(info, 0x03, buf);
+
 	// hide the useless assets that we can't change
-	if(asset->type != ASSET_TYPE_TECHSET &&
-	   asset->type != ASSET_TYPE_PIXELSHADER &&
-	   asset->type != ASSET_TYPE_VERTEXSHADER &&
-	   asset->type != ASSET_TYPE_VERTEXDECL)
+	if (asset->type != ASSET_TYPE_TECHSET &&
+		asset->type != ASSET_TYPE_PIXELSHADER &&
+		asset->type != ASSET_TYPE_VERTEXSHADER &&
+		asset->type != ASSET_TYPE_VERTEXDECL)
+	{
 		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), (asset->offset));
+	}
+
 	switch(asset->type)
 	{
 	case ASSET_TYPE_RAWFILE:
@@ -96,6 +102,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	case ASSET_TYPE_TRACER:
 		writeTracer(info, buf, (Tracer*)asset->data);
 	}
+
 	asset->written = true;
 	return asset->offset;
 }
@@ -106,8 +113,10 @@ ZStream* writeZone(zoneInfo_t * info)
 	buf->write(&memory, sizeof(xZoneMemory), 1);
 
     buf->write(&info->scriptStringCount, 4, 1);
+
     if(info->scriptStringCount > 0) buf->write(&pad, 4, 1);
     else buf->write(&zero, 4, 1);
+
     buf->write(&info->assetCount, 4, 1);
     buf->write(&pad, 4, 1);
 

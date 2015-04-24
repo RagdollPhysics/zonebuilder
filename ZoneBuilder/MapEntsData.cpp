@@ -36,11 +36,13 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 	{
 		Stage* stages = (Stage*)buf->at();
 		buf->write(data->stages, sizeof(Stage), data->stageCount);
+
 		for(int i=0; i<dest->stageCount; i++)
 		{
 			buf->write(data->stages[i].name, strlen(data->stages[i].name) + 1, 1);
 			stages[i].name = (const char*)-1;
 		}
+
 		dest->stages = (Stage*)-1;
 	}
 }
@@ -50,8 +52,10 @@ void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 	if(dataLen == 0)
 	{
 		MapEnts* asset = (MapEnts*)data;
-		char bspName[256];
-		_snprintf(bspName, 256, "maps/mp/%s.d3dbsp", info->name);
+
+		char bspName[256] = { 0 };
+		_snprintf(bspName, sizeof(bspName), "maps/mp/%s.d3dbsp", info->name);
+
 		asset->name = strdup(bspName);
 		return data;
 	}
