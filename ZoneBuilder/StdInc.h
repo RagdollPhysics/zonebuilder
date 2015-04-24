@@ -77,6 +77,9 @@ using namespace std;
 // complete structures
 #include "AssetStructs.h"
 
+// version
+#include "buildnumber.h"
+
 // more names
 void PatchMW2();
 void Sys_RunInit();

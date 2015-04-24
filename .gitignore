@@ -7,3 +7,5 @@ Normal
 /ZoneBuilder/Release
 /*.opensdf
 *.suo
+/ZoneBuilder/buildnumber.h
+/dependencies/lastrev.txt

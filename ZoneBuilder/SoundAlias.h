@@ -38,12 +38,19 @@ enum snd_alias_type_t : char
 	SAT_COUNT = 0x4,
 };
 
+struct MssSound
+{
+	int size;
+	char unknown1[10];
+	short numFrames;
+	int *frames;	// count = numFrames
+	char *data;	// size = soundSize 
+};
+
 struct LoadedSound
 {
 	const char *name;
-	int size;
-	char unknown[0x10];
-	char *data;
+	MssSound data;
 };
 
 struct StreamedSound

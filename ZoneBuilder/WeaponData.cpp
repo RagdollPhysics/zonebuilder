@@ -509,9 +509,9 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 
 	// fx
 	// null these for now because I'm not certain effect writing works
-/*
+
 #define save_fx(model) if (model) addAsset(info, ASSET_TYPE_FX, model->name, addFxEffectDef(info, model->name, (char*)model, 0));
-	
+	/*
 	save_fx(ret->WeaponDef->viewFlashEffect);
 	save_fx(ret->WeaponDef->worldFlashEffect);
 	save_fx(ret->WeaponDef->viewShellEjectEffect);
@@ -524,8 +524,9 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 	save_fx(ret->WeaponDef->projBeaconEffect);
 	save_fx(ret->WeaponDef->projIgnitionEffect);
 	save_fx(ret->WeaponDef->turretOverheatEffect);
+	*/
 #undef save_fx
-*/
+	
 	ret->WeaponDef->viewFlashEffect = NULL;
 	ret->WeaponDef->worldFlashEffect = NULL;
 	ret->WeaponDef->viewShellEjectEffect = NULL;
@@ -538,6 +539,6 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 	ret->WeaponDef->projBeaconEffect = NULL;
 	ret->WeaponDef->projIgnitionEffect = NULL;
 	ret->WeaponDef->turretOverheatEffect = NULL;
-
+	
 	return ret;
 }
