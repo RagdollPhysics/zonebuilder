@@ -53,20 +53,51 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 	}
 }
 
-int materialMapCount;
-int materialMaps[8];
-char materialTextureNames[8][64];
 char baseMatName [64];
-
+map<string, string> materialMaps;
+map<string, vec4_t*> materialProperties;
 
 // finally went and made this one sane with our new class for csv files
 int parseMatFile(char* data, size_t dataLen)
 {
-	materialMapCount = 0;
 	CSVFile * file = new CSVFile(data, dataLen);
 	int curRow = 0;
 	char* param = file->getData(curRow, 0);
 
+	// new material format
+	if (!strcmp(param, "map") || !strcmp(param, "prop"))
+	{
+		while (param != NULL)
+		{
+			if (!strcmp(param, "map"))
+			{
+				param = file->getData(curRow, 1);
+				if (!strcmp("basemat", param))
+				{
+					strncpy(baseMatName, file->getData(curRow, 2), sizeof(baseMatName));
+					curRow++;
+					param = file->getData(curRow, 0);
+					continue;
+				}
+
+				materialMaps[param] = file->getData(curRow, 2);
+			}
+
+			if (!strcmp(param, "prop"))
+			{
+				char vecstr[256];
+				strncpy(vecstr, file->getData(curRow, 2), 256);
+				vec4_t* vec = (vec4_t*)malloc(sizeof(vec4_t)); // this is a memory leak but idk where to free it
+				sscanf_s(vecstr, "(%g, %g, %g, %g)", vec[0], vec[1], vec[2], vec[3]);
+				materialProperties[file->getData(curRow, 1)] = vec;
+			}
+
+			curRow++;
+			param = file->getData(curRow, 0);
+		}
+	}
+
+	// fallback format
 	while(param != NULL)
 	{
 		if(!strcmp("basemat", param))
@@ -77,22 +108,15 @@ int parseMatFile(char* data, size_t dataLen)
 			continue;
 		}
 
-		materialMaps[materialMapCount] = R_HashString(param);
-		strncpy(materialTextureNames[materialMapCount++], file->getData(curRow, 1), sizeof(materialTextureNames[0]));
+		materialMaps[param] = file->getData(curRow, 1);
 
 		curRow++;
 		param = file->getData(curRow, 0);
-
-		if(materialMapCount == 8) 
-		{
-			Com_Error(false, "Too many maps in material file! Ignoring extra.");
-			return 0;
-		}
 	}
 	return 0;
 }
 
-GfxImage* LoadImageFromIWI(char* name, char semantic, char category, char flags)
+GfxImage* LoadImageFromIWI(const char* name, char semantic, char category, char flags)
 {
 	GfxImage* ret = new GfxImage;
 	memset(ret, 0, sizeof(GfxImage));
@@ -160,9 +184,10 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 
 	if(dataLen == 0) 
 	{
+		/*
 		Material* mat = (Material*)data;
 		strncpy(baseMatName, mat->name, 64);
-		materialMapCount = mat->textureCount;
+		int materialMapCount = mat->textureCount;
 
 		for (int i = 0; i<mat->textureCount; i++)
 		{
@@ -184,6 +209,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 
 			strncpy(materialTextureNames[i], mat->textureTable[i].info.image->name, 64);
 		}
+		*/
 	}
 	else
 	{
@@ -195,17 +221,18 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 	// duplicate the material
 	Material* mat = new Material;
 	memcpy(mat, basemat, sizeof(Material));
-	mat->textureTable = new MaterialTextureDef[materialMapCount];
+	mat->textureTable = new MaterialTextureDef[materialMaps.size()];
 
 	// new info
 	mat->name = strdup(name);
-	mat->textureCount = materialMapCount;
+	mat->textureCount = materialMaps.size();
 
-	for(int i=0; i<materialMapCount; i++)
+	int i = 0;
+	for (auto it = materialMaps.begin(); it != materialMaps.end(); ++it)
 	{
 		MaterialTextureDef* cur = &mat->textureTable[i];
 		memset(cur, 0, sizeof(MaterialTextureDef));
-		switch (materialMaps[i])
+		switch (R_HashString(it->first.c_str()))
 		{
 		case HASH_COLORMAP: cur->nameStart = 'c'; cur->nameHash = HASH_COLORMAP; cur->semantic = SEMANTIC_COLOR_MAP;  break;
 		case HASH_DETAILMAP: cur->nameStart = 'd'; cur->nameHash = HASH_DETAILMAP; cur->semantic = SEMANTIC_FUNCTION;  break;
@@ -213,7 +240,8 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 		case HASH_NORMALMAP: cur->nameStart = 'n'; cur->nameHash = HASH_NORMALMAP; cur->semantic = SEMANTIC_NORMAL_MAP;  break;
 		}
 		cur->nameEnd = 'p';
-		cur->info.image = LoadImageFromIWI(materialTextureNames[i], cur->semantic, 0, 0);
+		cur->info.image = LoadImageFromIWI(it->second.c_str(), cur->semantic, 0, 0);
+		i++;
 	}
 
 	// add techset to our DB here

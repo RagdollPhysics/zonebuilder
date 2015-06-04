@@ -2,7 +2,7 @@
 #include "Tool.h"
 // 276 is original
 // 277 is filepointers
-int desiredFFVersion = 277;
+int desiredFFVersion = 276;
 
 char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0', 
 	desiredFFVersion, desiredFFVersion >> 8, desiredFFVersion >> 16, desiredFFVersion >> 24, 
@@ -193,7 +193,10 @@ void ZoneBuild(char* building)
 	Com_Printf("Writing to Disk...");
 	CreateDirectoryA("zone", NULL);
 
-	FILE* out = fopen(toBuild.insert(0, va("zone\\%s\\", ((char*(*)())0x45CBA0)())).append(".ff").c_str(), "wb");
+	//const char* outputdir = ((char*(*)())0x45CBA0)();
+	const char* outputdir = "alter";
+
+	FILE* out = fopen(toBuild.insert(0, va("zone\\%s\\", outputdir)).append(".ff").c_str(), "wb");
 	_setmode( _fileno( out ), _O_BINARY ); // it was fucking up zlib output
 	
 	FILETIME time;
