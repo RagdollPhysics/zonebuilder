@@ -1,6 +1,8 @@
 #include "StdInc.h"
 #include "Tool.h"
-int desiredFFVersion = 276; // use 277 for filePointers which we shouldn't need anymore
+// 276 is original
+// 277 is filepointers
+int desiredFFVersion = 277;
 
 char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0', 
 	desiredFFVersion, desiredFFVersion >> 8, desiredFFVersion >> 16, desiredFFVersion >> 24, 

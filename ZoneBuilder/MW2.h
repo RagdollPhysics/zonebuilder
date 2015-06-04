@@ -548,6 +548,9 @@ extern DB_IsAssetDefault_t DB_IsAssetDefault;
 typedef int (__cdecl * DB_GetXAssetTypeSize_t)(int type);
 extern DB_GetXAssetTypeSize_t DB_GetXAssetTypeSize;
 
+typedef void(__cdecl * DB_EnumXAssets_t)(assetType_t type, void(*handler)(void*, int), int userData);
+extern DB_EnumXAssets_t DB_EnumXAssets;
+
 typedef dvar_t* (__cdecl * Dvar_RegisterBool_t)(const char* name, bool default, int flags, const char* description);
 extern Dvar_RegisterBool_t Dvar_RegisterBool;
 

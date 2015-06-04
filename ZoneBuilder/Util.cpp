@@ -157,6 +157,7 @@ long flength(FILE* fp)
 	return ret;
 }
 
+extern unsigned int R_HashString(const char* string);
 void debugChecks()
 {
 	ASSERT(sizeof(PhysGeomList) == 0x48);
@@ -167,7 +168,8 @@ void debugChecks()
 	ASSERT(sizeof(XAnim) == DB_GetXAssetTypeSize(ASSET_TYPE_XANIM));
 	ASSERT(sizeof(XModelSurfaces) == DB_GetXAssetTypeSize(ASSET_TYPE_XMODELSURFS));
 	ASSERT(sizeof(XModel) == DB_GetXAssetTypeSize(ASSET_TYPE_XMODEL));
-	ASSERT(sizeof(Material) == DB_GetXAssetTypeSize(ASSET_TYPE_MATERIAL));
+	ASSERT(sizeof(Material) == 0x60);
+	ASSERT(sizeof(GfxImage) == 0x20);
 	ASSERT(sizeof(SoundAliasList) == DB_GetXAssetTypeSize(ASSET_TYPE_SOUND));
 	ASSERT(sizeof(SoundAlias) == 100);
 	ASSERT(sizeof(SpeakerMap) == 408);

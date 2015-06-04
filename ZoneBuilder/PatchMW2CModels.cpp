@@ -746,9 +746,6 @@ void PatchMW2_CModels()
 	//getBoneIndexHook2.installHook();
 }
 
-typedef void (__cdecl * DB_EnumXAssets_t)(assetType_t type, void (*handler)(void*, int), int userData);
-static DB_EnumXAssets_t DB_EnumXAssets = (DB_EnumXAssets_t)0x42A770;
-
 void ReleaseCModels()
 {
 	for (unordered_map<DWORD, void*>::const_iterator iter = bufferMap.begin(); iter != bufferMap.end(); iter++)

@@ -20,11 +20,14 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 
 	if(a >= 0)
 	{		
-		writeAsset(info, &info->assets[a], buf);
+		int off = writeAsset(info, &info->assets[a], buf);
 		// this will make no sense... just let it
 		// we are returning the offset to the pointer in the asset index which isn't generated until load time
 		// go figure
-		return (3 << 28) | ((info->index_start + (8 * (a + 1))) & 0x0FFFFFFF);
+		if (desiredFFVersion == 276)
+			return (3 << 28) | ((info->index_start + (8 * (a + 1))) & 0x0FFFFFFF);
+		else if (desiredFFVersion == 277)
+			return off | 0xF0000000;
 	}
 	else
 	{

@@ -8,4 +8,4 @@ Normal
 /*.opensdf
 *.suo
 /ZoneBuilder/buildnumber.h
-/dependencies/lastrev.txt
+/ZoneBuilder/lastrev.txt

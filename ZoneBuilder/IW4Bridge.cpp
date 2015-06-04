@@ -122,6 +122,29 @@ LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 	return 0;
 }
 
+list<string> constants;
+int constantHash[256];
+int constantCount = 0;
+
+void GetMaterialConstants(void* varMaterial, int handle)
+{
+	Material* mat = (Material*)varMaterial;
+	for (int i = 0; i < mat->constantCount; i++)
+	{
+		bool found = false;
+		for (int j = 0; j < constantCount; j++)
+		{
+			if (mat->constantTable[i].nameHash == constantHash[j]) {
+				found = true;
+				break;
+			}
+		}
+		if (found) continue;
+		constants.push_back(mat->constantTable[i].name);
+		constantHash[constantCount++] = mat->constantTable[i].nameHash;
+	}
+}
+
 void RunTool()
 {
 	doInit();
@@ -161,6 +184,9 @@ void RunTool()
 	// allow us to load weapons from disk
 	__asm call setupWeaponDef
 
+	// this gives us a list of material constants
+	//DB_EnumXAssets(ASSET_TYPE_MATERIAL, GetMaterialConstants, 0);
+	
 	if(dumping)
 	{
 		printf("dumping stuff now");
