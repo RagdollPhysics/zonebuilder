@@ -340,6 +340,13 @@ void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 
 		char* filename = matName;
 
+		// asset is already in db... dont re-add it
+		if (containsAsset(info, ASSET_TYPE_MATERIAL, matName) > 0)
+		{
+			asset->materials[i] = (Material*)getAsset(info, ASSET_TYPE_MATERIAL, matName);
+			continue;
+		}
+
 		if(!strncmp("mc/", matName, 3)) filename = matName + 3;
 
 		_snprintf(matFileName, sizeof(matFileName), "materials/%s.txt", filename);

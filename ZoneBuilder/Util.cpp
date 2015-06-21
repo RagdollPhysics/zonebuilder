@@ -46,13 +46,13 @@ void Com_Error(bool exit, const char* format, ...)
 	printf("ERROR: %s\n", buffer);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
+	if (IsDebuggerPresent())
+	{
+		DebugBreak();
+	}
+
 	if (exit)
 	{
-		if (IsDebuggerPresent())
-		{
-			DebugBreak();
-		}
-
 		TerminateProcess(GetCurrentProcess(), -1);
 	}
 }
