@@ -35,8 +35,11 @@ bool loadedFastfiles = false;
 bool dumping = false;
 bool verify = false;
 bool useEntryNames = false;
+bool postBuildVerify = false;
 
 void ZoneBuild(char* toBuild);
+void buildVerify(int type, const char* name, void* asset);
+void checkVerified();
 
 list<string> sources;
 string zoneToBuild;
@@ -215,6 +218,29 @@ void RunTool()
 	}
 
 	ZoneBuild((char*)zoneToBuild.c_str());
+
+	// post build verify of zone
+#if ZB_DEBUG
+	Com_Debug("Verifying built fastfile integrity...\n");
+
+	useEntryNames = true;
+	postBuildVerify = true;
+	XZoneInfo verify;
+	verify.name = zoneToBuild.c_str();
+	verify.type1 = 3;
+	verify.type2 = 0;
+	loadedFastfiles = false;
+	DB_LoadXAssets(&verify, 1, 0);
+
+	while (!loadedFastfiles) Sleep(100);
+
+	checkVerified();
+	Com_Debug("Done!");
+#endif
+	if (IsDebuggerPresent())
+	{
+		getchar();
+	}
 }
 
 DWORD LoadFFDBThread = 0x5BC800;
@@ -310,8 +336,9 @@ DB_GetXAssetSizeHandler_t* DB_GetXAssetSizeHandlers = (DB_GetXAssetSizeHandler_t
 void* ReallocateAssetPool(assetType_t type, unsigned int newSize)
 {
 	int elSize = DB_GetXAssetSizeHandlers[type]();
-	void* poolEntry = malloc(newSize * elSize);
-	DB_XAssetPool[type] = poolEntry;
+	char* poolEntry = (char*)malloc(newSize * elSize + 1);
+	*poolEntry = type;
+	DB_XAssetPool[type] = (poolEntry + 1);
 	g_poolSize[type] = newSize;
 	return poolEntry;
 }
@@ -322,10 +349,16 @@ static DWORD gameWorldMP;
 CallHook addEntryNameHook;
 DWORD addEntryNameHookLoc = 0x5BB697;
 
-void AddEntryNameHookFunc(int type, const char* name)
+void AddEntryNameHookFunc(int type, const char* name, void* asset)
 {
 	if (!useEntryNames)
 	{
+		return;
+	}
+
+	if (postBuildVerify)
+	{
+		buildVerify(type, name, asset);
 		return;
 	}
 
@@ -346,11 +379,13 @@ void __declspec(naked) AddEntryNameHookStub()
 {
 	__asm
 	{
+		push [esp + 36]
 		push ecx
 		push eax
 		call AddEntryNameHookFunc
 		pop eax
 		pop ecx
+		add esp, 4
 		jmp addEntryNameHook.pOriginal
 	}
 }
@@ -506,9 +541,8 @@ void InitBridge()
 	ReallocateAssetPool(ASSET_TYPE_VERTEXDECL, 196);
 	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
 	ReallocateAssetPool(ASSET_TYPE_WEAPON, 2000);
-	ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
-
-
+	//ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
+	// causes heap issues
 }
 
 

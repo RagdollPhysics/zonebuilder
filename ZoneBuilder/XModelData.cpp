@@ -20,10 +20,10 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 		dest->boneNames = (short*)-1;
 	}
 
-	if(data->boneUnknown1) 
+	if (data->parentList)
 	{
-		buf->write(dest->boneUnknown1, 1, dest->numBones - dest->numSubBones);
-		dest->boneUnknown1 = (char*)-1;
+		buf->write(dest->parentList, 1, dest->numBones - dest->numSubBones);
+		dest->parentList = (char*)-1;
 	}
 
 	if(data->tagAngles) 
@@ -38,10 +38,10 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 		dest->tagPositions = (XModelTagPos*)-1;
 	}
 
-	if(data->boneUnknown4) 
+	if(data->partClassification) 
 	{
-		buf->write(dest->boneUnknown4, 1, dest->numBones);
-		dest->boneUnknown4 = (char*)-1;
+		buf->write(dest->partClassification, 1, dest->numBones);
+		dest->partClassification = (char*)-1;
 	}
 
 	if(data->animMatrix) 
@@ -231,21 +231,21 @@ void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	// allocate stuff and load it
 	if(asset->numBones - asset->numSubBones)
 	{
-		asset->boneUnknown1 = new char[asset->numBones - asset->numSubBones];
+		asset->parentList = new char[asset->numBones - asset->numSubBones];
 		asset->tagAngles = new XModelAngle[asset->numBones - asset->numSubBones];
 		asset->tagPositions = new XModelTagPos[asset->numBones - asset->numSubBones];
 
-		buf->read(asset->boneUnknown1, sizeof(char), asset->numBones - asset->numSubBones);
+		buf->read(asset->parentList, sizeof(char), asset->numBones - asset->numSubBones);
 		buf->read(asset->tagAngles, sizeof(XModelAngle), asset->numBones - asset->numSubBones);
 		buf->read(asset->tagPositions, sizeof(XModelTagPos), asset->numBones - asset->numSubBones);
 	}
 
 	if(asset->numBones)
 	{
-		asset->boneUnknown4 = new char[asset->numBones];
+		asset->partClassification = new char[asset->numBones];
 		asset->animMatrix = new char[32 * asset->numBones];
 
-		buf->read(asset->boneUnknown4, sizeof(char), asset->numBones);
+		buf->read(asset->partClassification, sizeof(char), asset->numBones);
 		buf->read(asset->animMatrix, 32, asset->numBones);
 	}
 

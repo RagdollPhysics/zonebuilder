@@ -37,13 +37,13 @@ void dumpModel(char * name)
 		fwritestr(f, SL_ConvertToString(mod->boneNames[i]));
 	}
 
-	fwrite(mod->boneUnknown1, 1, (mod->numBones - mod->numSubBones), f);
+	fwrite(mod->parentList, 1, (mod->numBones - mod->numSubBones), f);
 
 	fwrite(mod->tagAngles, sizeof(XModelAngle), (mod->numBones - mod->numSubBones), f);
 
 	fwrite(mod->tagPositions, sizeof(XModelTagPos), (mod->numBones - mod->numSubBones), f);
 
-	fwrite(mod->boneUnknown4, 1, mod->numBones, f);
+	fwrite(mod->partClassification, 1, mod->numBones, f);
 
 	fwrite(mod->animMatrix, 32, mod->numBones, f);
 

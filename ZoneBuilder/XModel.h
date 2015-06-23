@@ -104,10 +104,10 @@ struct XModel
 	char pad2; // +7
 	char pad3[28]; // +8
 	short* boneNames; // +36
-	char* boneUnknown1; // +40
+	char* parentList; // +40
 	XModelAngle* tagAngles; // +44, element size 8
 	XModelTagPos* tagPositions; // +48, element size 12
-	char* boneUnknown4; // +52
+	char* partClassification; // +52
 	char* animMatrix; // +56, element size 32
 	Material** materials; // +60
 	XSurfaceLod lods[4]; // +64

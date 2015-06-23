@@ -12,7 +12,6 @@ CSVFile::CSVFile(char* input, int count)
 	char * at = data;
 	char* start = data;
 	int curRow = 0, curCol = 0;
-	int len = strlen(input);
 	while(at < data + count)
 	{
 		if(*at == ',')

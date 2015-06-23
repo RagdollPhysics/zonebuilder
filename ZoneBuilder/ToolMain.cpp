@@ -8,6 +8,8 @@ char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0',
 	desiredFFVersion, desiredFFVersion >> 8, desiredFFVersion >> 16, desiredFFVersion >> 24, 
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
+zoneInfo_t* currentInfo;
+
 void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name)
 {
 	if(containsAsset(info, type, name) > 0) return;
@@ -165,6 +167,7 @@ void ZoneBuild(char* building)
 #endif
 
 	zoneInfo_t * info = getZoneInfo(toBuild.c_str());
+	currentInfo = info;
 
 	Com_Printf("\nBuilding Zone : %s\n", toBuild.c_str());
 
@@ -212,9 +215,26 @@ void ZoneBuild(char* building)
 	fclose(out);
 
 	Com_Printf("Done!\n");
+}
 
-	if(IsDebuggerPresent()) 
+#if ZB_DEBUG
+void buildVerify(int type, const char* name, void* asset)
+{
+	// images & surfs dont get added
+	if (type == ASSET_TYPE_IMAGE || type == ASSET_TYPE_XMODELSURFS) return;
+
+	if (containsAsset(currentInfo, type, name) < 0)
+		Com_Error(true, "Invalid zone created!\nSee asset %s of type 0x%x\n", name, type);
+	verifyAsset(currentInfo, type, name);
+}
+
+void checkVerified()
+{
+	asset_t* a = nextUnverifiedAsset(currentInfo);
+	while (a != NULL)
 	{
-		getchar();
+		Com_Printf("Asset '%s' unverified\n", a->debugName.c_str());
+		a = nextUnverifiedAsset(currentInfo);
 	}
 }
+#endif

@@ -21,6 +21,10 @@ typedef struct
 	void* data;
 	int offset;
 	bool written;
+#if ZB_DEBUG
+	std::string debugName;
+	bool verified;
+#endif
 } asset_t;
 
 typedef struct
@@ -72,6 +76,10 @@ extern void doLastAsset(zoneInfo_t* info, const char* name);
 extern void* getAsset(zoneInfo_t* info, int type, const char* name);
 extern void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name);
 extern int getOffsetForWrite(zoneInfo_t* info, int stream, ZStream* buf);
+#if ZB_DEBUG
+void verifyAsset(zoneInfo_t* info, int type, const char* name);
+asset_t* nextUnverifiedAsset(zoneInfo_t* info);
+#endif
 
 // XAnimData
 extern void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

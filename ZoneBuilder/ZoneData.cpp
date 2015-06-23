@@ -76,6 +76,10 @@ int addAsset(zoneInfo_t* info, int type, const char* name, void* data)
 	info->assets[info->assetCount].name = R_HashString(name);
 	info->assets[info->assetCount].type = type;
 	info->assets[info->assetCount].data = data;
+#if ZB_DEBUG
+	info->assets[info->assetCount].debugName = name;
+	info->assets[info->assetCount].verified = false;
+#endif
 
 	return info->assetCount++;
 }
@@ -140,3 +144,27 @@ void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name)
 
 	return DB_FindXAssetHeader(type, name);
 }
+
+#if ZB_DEBUG
+void verifyAsset(zoneInfo_t* info, int type, const char* name)
+{
+	for (int i = 0; i<info->assetCount; i++)
+	{
+		if (info->assets[i].type == type && info->assets[i].name == R_HashString(name))
+		{
+			info->assets[i].verified = true;
+		}
+	}
+}
+asset_t* nextUnverifiedAsset(zoneInfo_t* info)
+{
+	for (int i = 0; i<info->assetCount; i++)
+	{
+		if (!info->assets[i].verified)
+		{
+			return &info->assets[i];
+		}
+	}
+	return NULL;
+}
+#endif
