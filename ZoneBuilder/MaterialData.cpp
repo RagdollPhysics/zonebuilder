@@ -221,10 +221,11 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 	// duplicate the material
 	Material* mat = new Material;
 	memcpy(mat, basemat, sizeof(Material));
-	mat->textureTable = new MaterialTextureDef[materialMaps.size()];
 
 	// new info
 	mat->name = strdup(name);
+
+	mat->textureTable = new MaterialTextureDef[materialMaps.size()];
 	mat->textureCount = materialMaps.size();
 
 	int i = 0;
@@ -242,6 +243,24 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 		cur->nameEnd = 'p';
 		cur->info.image = LoadImageFromIWI(it->second.c_str(), cur->semantic, 0, 0);
 		i++;
+	}
+
+	// only overwrite this stuff if we specifically want to
+	if (materialProperties.size()) {
+		mat->constantTable = new MaterialConstantDef[materialProperties.size()];
+		mat->constantCount = materialProperties.size();
+
+		i = 0;
+		for (auto it = materialProperties.begin(); it != materialProperties.end(); ++it)
+		{
+			MaterialConstantDef* cur = &mat->constantTable[i];
+			memset(cur, 0, sizeof(MaterialConstantDef));
+			strncpy(cur->name, it->first.c_str(), 12);
+			cur->nameHash = R_HashString(it->first.c_str());
+			memcpy(cur->literal, it->second, sizeof(vec4_t));
+
+			i++;
+		}
 	}
 
 	// add techset to our DB here

@@ -93,7 +93,7 @@
     copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\SteamApps\common\Call of Duty Modern Warfare 2 - REKT\zonetool.dll"
 ) 
 
-if "$(SolutionDir)" == "C:\dev\COD Archive\mw2dev\ZoneBuilder\" (
+if "$(SolutionDir)" == "C:\dev\COD Archive\iw4\ZoneBuilder\" (
     copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"
 )
 
