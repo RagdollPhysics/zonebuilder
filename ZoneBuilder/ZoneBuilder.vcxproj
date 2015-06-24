@@ -73,7 +73,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;pdcurses.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -162,6 +162,7 @@ echo $(SolutionDir)</Command>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Args.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
     <ClCompile Include="CSVFile.cpp" />
@@ -177,7 +178,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="MW2.cpp" />
     <ClCompile Include="PatchMW2CModels.cpp" />
-    <ClCompile Include="PatchMW2Console.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="PatchMW2CryptoFiles.cpp" />
     <ClCompile Include="PatchMW2CryptoZone.cpp" />
     <ClCompile Include="PatchMW2FilePointers.cpp" />

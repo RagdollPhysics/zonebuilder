@@ -9,7 +9,6 @@
 #include "Tool.h"
 #include "WeaponDef.h"
 
-void PatchMW2_Console();
 void PatchMW2_Load();
 void PatchMW2_StringList();
 void PatchMW2_CryptoFiles();
@@ -31,21 +30,7 @@ DWORD init11 = 0x4A62A0;
 DWORD init12 = 0x429080;
 DWORD setupWeaponDef = 0x4E1F30;
 
-bool loadedFastfiles = false;
-bool dumping = false;
-bool verify = false;
 bool useEntryNames = false;
-bool postBuildVerify = false;
-
-void ZoneBuild(char* toBuild);
-void buildVerify(int type, const char* name, void* asset);
-void checkVerified();
-
-list<string> sources;
-string zoneToBuild;
-string toDump;
-int dumpType;
-void dumpModel(char * name);
 
 void doInit()
 {
@@ -148,103 +133,74 @@ void GetMaterialConstants(void* varMaterial, int handle)
 	}
 }
 
+XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
+						   { "localized_code_pre_gfx_mp", 0, 0 },
+						   { "code_post_gfx_mp", 0, 0 },
+						   { "localized_code_post_gfx_mp", 0, 0 },
+						   { "common_mp", 0, 0 },
+						 };
+
 void RunTool()
 {
 	doInit();
 
-	//if (verify) sources.clear();
-
-	printf("Loading Source Zones...\n");
-	// load source files
-	XZoneInfo* info = new XZoneInfo[9];
-	int i=0;
-	if(sources.size() == 0) loadedFastfiles = true;
-
-	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
-	{
-		info[i].name = strdup((*it).c_str());
-		info[i].type1 = 3;
-		info[i].type2 = 0;
-
-		if(i >= 8)
-		{
-			DB_LoadXAssets(info, i, 0);
-			i = 0;
-		}
-		else
-		{
-			i++;
-		}
-	}
-
-	if (i > 0)
-	{
-		DB_LoadXAssets(info, i, 0);
-	}
-
-	while(!loadedFastfiles) Sleep(100);
+	Com_Printf("Loading Base Zones...\n");
+	Com_LoadZones(baseZones, 5);
+	Com_Printf("Done IW4 Initialization!\n");
 
 	// allow us to load weapons from disk
 	__asm call setupWeaponDef
 
+	if (console) { RunConsole(); return; }
+
 	// this gives us a list of material constants
 	//DB_EnumXAssets(ASSET_TYPE_MATERIAL, GetMaterialConstants, 0);
-	
-	if(dumping)
-	{
-		printf("dumping stuff now");
 
-		if (dumpType == ASSET_TYPE_XMODEL)
+	if (build)
+	{
+		if (sources.size())
 		{
-			dumpModel((char*)toDump.c_str());
+			XZoneInfo* srcInfo = new XZoneInfo[sources.size()];
+			int i = 0;
+			for (auto it = sources.begin(); it != sources.end(); ++it)
+			{
+				srcInfo[i].name = strdup(it->c_str());
+				srcInfo[i].type1 = 3;
+				srcInfo[i].type2 = 0;
+				i++;
+				if (i == 9) { Com_Error(false, "Max of 9 source zones! Ignoring extra.\n"); break; }
+			}
+			Com_Printf("Loading source zones...\n");
+			Com_LoadZones(srcInfo, i);
 		}
-
-		getchar();
-		return;
+		ZoneBuild((char*)zoneToBuild.c_str());
 	}
 
-	if(verify)
+	if (verify)
 	{
-		useEntryNames = true;
-		XZoneInfo info;
-		info.name = zoneToBuild.c_str();
-		info.type1 = 3;
-		info.type2 = 0;
-		loadedFastfiles = false;
-		DB_LoadXAssets(&info, 1, 0);
+		Com_Printf("Verifying fastfile integrity...\n");
+		if(!build) useEntryNames = true; // only dump names when we arent building
+		XZoneInfo verify;
+		verify.name = zoneToBuild.c_str();
+		verify.type1 = 3;
+		verify.type2 = 0;
+		Com_LoadZones(&verify, 1);
 
-		while(!loadedFastfiles) Sleep(100);
-		return;
+		Com_Printf("Done!");
 	}
 
-	ZoneBuild((char*)zoneToBuild.c_str());
-
-	// post build verify of zone
-#if ZB_DEBUG
-	Com_Debug("Verifying built fastfile integrity...\n");
-
-	useEntryNames = true;
-	postBuildVerify = true;
-	XZoneInfo verify;
-	verify.name = zoneToBuild.c_str();
-	verify.type1 = 3;
-	verify.type2 = 0;
-	loadedFastfiles = false;
-	DB_LoadXAssets(&verify, 1, 0);
-
-	while (!loadedFastfiles) Sleep(100);
-
-	checkVerified();
-	Com_Debug("Done!");
-#endif
 	if (IsDebuggerPresent())
 	{
 		getchar();
 	}
+
+	DestroyConsole();
 }
 
 DWORD LoadFFDBThread = 0x5BC800;
 
+extern bool waitingOnLoad;
+extern const char* zoneWaitingOn;
 void CheckZoneLoad(char* name, int atype)
 {
 	__asm 
@@ -255,75 +211,10 @@ void CheckZoneLoad(char* name, int atype)
 		add esp, 8
 	}
 
-	if(!strcmp(name, sources.back().c_str()))
+	if(!strcmp(name, zoneWaitingOn))
 	{
-		printf("Done IW4 Initialization!\n");
-		loadedFastfiles = true;
+		waitingOnLoad = false;
 	}
-
-	if(!strcmp(name, zoneToBuild.c_str()))
-	{
-		loadedFastfiles = true;
-	}
-}
-
-void printUsage()
-{
-	printf("usage: ZoneBuilder.exe [zone name] -sSourceZones\n");
-	printf("\t\t\t\t\t   -v [zone name]\n");
-	TerminateProcess(GetCurrentProcess(), 0);
-}
-
-char* fs_basegame = "zonebuilder";
-
-void parseArgs()
-{
-	sources.push_back(string("code_pre_gfx_mp"));
-	sources.push_back(string("localized_code_pre_gfx_mp"));
-	sources.push_back(string("code_post_gfx_mp"));
-	sources.push_back(string("localized_code_post_gfx_mp"));
-	sources.push_back(string("common_mp"));
-
-	char** argv = getArgs();
-	int argc = getArgc();
-	if(argc == 1) printUsage();
-
-	if(!strncmp("-v", argv[1], 2))
-	{
-		verify = true;
-		//sources.clear();
-		zoneToBuild = string(argv[2]);
-		return;
-	}
-
-	for(int i=1; i<argc; i++)
-	{
-		if(!strncmp("-s", argv[i], 2))
-		{
-			sources.push_back(string(argv[i] + 2));
-		}
-		else if(!strncmp("-d", argv[i], 2))
-		{
-			char line[3];
-			strncpy(line, argv[i] + 2, 2);
-			line[2] = 0;
-			dumpType = atoi(line);
-			toDump = string(argv[i] + 4);
-			dumping = true;
-		}
-		else if (!strncmp("-b", argv[i], 2))
-		{
-			i++;
-			fs_basegame = strdup(argv[i]);
-		}
-		else
-		{
-			if(strlen(zoneToBuild.c_str())) { printf("Can't build more than one zone!\n"); TerminateProcess(GetCurrentProcess(), 0); }
-			zoneToBuild = string(argv[i]);
-		}
-	}
-
-	if(!strlen(zoneToBuild.c_str()) && !dumping) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 }
 
 typedef int (__cdecl * DB_GetXAssetSizeHandler_t)();
@@ -356,12 +247,7 @@ void AddEntryNameHookFunc(int type, const char* name, void* asset)
 		return;
 	}
 
-	if (postBuildVerify)
-	{
-		buildVerify(type, name, asset);
-		return;
-	}
-
+	// cant be changed so hide them
 	if (type == ASSET_TYPE_PIXELSHADER ||
 		type == ASSET_TYPE_VERTEXSHADER ||
 		type == ASSET_TYPE_VERTEXDECL ||
@@ -371,8 +257,8 @@ void AddEntryNameHookFunc(int type, const char* name, void* asset)
 	char blah[1024] = { 0 };
 	_snprintf(blah, sizeof(blah), "%s,%s\n", getAssetStringForType(type), name);
 
-	OutputDebugString(blah);
-	printf(blah);
+	//OutputDebugString(blah);
+	Com_Printf(blah);
 }
 
 void __declspec(naked) AddEntryNameHookStub()
@@ -421,8 +307,10 @@ const char* soundLoadingHook(const char* ptr)
 
 void InitBridge()
 {
-	printf("Initializing IW4...\n");
 	parseArgs();
+	InitConsole();
+
+	Com_Printf("Initializing IW4...\n");
 
 	// check version
 	if (strcmp((char*)0x6E9638, "177"))
@@ -431,10 +319,8 @@ void InitBridge()
 		TerminateProcess(GetCurrentProcess(), 0);
 	}
 
-	PatchMW2_Console(); // redirect output
 	PatchMW2_Load(); // load fastfiles from dlc and alter
 	//PatchMW2_StringList(); // for some reason the SL is messed up?
-	// no but why not
 	PatchMW2_CryptoFiles(); // let us pull from iw4c fastfiles
 	PatchMW2_FifthInfinity();
 

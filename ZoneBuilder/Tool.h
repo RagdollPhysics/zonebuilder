@@ -46,17 +46,32 @@ typedef struct
 
 // Main
 extern void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name);
+extern void ZoneBuild(char* toBuild);;
 
 // Util
 extern void Com_Printf(const char* format, ...);
-void Com_Error(bool exit, const char* format, ...);
-void Com_Debug_(const char* format, ...);
-int getAssetTypeForString(const char* str);
-const char* getAssetStringForType(int type);
-int getArgc();
-LPSTR* getArgs();
-long flength(FILE* fp);
-void debugChecks();
+extern void Com_Error(bool exit, const char* format, ...);
+extern void Com_Debug_(const char* format, ...);
+extern int getAssetTypeForString(const char* str);
+extern const char* getAssetStringForType(int type);
+extern int getArgc();
+extern LPSTR* getArgs();
+extern long flength(FILE* fp);
+extern void debugChecks();
+extern void Com_LoadZones(XZoneInfo* zones, int count);
+extern void Com_UnloadZones(int group);
+
+// console
+extern void InitConsole();
+extern void DestroyConsole();
+extern void RunConsole();
+
+// args
+extern char* fs_basegame;
+extern string zoneToBuild;
+extern bool build, verify, console;
+extern list<string> sources;
+extern void parseArgs();
 
 // ZoneWriter
 //extern void writeZone(zoneInfo_t * info);

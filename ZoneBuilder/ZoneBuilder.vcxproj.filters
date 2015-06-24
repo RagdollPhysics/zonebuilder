@@ -28,6 +28,9 @@
     <Filter Include="Header Files\AssetStructures">
       <UniqueIdentifier>{0019f166-98f7-4e1b-9899-6b12dcb653b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{decf9406-c1d8-4e01-96cb-856263fcab34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SteamAPI.cpp">
@@ -57,9 +60,6 @@
     <ClCompile Include="SteamUtils005.cpp">
       <Filter>Source Files\Steam</Filter>
     </ClCompile>
-    <ClCompile Include="PatchMW2Console.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="MW2.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
@@ -81,16 +81,10 @@
     <ClCompile Include="ToolMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Buffers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ZoneData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ZoneWriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="XAnimData.cpp">
@@ -135,9 +129,6 @@
     <ClCompile Include="SoundAliasData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CSVFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PatchMW2StringList.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
@@ -176,6 +167,21 @@
     </ClCompile>
     <ClCompile Include="TracerData.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="CSVFile.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffers.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Args.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

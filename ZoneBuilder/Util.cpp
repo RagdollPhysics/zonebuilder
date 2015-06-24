@@ -1,6 +1,9 @@
 #include "StdInc.h"
 #include <shellapi.h>
 
+extern bool console;
+void Sys_Print(const char* message);
+
 void Com_Printf(const char* format, ...)
 {
 	static char buffer[32768] = { 0 };
@@ -12,7 +15,10 @@ void Com_Printf(const char* format, ...)
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
 
-	printf("%s", buffer);
+	if (console)
+		Sys_Print(buffer);
+	else
+		printf(buffer);
 }
 
 void Com_Debug_(const char* format, ...)
@@ -26,9 +32,16 @@ void Com_Debug_(const char* format, ...)
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
-	printf("%s", buffer);
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	if (console){
+		Sys_Print("^5");
+		Sys_Print(buffer);
+		Sys_Print("^1");
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+		printf(buffer);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	}
 }
 
 void Com_Error(bool exit, const char* format, ...)
@@ -42,9 +55,16 @@ void Com_Error(bool exit, const char* format, ...)
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-	printf("ERROR: %s\n", buffer);
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	if (console){
+		Sys_Print("^5ERROR: ");
+		Sys_Print(buffer);
+		Sys_Print("\n^1");
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+		printf("ERROR: %s\n", buffer);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	}
 
 	if (IsDebuggerPresent())
 	{
@@ -176,4 +196,26 @@ void debugChecks()
 	ASSERT(sizeof(SoundFile) == 12);
 	ASSERT(sizeof(WeaponVariantDef) == 0x74);
 	ASSERT(sizeof(WeaponDef) == 0x684)
+}
+
+bool waitingOnLoad = false;
+const char* zoneWaitingOn;
+
+void Com_LoadZones(XZoneInfo* zones, int count)
+{
+	zoneWaitingOn = zones[count - 1].name;
+	waitingOnLoad = true;
+
+	DB_LoadXAssets(zones, count, 0);
+
+	while (waitingOnLoad) Sleep(100);
+}
+
+void Com_UnloadZones(int group)
+{
+	XZoneInfo unload;
+	unload.name = NULL;
+	unload.type1 = 0;
+	unload.type2 = group;
+	Com_LoadZones(&unload, 1);
 }
