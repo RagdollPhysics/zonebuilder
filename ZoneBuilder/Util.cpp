@@ -33,9 +33,9 @@ void Com_Debug_(const char* format, ...)
 	va_end(va);
 
 	if (console){
-		Sys_Print("^5");
+		Sys_Print("^3");
 		Sys_Print(buffer);
-		Sys_Print("^1");
+		Sys_Print("^7");
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
@@ -56,9 +56,9 @@ void Com_Error(bool exit, const char* format, ...)
 	va_end(va);
 
 	if (console){
-		Sys_Print("^5ERROR: ");
+		Sys_Print("^1ERROR: ");
 		Sys_Print(buffer);
-		Sys_Print("\n^1");
+		Sys_Print("^7\n");
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
@@ -66,15 +66,36 @@ void Com_Error(bool exit, const char* format, ...)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	}
 
-	if (IsDebuggerPresent())
-	{
-		DebugBreak();
-	}
-
 	if (exit)
 	{
+		if (IsDebuggerPresent())
+		{
+			DebugBreak();
+		}
 		TerminateProcess(GetCurrentProcess(), -1);
 	}
+}
+
+bool waitingOnLoad = false;
+const char* zoneWaitingOn;
+
+void Com_LoadZones(XZoneInfo* zones, int count)
+{
+	zoneWaitingOn = zones[count - 1].name;
+	waitingOnLoad = true;
+
+	DB_LoadXAssets(zones, count, 0);
+
+	while (waitingOnLoad) Sleep(100);
+}
+
+void Com_UnloadZones(int group)
+{
+	XZoneInfo unload;
+	unload.name = NULL;
+	unload.type1 = 0;
+	unload.type2 = group;
+	DB_LoadXAssets(&unload, 1, 0);
 }
 
 const char* assetTypeStrings [] = {
@@ -196,26 +217,4 @@ void debugChecks()
 	ASSERT(sizeof(SoundFile) == 12);
 	ASSERT(sizeof(WeaponVariantDef) == 0x74);
 	ASSERT(sizeof(WeaponDef) == 0x684)
-}
-
-bool waitingOnLoad = false;
-const char* zoneWaitingOn;
-
-void Com_LoadZones(XZoneInfo* zones, int count)
-{
-	zoneWaitingOn = zones[count - 1].name;
-	waitingOnLoad = true;
-
-	DB_LoadXAssets(zones, count, 0);
-
-	while (waitingOnLoad) Sleep(100);
-}
-
-void Com_UnloadZones(int group)
-{
-	XZoneInfo unload;
-	unload.name = NULL;
-	unload.type1 = 0;
-	unload.type2 = group;
-	Com_LoadZones(&unload, 1);
 }

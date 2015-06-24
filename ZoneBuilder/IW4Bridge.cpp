@@ -308,7 +308,8 @@ const char* soundLoadingHook(const char* ptr)
 void InitBridge()
 {
 	parseArgs();
-	InitConsole();
+	if (console)
+		InitConsole();
 
 	Com_Printf("Initializing IW4...\n");
 

@@ -1,68 +1,94 @@
 #include "StdInc.h"
 #pragma once
 
-typedef struct
+union XAnimIndices
 {
-	int name; // use DB_GetFFString
-	float frame; // something like that
-} Notetrack;
-
-struct XAnimDeltaTransData
-{
-	char pad[24];
-	char* unk;
-}; // more data follows struct
-
-struct XAnimDeltaTrans
-{
-	short deltaBase;
-	short deltaBase2;
-	union
-	{
-		float rawData[3];
-		XAnimDeltaTransData data;
-	};
+	char *_1;
+	unsigned __int16 *_2;
+	void *data;
 };
 
-struct XAnimDeltaQuatData
+struct XAnimNotifyInfo
 {
-	char* data;
-}; // more data follows end of struct
-
-struct XAnimDeltaQuat
-{
-	short deltaBase;
-	short deltaBase2;
-	union
-	{
-		int rawData;
-		XAnimDeltaQuatData data;
-	};
+	unsigned __int16 name;
+	float time;
 };
 
-struct XAnimDeltaUnkData
+union XAnimDynamicFrames
 {
-	char* data;
-}; // more data follows end of struct, as usual
+	char(*_1)[3];
+	unsigned __int16(*_2)[3];
+};
 
-struct XAnimDeltaUnk
+union XAnimDynamicIndices
 {
-	short deltaBase;
-	short deltaBase2;
-	union
-	{
-		__int64 rawData;
-		XAnimDeltaUnkData data;
-	};
+	char _1[1];
+	unsigned __int16 _2[1];
+};
+
+struct XAnimPartTransFrames
+{
+	float mins[3];
+	float size[3];
+	XAnimDynamicFrames frames;
+	XAnimDynamicIndices indices;
+};
+
+union XAnimPartTransData
+{
+	XAnimPartTransFrames frames;
+	float frame0[3];
+};
+
+struct XAnimPartTrans
+{
+	unsigned __int16 size;
+	char smallTrans;
+	XAnimPartTransData u;
+};
+
+struct XAnimDeltaPartQuatDataFrames2
+{
+	__int16(*frames)[2];
+	XAnimDynamicIndices indices;
+};
+
+union XAnimDeltaPartQuatData2
+{
+	XAnimDeltaPartQuatDataFrames2 frames;
+	__int16 frame0[2];
+};
+
+struct XAnimDeltaPartQuat2
+{
+	unsigned __int16 size;
+	XAnimDeltaPartQuatData2 u;
+};
+
+struct XAnimDeltaPartQuatDataFrames
+{
+	__int16(*frames)[4];
+	XAnimDynamicIndices indices;
+};
+
+union XAnimDeltaPartQuatData
+{
+	XAnimDeltaPartQuatDataFrames frames;
+	__int16 frame0[4];
+};
+
+struct XAnimDeltaPartQuat
+{
+	unsigned __int16 size;
+	XAnimDeltaPartQuatData u;
 };
 
 struct XAnimDeltaPart
 {
-	XAnimDeltaTrans* trans;
-	XAnimDeltaQuat* quat;
-	XAnimDeltaUnk* unk;
+	XAnimPartTrans *trans;
+	XAnimDeltaPartQuat2 *quat2;
+	XAnimDeltaPartQuat *quat;
 };
-
 
 struct XAnim
 {
@@ -91,8 +117,8 @@ struct XAnim
 	short *randomDataShort; // 64 - 0x40
 	char *randomDataByte; // 68 - 0x44
 	int *randomDataInt; // 72 - 0x48
-	char* indicies; // 76 - 0x4C
-	Notetrack* notetracks; // 80 - 0x50
+	XAnimIndices* indicies; // 76 - 0x4C
+	XAnimNotifyInfo* notetracks; // 80 - 0x50
 	XAnimDeltaPart * delta; // 84 - 0x54
 	// 88 - 0x58
 };

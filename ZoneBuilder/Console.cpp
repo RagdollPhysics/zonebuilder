@@ -116,7 +116,11 @@ void Sys_CreateConsole()
 	wbkgd(infoWindow, COLOR_PAIR(1));
 
 	wclear(infoWindow);
+#if ZB_DEBUG
+	wprintw(infoWindow, "ZoneBuilder-%s built on %s %s %s (Debug)", COMMIT_STR, BUILDHOST, __DATE__, __TIME__);
+#else
 	wprintw(infoWindow, "ZoneBuilder-%s built on %s %s %s", COMMIT_STR, BUILDHOST, __DATE__, __TIME__);
+#endif
 	wnoutrefresh(infoWindow);
 
 	wrefresh(infoWindow);
@@ -168,7 +172,7 @@ void Sys_Print(const char* message)
 		p++;
 	}
 
-	wattron(outputWindow, COLOR_PAIR(9));
+	//wattron(outputWindow, COLOR_PAIR(9));
 
 	int currentTime = GetTickCount();
 
@@ -194,9 +198,9 @@ void Sys_Error(const char* format, ...)
 
 	if (!console) { Com_Error(true, "%s", buffer); return; }
 
-	Sys_Print("^3ERROR: ");
+	Sys_Print("^1ERROR: ");
 	Sys_Print(buffer);
-	Sys_Print("\n");
+	Sys_Print("^7\n");
 	RefreshOutput();
 
 	if (IsDebuggerPresent())
@@ -368,7 +372,7 @@ void RunConsole()
 
 		else if(cmd.first == "verify")
 		{
-			if (cmd.second.length() == 0) { Com_Printf("verify requires 1 argument, zone"); }
+			if (cmd.second.length() == 0) { Com_Printf("verify requires 1 argument, zone\n"); }
 			else{
 				useEntryNames = true;
 				XZoneInfo info;
@@ -393,7 +397,7 @@ void RunConsole()
 		}
 		else
 		{
-			Com_Printf("Error: Command '%s' unrecognized\n", cmd.first.c_str());
+			Com_Error(false, "Error: Command '%s' unrecognized", cmd.first.c_str());
 		}
 	}
 }
