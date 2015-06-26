@@ -37,7 +37,7 @@ CallHook consoleInputHook;
 // patch functions
 #define WIDTH 80
 #define HEIGHT 25
-#define OUTPUT_HEIGHT 250
+#define OUTPUT_HEIGHT 500
 #define OUTPUT_MAX_TOP (OUTPUT_HEIGHT - (HEIGHT - 2))
 static WINDOW* outputWindow;
 static WINDOW* inputWindow;
@@ -331,6 +331,7 @@ void InitConsole()
 
 void DestroyConsole()
 {
+	if (!console) return;
 	Sys_DestroyConsole();
 }
 
@@ -344,6 +345,12 @@ pair<string, string> parseCmd(const char* cmd)
 	for (char* p = first; *p; ++p) *p = tolower(*p);
 	for (char* p = second; *p; ++p) *p = tolower(*p);
 	return pair<string, string>(first, second);
+}
+
+void PrintNameOfAsset(void* data, int userdata)
+{
+	FILE* output = (FILE*)userdata;
+	fprintf(output, "%s\n", *((char**)data));
 }
 
 void RunConsole()
@@ -360,7 +367,8 @@ void RunConsole()
 		if (cmd.first == "loadzone")
 		{
 			if (cmd.second == "") { Com_Printf("loadzone requires 1 argument, zone"); }
-			else{
+			else
+			{
 				XZoneInfo info;
 				info.name = cmd.second.c_str();
 				info.type1 = 2;
@@ -373,7 +381,8 @@ void RunConsole()
 		else if(cmd.first == "verify")
 		{
 			if (cmd.second.length() == 0) { Com_Printf("verify requires 1 argument, zone\n"); }
-			else{
+			else
+			{
 				useEntryNames = true;
 				XZoneInfo info;
 				info.name = cmd.second.c_str();
@@ -394,6 +403,34 @@ void RunConsole()
 		else if (cmd.first == "buildzone")
 		{
 			ZoneBuild((char*)cmd.second.c_str());
+		}
+		else if (cmd.first == "listassets")
+		{
+			if (cmd.second.length() == 0) { Com_Printf("listAssets requires 1 argument, type\n"); }
+			else
+			{
+				Com_Printf("Listing all loaded %s assets to 'assets.txt'\n", cmd.second.c_str());
+				assetType_t type = (assetType_t)getAssetTypeForString(cmd.second.c_str());
+				if (type >= 0)
+				{
+					FILE* output = fopen("assets.txt", "w");
+					DB_EnumXAssets(type, PrintNameOfAsset, (int)output);
+					fclose(output);
+				}
+			}
+		}
+		else if (cmd.first == "dump")
+		{
+			XModel* model = (XModel*)DB_FindXAssetHeader(ASSET_TYPE_XMODEL, "mp_body_airborne_assault_a");
+			FILE* out = fopen("mp_skeleton.txt", "w");
+			fprintf(out, "Bones\n");
+			fprintf(out, "0 -1 tag_origin");
+			for (int i = 1; i < model->numBones; i++)
+			{
+				fprintf(out, "%d %d %s\n", i, model->parentList[i+1], SL_ConvertToString(model->boneNames[i]));
+			}
+
+			fclose(out);
 		}
 		else
 		{
