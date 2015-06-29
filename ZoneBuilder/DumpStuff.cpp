@@ -29,19 +29,19 @@ void dumpModel(char * name)
 
 	fwritestr(f, mod->name);
 	fwriteint(f, mod->numBones);
-	fwriteint(f, mod->numSubBones);
-	fwriteint(f, mod->numSurfaces);
+	fwriteint(f, mod->numRootBones);
+	fwriteint(f, mod->numRootBones);
 
 	for (int i = 0; i < mod->numBones; i++)
 	{
 		fwritestr(f, SL_ConvertToString(mod->boneNames[i]));
 	}
 
-	fwrite(mod->parentList, 1, (mod->numBones - mod->numSubBones), f);
+	fwrite(mod->parentList, 1, (mod->numBones - mod->numRootBones), f);
 
-	fwrite(mod->tagAngles, sizeof(XModelAngle), (mod->numBones - mod->numSubBones), f);
+	fwrite(mod->tagAngles, sizeof(XModelAngle), (mod->numBones - mod->numRootBones), f);
 
-	fwrite(mod->tagPositions, sizeof(XModelTagPos), (mod->numBones - mod->numSubBones), f);
+	fwrite(mod->tagPositions, sizeof(XModelTagPos), (mod->numBones - mod->numRootBones), f);
 
 	fwrite(mod->partClassification, 1, mod->numBones, f);
 
@@ -101,14 +101,14 @@ void dumpModel(char * name)
 		DebugBreak(); // i dont think this is supported
 	}
 
-	fwriteint(f, (mod->unknowns) ? 1 : 0);
+	fwriteint(f, (mod->boneInfo) ? 1 : 0);
 
-	if (mod->unknowns)
+	if (mod->boneInfo)
 	{
 		for (int i = 0; i < mod->numBones; i++)
 		{
 			float thisUnknowns[7];
-			float* unknown = (float*)&mod->unknowns[40 * i];
+			float* unknown = (float*)&mod->boneInfo[40 * i];
 
 			thisUnknowns[0] = unknown[0];
 			thisUnknowns[1] = unknown[1];

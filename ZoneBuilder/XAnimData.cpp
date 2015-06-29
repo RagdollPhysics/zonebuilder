@@ -28,7 +28,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 					buf->write(data->trans->u.frames.frames, sizeof(char) * 3, data->trans->size + 1);
 				else
 					buf->write(data->trans->u.frames.frames, sizeof(short) * 3, data->trans->size + 1);
-				dest->trans->u.frames.frames = (char*)-1;
+				//dest->trans->u.frames.frames = (char*)-1;
 			}
 		}
 		else
@@ -43,6 +43,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 		buf->write(data->quat2, 4, 1); // not full struct
 		if (data->quat2->size)
 		{
+			buf->write(&data->quat2->u, 0x4, 1); // not full struct
 			if (parts->framecount > 0x100)
 			{
 				buf->write(&data->quat2->u.frames.indices, sizeof(short), data->quat2->size + 1);
@@ -55,7 +56,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 			if (data->quat2->u.frames.frames)
 			{
 				buf->write(data->quat2->u.frames.frames, sizeof(short) * 2, data->quat2->size + 1);
-				dest->quat2->u.frames.frames = (short*)-1;
+				//dest->quat2->u.frames.frames = (short*)-1;
 			}
 		}
 		else
@@ -70,6 +71,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 		buf->write(data->quat, 4, 1);
 		if (data->quat->size)
 		{
+			buf->write(&data->quat->u, 0x4, 1); // not full struct
 			if (parts->framecount > 0x100)
 			{
 				buf->write(&data->quat->u.frames.indices, sizeof(short), data->quat->size + 1);
@@ -82,7 +84,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 			if (data->quat->u.frames.frames)
 			{
 				buf->write(data->quat->u.frames.frames, sizeof(short) * 4, data->quat->size + 1);
-				dest->quat->u.frames.frames = (short*)-1;
+				//dest->quat->u.frames.frames = (short*)-1;
 			}
 		}
 		else
@@ -102,8 +104,9 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 	WRITE_FIELD(data, notetracks, XAnimNotifyInfo, notetrackCount);
 	if (data->delta)
 	{
-		writeXAnimDeltaParts(info, buf, data);
-		dest->delta = (XAnimDeltaPart*)-1;
+		dest->delta = NULL;
+		//writeXAnimDeltaParts(info, buf, data);
+		//dest->delta = (XAnimDeltaPart*)-1;
 	}
 	WRITE_FIELD(data, dataByte, char, dataByteCount);
 	WRITE_FIELD(data, dataShort, short, dataShortCount);
@@ -127,7 +130,6 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 
 void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	//if (!strcmp("ai_zombie_taunts_4", name)) DebugBreak();
 	if (dataLen == 0)
 	{
 		XAnim* a = (XAnim*)data;

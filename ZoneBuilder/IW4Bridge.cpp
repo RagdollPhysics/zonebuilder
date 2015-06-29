@@ -14,6 +14,7 @@ void PatchMW2_StringList();
 void PatchMW2_CryptoFiles();
 void PatchMW2_FifthInfinity();
 void PatchMW2_FilePointers();
+void PatchMW2_AssetRestrict();
 void doWeaponEntries();
 
 DWORD init1 = 0x42F0A0;
@@ -324,6 +325,7 @@ void InitBridge()
 	//PatchMW2_StringList(); // for some reason the SL is messed up?
 	PatchMW2_CryptoFiles(); // let us pull from iw4c fastfiles
 	PatchMW2_FifthInfinity();
+	PatchMW2_AssetRestrict();
 
 	SetConsoleTitle("ZoneBuilder"); // branding
 

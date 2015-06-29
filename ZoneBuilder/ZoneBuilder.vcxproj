@@ -165,6 +165,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="Args.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
+    <ClCompile Include="ConsoleCommands.cpp" />
     <ClCompile Include="CSVFile.cpp" />
     <ClCompile Include="DumpStuff.cpp" />
     <ClCompile Include="FxEffectDefData.cpp" />
@@ -177,6 +178,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="MapEntsData.cpp" />
     <ClCompile Include="MaterialData.cpp" />
     <ClCompile Include="MW2.cpp" />
+    <ClCompile Include="PatchMW2AssetRestrict.cpp" />
     <ClCompile Include="PatchMW2CModels.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="PatchMW2CryptoFiles.cpp" />

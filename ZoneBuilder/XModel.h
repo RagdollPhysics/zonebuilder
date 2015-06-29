@@ -3,10 +3,10 @@
 
 struct XModelAngle
 {
-	short x;
-	short y;
-	short z;
-	short base; // defines the 90-degree point for the shorts
+	unsigned short x;
+	unsigned short y;
+	unsigned short z;
+	unsigned short base; // defines the 90-degree point for the shorts
 };
 
 struct XModelTagPos
@@ -15,6 +15,23 @@ struct XModelTagPos
 	float y;
 	float z;
 };
+
+struct DObjAnimMat
+{
+	float quat[4];
+	float trans[3];
+	float transWeight;
+};
+
+// NOOOOOPE
+/*
+struct XBoneInfo
+{
+	float bounds[2][3];
+	float offset[3];
+	float radiusSquared;
+};
+*/
 
 struct XSurfaceCTEntry
 {
@@ -44,16 +61,16 @@ struct GfxPackedVertex
 
 struct Face
 {
-	short v1;
-	short v2;
-	short v3;
+	unsigned short v1;
+	unsigned short v2;
+	unsigned short v3;
 };
 
 struct XSurface
 {
 	short pad; // +0
-	short numVertices; // +2
-	short numPrimitives; // +4
+	unsigned short numVertices; // +2
+	unsigned short numPrimitives; // +4
 	unsigned char streamHandle; // something to do with buffers, +6
 	char pad2; // +7
 	int pad3; // +8
@@ -99,7 +116,7 @@ struct XModel
 {
 	char* name; // +0
 	char numBones; // +4
-	char numSubBones; // +5
+	char numRootBones; // +5
 	char numSurfaces; // +6
 	char pad2; // +7
 	char pad3[28]; // +8
@@ -108,14 +125,14 @@ struct XModel
 	XModelAngle* tagAngles; // +44, element size 8
 	XModelTagPos* tagPositions; // +48, element size 12
 	char* partClassification; // +52
-	char* animMatrix; // +56, element size 32
+	DObjAnimMat* animMatrix; // +56, element size 32
 	Material** materials; // +60
 	XSurfaceLod lods[4]; // +64
 	int pad4; // +240
 	XColSurf* colSurf; // +244
 	int numColSurfs; // +248
 	int pad6;
-	char* unknowns; // bone count, +256, element size 28
+	char* boneInfo; // bone count, +256, element size 28
 	char pad5[36];
 	PhysPreset* physPreset;
 	struct PhysGeomList* physCollmap;

@@ -14,6 +14,7 @@
 
 #include "Hooking.h"
 #include "Tool.h"
+#include "s10e5.h"
 
 #include <curses.h>
 #include <cctype>
@@ -138,7 +139,6 @@ void Sys_DestroyConsole()
 }
 
 static bool didWeHaveConsole = false;
-static int lastRefresh = 0;
 
 void Sys_Print(const char* message)
 {
@@ -173,18 +173,7 @@ void Sys_Print(const char* message)
 	}
 
 	//wattron(outputWindow, COLOR_PAIR(9));
-
-	int currentTime = GetTickCount();
-
-	if (!didWeHaveConsole)
-	{
-		RefreshOutput();
-	}
-	else if ((currentTime - lastRefresh) > 100)
-	{
-		RefreshOutput();
-		lastRefresh = currentTime;
-	}
+	RefreshOutput();
 }
 
 void Sys_Error(const char* format, ...)
@@ -353,6 +342,9 @@ void PrintNameOfAsset(void* data, int userdata)
 	fprintf(output, "%s\n", *((char**)data));
 }
 
+void decryptFastfile(const char* param);
+void dumpStuff(const char* param);
+
 void RunConsole()
 {
 	ScrollOutput(12);
@@ -421,16 +413,15 @@ void RunConsole()
 		}
 		else if (cmd.first == "dump")
 		{
-			XModel* model = (XModel*)DB_FindXAssetHeader(ASSET_TYPE_XMODEL, "mp_body_airborne_assault_a");
-			FILE* out = fopen("mp_skeleton.txt", "w");
-			fprintf(out, "Bones\n");
-			fprintf(out, "0 -1 tag_origin");
-			for (int i = 1; i < model->numBones; i++)
-			{
-				fprintf(out, "%d %d %s\n", i, model->parentList[i+1], SL_ConvertToString(model->boneNames[i]));
-			}
-
-			fclose(out);
+			dumpStuff(cmd.second.c_str());
+		}
+		else if (cmd.first == "decryptzone")
+		{
+			decryptFastfile(cmd.second.c_str());
+		}
+		else if (cmd.first == "quit")
+		{
+			TerminateProcess(GetCurrentProcess(), 0x0);
 		}
 		else
 		{
