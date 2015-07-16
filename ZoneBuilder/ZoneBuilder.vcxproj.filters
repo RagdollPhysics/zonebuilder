@@ -272,5 +272,8 @@
     <ClInclude Include="Weapon.h">
       <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
+    <ClInclude Include="GfxWorld.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

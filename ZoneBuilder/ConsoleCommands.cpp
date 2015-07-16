@@ -6,6 +6,9 @@
 
 #include <zlib/zlib.h>
 
+#include "GfxWorld.h"
+#include "s10e5.h"
+
 extern unsigned char ffKey[1191];
 
 extern std::string _buffer;
@@ -67,31 +70,64 @@ void decryptFastfile(const char* param)
 	fclose(output);
 }
 
+void UnpackUnitVec(PackedUnitVec in, float* out)
+{
+	float decodeScale = (float)((float)(unsigned __int8)in.array[3] - -192.0) / 32385.0;
+	out[0] = (float)((float)(unsigned __int8)in.array[0] - 127.0) * decodeScale;
+	out[1] = (float)((float)(unsigned __int8)in.array[1] - 127.0) * decodeScale;
+	out[2] = (float)((float)(unsigned __int8)in.array[2] - 127.0) * decodeScale;
+}
+
 void dumpStuff(const char* param)
 {
-	XModel* model = (XModel*)DB_FindXAssetHeader(ASSET_TYPE_XMODEL, "mp_body_airborne_assault_a");
-	FILE* out = fopen("mp_skeleton.txt", "w");
-	fprintf(out, "NUMBONES %d\n", model->numBones);
-	for (int i = 0; i < model->numRootBones; i++)
+	XZoneInfo info;
+	info.name = param;
+	info.type1 = 2;
+	info.type2 = 0;
+	Com_LoadZones(&info, 1);
+	Com_Printf("Loaded!\n");
+
+	GfxWorld * world = (GfxWorld*)0x69F9060;
+
+	Com_Printf("Map is %s (%s)\n", world->name, world->baseName);
+
+	FILE* out = fopen(va("%s.obj", world->baseName), "w");
+
+	GfxWorldVertex* verts = world->worldDraw.vd.vertices;
+	Com_Printf("Dumping %d verts\n", world->worldDraw.vertexCount);
+
+	fprintf(out, "# location\n");
+	for (int i = 0; i < world->worldDraw.vertexCount; i++)
 	{
-		fprintf(out, "BONE %d -1 %s\n", i, SL_ConvertToString(model->boneNames[i]));
-	}
-	for (int i = model->numRootBones; i < model->numBones; i++)
-	{
-		fprintf(out, "BONE %d %d %s \n", i, model->parentList[i - model->numRootBones], SL_ConvertToString(model->boneNames[i]));
+		fprintf(out, "v %g %g %g\n", verts[i].xyz[0], verts[i].xyz[2], verts[i].xyz[1]);
 	}
 
-	for (int i = 0; i < model->numBones; i++)
+	fprintf(out, "\n\n# texcoords\n");
+	for (int i = 0; i < world->worldDraw.vertexCount; i++)
 	{
-		fprintf(out, "\nBONE %d\n", i);
-		XModelTagPos* pos = &model->tagPositions[i];
-		fprintf(out, "OFFSET %g, %g, %g\n", pos->x, pos->y, pos->z);
-		fprintf(out, "SCALE 1.000000, 1.000000, 1.000000\n");
-		fprintf(out, "ROT %g %g %g %g\n", model->animMatrix[i].quat[0],
-			model->animMatrix[i].quat[1],
-			model->animMatrix[i].quat[2],
-			model->animMatrix[i].quat[3]);
+		fprintf(out, "vt %g %g\n", verts[i].texCoord[0], verts[i].texCoord[1]);
+	}
+
+	fprintf(out, "\n\n# normals\n");
+	for (int i = 0; i < world->worldDraw.vertexCount; i++)
+	{
+		float normal[3];
+		UnpackUnitVec(verts[i].normal, normal);
+		fprintf(out, "vn %g %g %g\n", normal[0], normal[1], normal[2]);
+	}
+
+	Com_Printf("Dumping %d faces\n", world->worldDraw.indexCount);
+	fprintf(out, "\n\n# faces\n");
+	for (int i = 0; i < world->worldDraw.indexCount / 3; i++)
+	{
+		int f1 = world->worldDraw.indices[(i * 3) + 0] + 1;
+		int f2 = world->worldDraw.indices[(i * 3) + 1] + 1;
+		int f3 = world->worldDraw.indices[(i * 3) + 2] + 1;
+		fprintf(out, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", f1, f1, f1, f2, f2, f2, f3, f3, f3);
+
 	}
 
 	fclose(out);
+
+	__asm int 3
 }

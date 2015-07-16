@@ -226,6 +226,7 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="CSVFile.h" />
     <ClInclude Include="FX.h" />
     <ClInclude Include="FxParsing.h" />
+    <ClInclude Include="GfxWorld.h" />
     <ClInclude Include="Hooking.h" />
     <ClInclude Include="Maps.h" />
     <ClInclude Include="Material.h" />

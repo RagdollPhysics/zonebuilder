@@ -1,5 +1,6 @@
 #include "StdInc.h"
-#include "AssetStructs.h"
+
+struct cplane_s;
 
 struct XModelDrawInfo
 {
@@ -7,38 +8,23 @@ struct XModelDrawInfo
 	unsigned __int16 surfId;
 };
 
-#pragma pack(push, 4)
-struct GfxLightImage
-{
-	GfxImage *image;
-	char samplerState;
-};
-#pragma pack(pop)
- 
-struct GfxLightDef
-{
-	const char *name;
-	GfxLightImage attenuation;
-	int lmapLookupStart;
-};
- 
 struct GfxSceneDynModel
 {
 	XModelDrawInfo info;
 	unsigned __int16 dynEntId;
 };
- 
+
 struct BModelDrawInfo
 {
 	unsigned __int16 surfId;
 };
- 
+
 struct GfxSceneDynBrush
 {
 	BModelDrawInfo info;
 	unsigned __int16 dynEntId;
 };
- 
+
 struct GfxStreamingAabbTree
 {
 	unsigned __int16 firstItem;
@@ -48,7 +34,7 @@ struct GfxStreamingAabbTree
 	float mins[3];
 	float maxs[3];
 };
- 
+
 struct GfxWorldStreamInfo
 {
 	int aabbTreeCount;
@@ -56,18 +42,19 @@ struct GfxWorldStreamInfo
 	int leafRefCount;
 	int *leafRefs;
 };
- 
+
 union GfxColor
 {
 	unsigned int packed;
-	char asArray[4];
+	char array[4];
 };
- 
+
 union PackedUnitVec
 {
 	unsigned int packed;
+	char array[4];
 };
- 
+
 struct GfxWorldVertex
 {
 	float xyz[3];
@@ -78,13 +65,28 @@ struct GfxWorldVertex
 	PackedUnitVec normal;
 	PackedUnitVec tangent;
 };
- 
+
 struct GfxWorldVertexData
 {
 	GfxWorldVertex *vertices;
-	void* worldVb;
+	IDirect3DVertexBuffer9* worldVb;
 };
- 
+
+#pragma pack(push, 4)
+struct GfxLightImage
+{
+	GfxImage *image;
+	char samplerState;
+};
+#pragma pack(pop)
+
+struct GfxLightDef
+{
+	const char *name;
+	GfxLightImage attenuation;
+	int lmapLookupStart;
+};
+
 struct GfxLight
 {
 	char type;
@@ -100,20 +102,12 @@ struct GfxLight
 	unsigned int spotShadowIndex;
 	GfxLightDef *def;
 };
- 
+
 struct GfxReflectionProbe
 {
 	float offset[3];
 };
 
-struct cplane_s
-{
-	float normal[3];
-	float dist;
-	char type;
-	char signbits;
-};
- 
 struct GfxWorldDpvsPlanes
 {
 	int cellCount;
@@ -121,7 +115,7 @@ struct GfxWorldDpvsPlanes
 	unsigned __int16 *nodes;
 	unsigned int *sceneEntCellBits; //Size = cellCount << 11
 };
- 
+
 struct GfxAabbTree
 {
 	float mins[3];
@@ -133,26 +127,26 @@ struct GfxAabbTree
 	unsigned __int16 *smodelIndexes;
 	int childrenOffset;
 };
- 
+
 struct GfxLightGridEntry
 {
 	unsigned __int16 colorsIndex;
 	char primaryLightIndex;
 	char needsTrace;
 };
- 
+
 struct GfxLightGridColors
 {
 	char rgb[56][3];
 };
- 
+
 struct GfxStaticModelInst
 {
 	float mins[3];
 	float maxs[3];
 	GfxColor groundLighting;
 };
- 
+
 struct srfTriangles_t
 {
 	int vertexLayerData;
@@ -161,7 +155,7 @@ struct srfTriangles_t
 	unsigned __int16 triCount;
 	int baseIndex;
 };
- 
+
 struct GfxSurface
 {
 	srfTriangles_t tris;
@@ -171,7 +165,7 @@ struct GfxSurface
 	char primaryLightIndex;
 	bool castsSunShadow;
 };
- 
+
 struct GfxCullGroup
 {
 	float mins[3];
@@ -179,38 +173,20 @@ struct GfxCullGroup
 	int surfaceCount;
 	int startSurfIndex;
 };
- 
+
 struct GfxDrawSurfFields
 {
 	__int64 _bf0;
 };
- 
+
 union GfxDrawSurf
 {
 	GfxDrawSurfFields fields;
 	unsigned __int64 packed;
 };
 
-#pragma pack(push, 4)
-struct GfxPackedPlacement
-{
-	float origin[3];
-	PackedUnitVec axis[3];
-	float scale;
-};
- 
-struct GfxStaticModelDrawInst
-{
-	GfxPackedPlacement placement;
-	XModel *model;
-	float cullDist;
-	char reflectionProbeIndex;
-	char primaryLightIndex;
-	unsigned __int16 lightingHandle;
-	char flags;
-};
-#pragma pack(pop)
- 
+struct GfxStaticModelDrawInst;
+
 struct GfxWorldDpvsStatic
 {
 	unsigned int smodelCount;
@@ -229,34 +205,59 @@ struct GfxWorldDpvsStatic
 	unsigned int *surfaceCastsSunShadow;
 	volatile int usageCount;
 };
- 
+
 #pragma pack(push, 4)
- 
+struct GfxPackedPlacement
+{
+	float origin[3];
+	PackedUnitVec axis[3];
+	float scale;
+};
+
+struct GfxStaticModelDrawInst
+{
+	GfxPackedPlacement placement;
+	XModel *model;
+	float cullDist;
+	char reflectionProbeIndex;
+	char primaryLightIndex;
+	unsigned __int16 lightingHandle;
+	char flags;
+};
+
+struct cplane_s
+{
+	float normal[3];
+	float dist;
+	char type;
+	char signbits;
+};
+
 struct GfxPortalWritable
 {
 	bool isQueued;
 	bool isAncestor;
 	char recursionDepth;
 	char hullPointCount;
-	float (*hullPoints)[2];
+	float(*hullPoints)[2];
 };
- 
+
 struct DpvsPlane
 {
-	 float coeffs[4];
-	 char side[3];
+	float coeffs[4];
+	char side[3];
 };
- 
+
 struct GfxPortal
 {
 	GfxPortalWritable writable;
 	DpvsPlane plane;
-	float (*vertices)[3];
+	float(*vertices)[3];
 	char unknown[2];
 	char vertexCount;
 	float hullAxis[2][3];
 };
- 
+
 struct GfxCell
 {
 	float mins[3];
@@ -266,13 +267,13 @@ struct GfxCell
 	char reflectionProbeCount;
 	char *reflectionProbes;
 };
- 
+
 struct GfxLightmapArray
 {
 	GfxImage *primary;
 	GfxImage *secondary;
 };
- 
+
 struct GfxLightGrid
 {
 	bool hasLightRegions;
@@ -295,7 +296,7 @@ struct GfxBrushModelWritable
 	float mins[3];
 	float maxs[3];
 };
- 
+
 struct GfxBrushModel
 {
 	GfxBrushModelWritable writable;
@@ -364,7 +365,7 @@ struct GfxLightRegion
 	unsigned int hullCount;
 	GfxLightRegionHull *hulls;
 };
- 
+
 struct GfxWorldDpvsDynamic
 {
 	unsigned int dynEntClientWordCount[2];
@@ -372,7 +373,7 @@ struct GfxWorldDpvsDynamic
 	unsigned int *dynEntCellBits[2];
 	char *dynEntVisData[2][3];
 };
- 
+
 struct SunLightParseParams
 {
 	char name[64];
@@ -385,15 +386,15 @@ struct SunLightParseParams
 	bool diffuseColorHasBeenSet;
 	float angles[3];
 };
- 
+
 struct GfxWorldVertexLayerData
 {
 	char *data;
-	void* layerVb;
+	IDirect3DVertexBuffer9* layerVb;
 };
- 
+
 typedef char GfxTexture[0x34];
- 
+
 struct GfxWorldDraw
 {
 	unsigned int reflectionProbeCount;
@@ -412,9 +413,9 @@ struct GfxWorldDraw
 	GfxWorldVertexLayerData vld;
 	int indexCount;
 	unsigned __int16 *indices;
-	void* indexBuffer;
+	IDirect3DIndexBuffer9* indexBuffer;
 };
- 
+
 struct unknownGfxWorldStruct2
 {
 	int unknownCount;
@@ -429,12 +430,12 @@ struct GfxWorld
 	const char *baseName;
 	int planeCount;
 	int nodeCount;
-	int unknownInt2;
+	int unknown2;
 	unsigned int unknownCount1;
 	unknownGfxWorldStruct2 * unknownStructs1; //Count = unknownCount1;
 	char unknown1[0x18];
 	GfxWorldDpvsPlanes dpvsPlanes; //The following rely on the count in this
-	char *unknown4;
+	char *unknown3;
 	GfxAabbTree *aabbTree;
 	GfxCell *cells;
 	GfxWorldDraw worldDraw;
@@ -458,7 +459,7 @@ struct GfxWorld
 	GfxWorldDpvsStatic dpvs;
 	GfxWorldDpvsDynamic dpvsDyn;
 	unsigned int unknownCount2;
-	char * unknown2; //Size = unknownCount2 * 0x38
-	int unknown3;
+	char * unknown4; //Size = unknownCount2 * 0x38
+	int unknown5;
 };
 #pragma pack(pop)

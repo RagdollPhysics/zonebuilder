@@ -331,6 +331,8 @@ pair<string, string> parseCmd(const char* cmd)
 	char* second = strtok(NULL, " \n");
 	if (!second) second = "";
 
+	if (first == NULL || second == NULL) return pair<string, string>("", "");
+
 	for (char* p = first; *p; ++p) *p = tolower(*p);
 	for (char* p = second; *p; ++p) *p = tolower(*p);
 	return pair<string, string>(first, second);
@@ -345,9 +347,23 @@ void PrintNameOfAsset(void* data, int userdata)
 void decryptFastfile(const char* param);
 void dumpStuff(const char* param);
 
+void printHelp()
+{
+	Com_Printf("Commands: \n");
+	Com_Printf("\tloadzone <zone> - load a zone as source\n");
+	Com_Printf("\tbuildzone <zone> - build a zone\n");
+	Com_Printf("\tverify <zone> - verify a zone\n");
+	Com_Printf("\tunloadzones - unload all loaded zones\n");
+	Com_Printf("\tlistassets <type> - list all loaded assets of a type\n");
+	Com_Printf("\tdecryptzone <zone> - decrypts an iw4c zone\n");
+	Com_Printf("\thelp - prints this message\n");
+	Com_Printf("\tquit - quits the program\n");
+}
+
 void RunConsole()
 {
 	ScrollOutput(12);
+	printHelp();	
 	while (console)
 	{
 		RefreshOutput();
@@ -422,6 +438,10 @@ void RunConsole()
 		else if (cmd.first == "quit")
 		{
 			TerminateProcess(GetCurrentProcess(), 0x0);
+		}
+		else if (cmd.first == "help")
+		{
+			printHelp();
 		}
 		else
 		{

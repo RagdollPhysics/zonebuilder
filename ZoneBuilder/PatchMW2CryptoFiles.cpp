@@ -126,7 +126,7 @@ static unz_s* unzunz;
 
 int FS_IsFileEncrypted(const char* filename)
 {
-	return (strstr(filename, "iw_image") || strstr(filename, "iw_model") || strstr(filename, "iw_config") || strstr(filename, "iw_sound"));
+	return (strstr(filename, "iw_image") || strstr(filename, "iw_model") || strstr(filename, "iw_config") || strstr(filename, "iw_sound") || strstr(filename, "iw_se5") || strstr(filename, "iw_sh"));
 }
 
 void FS_LoadZipFile_getFileKey(unz_s* uf, const char* filename)

@@ -171,7 +171,9 @@ char* LoadCModel(const char* name)
 
 	if (handle <= 0)
 	{
-		Com_Error(1, "Error opening %s", filename);
+		Com_Printf("Warning: missing cmodel file '%s'\n", name);
+		return NULL;
+		//Com_Error(1, "Error opening %s", filename);
 	}
 
 	CModelHeader header;
@@ -310,6 +312,7 @@ bool Load_XModelAssetHookFunc(char* xmodel)
 		if (!surfs->surfaces)
 		{
 			char* newSurfs = LoadCModel(surfs->name);
+			if (!newSurfs) return false;
 
 			memcpy(xmodel + 76 + (44 * i), &newSurfs[12], 24);
 			memcpy(xmodel + 100 + (44 * i), &newSurfs[4], 4);

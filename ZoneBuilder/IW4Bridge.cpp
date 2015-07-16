@@ -12,6 +12,7 @@
 void PatchMW2_Load();
 void PatchMW2_StringList();
 void PatchMW2_CryptoFiles();
+void PatchMW2_CModels();
 void PatchMW2_FifthInfinity();
 void PatchMW2_FilePointers();
 void PatchMW2_AssetRestrict();
@@ -324,6 +325,7 @@ void InitBridge()
 	PatchMW2_Load(); // load fastfiles from dlc and alter
 	//PatchMW2_StringList(); // for some reason the SL is messed up?
 	PatchMW2_CryptoFiles(); // let us pull from iw4c fastfiles
+	PatchMW2_CModels();
 	PatchMW2_FifthInfinity();
 	PatchMW2_AssetRestrict();
 
@@ -403,9 +405,11 @@ void InitBridge()
 
 	// fs_basegame
 	*(DWORD*)0x6431D1 = (DWORD)fs_basegame;
+	*(DWORD*)0x6431EF = (DWORD)"mods/sherkan";
 
 	// r_registerDvars hack
 	*(BYTE*)0x51B1CD = 0xC3;
+
 
 	// weapon entries stuff here
 	//doWeaponEntries();
