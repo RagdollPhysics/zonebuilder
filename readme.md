@@ -38,12 +38,15 @@ Repacking Asset *note: for here you need the asset loaded from a source (-s) zon
 type, asset name
 ```
 
+The default loaded zones are code_pre_gfx_mp, localized_code_pre_gfx_mp, code_post_gfx_mp, localized_code_post_gfx_mp, and common_mp.
+
 <h3>Material CSV files</h3>
 Materials are described by CSV files even though their extension is ".txt".  Their format is as follows.
 ```
-option, value
+map, mapName, value
+prop, propName, vec4Value
 ```
-These options are described in the table below.
+These different map names are described in the table below.
 
 | option | value description |
 | ------ | ----------------- |
@@ -52,6 +55,9 @@ These options are described in the table below.
 | normalMap | normal map image | 
 | specularMap | specular image | 
 | detailMap | camo image | 
+
+Properties are all stored as a vec4 (4 float values) and should be in the format (1.0, 1.0, 1.0, 1.0)
+It is impossible to know what every property is named because they are only stored as a hash.
 
 <h2>XME, XAE, and IWI</h2>
 These are files that define models, animations, and images respectively. They are the files referenced in the zone's csv file when creating a custom asset. They are binary formats and not described here.
@@ -66,7 +72,7 @@ __Step 2:__
 Make sure all of your asset files are in their correct folders inside the /zonebuilder directory.  If files aren't in here then the tool will be unable to find them.
 
 __Step 3:__
-Run Zonebuilder.  The simpelest way to do this is to simply call ```zonebuilder.exe fastfile``` where fastfile is the name of your csv.  This will output a fastfile into the /zone/language folder.
+Run Zonebuilder.  The simpelest way to do this is to simply run zonebuilder and do the *buildzone* command.
 
 <h2>Custom Models</h2>
 Coming Soon...
@@ -85,10 +91,13 @@ and the contents of sound/expl3.txt would be:
 
 
 <h1>Command Line Options</h1>
+usage: ZoneBuilder.exe zoneName [-b] [-v] [-sSourceZone] [-dBuildFolder]
+Or run with no arguments for console mode.
+
+__-b__: Build the specefied zone
+
+__-v__: Verify a created fastfile. Prints out every asset in the fastfile if not building as well.
+
 __-s__: Load a fastfile to be used as a source zone. You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool. *note: there is no space between the -s and the fastfile name!*
 
-__-v__: This option allows you to verify a created fastfile. Prints out every asset in the fastfile.
-
-__-d__: Dumps certain assets from the game to a format that can be rebuilt by this tool.
-
-__-b__: Change the value of fs_basegame. Defaults to "zonebulder".  Where you place all data the tool uses.
+__-d__: Change the value of fs_basegame. Defaults to "zonebulder".  Where you place all data the tool uses.
