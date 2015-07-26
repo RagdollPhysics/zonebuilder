@@ -18,19 +18,19 @@ void PatchMW2_FilePointers();
 void PatchMW2_AssetRestrict();
 void doWeaponEntries();
 
-DWORD init1 = 0x42F0A0;
-DWORD init2 = 0x4301B0;
-DWORD init3 = 0x406D10;
-DWORD init4 = 0x4D2280;
-DWORD init5 = 0x47F390;
-DWORD init6 = 0x420830;
-DWORD init7 = 0x64A020;
-DWORD init8 = 0x4E0FB0;
-DWORD init9 = 0x60AD10;
-DWORD init10 = 0x5196C0;
+DWORD Sys_InitializeCriticalSections = 0x42F0A0;
+DWORD Sys_InitMainThread = 0x4301B0;
+DWORD Win_InitLocalization = 0x406D10;
+DWORD SL_Init = 0x4D2280;
+DWORD Swap_Init = 0x47F390;
+DWORD Com_AllocMemInfo = 0x420830;
+DWORD PMem_Init = 0x64A020;
+DWORD DB_InitThread = 0x4E0FB0;
+DWORD Com_InitDvars = 0x60AD10;
+DWORD R_RegisterDvars = 0x5196C0;
 DWORD init11 = 0x4A62A0;
-DWORD init12 = 0x429080;
-DWORD setupWeaponDef = 0x4E1F30;
+DWORD FS_InitFilesystem = 0x429080;
+DWORD G_SetupWeaponDef = 0x4E1F30;
 
 bool useEntryNames = false;
 
@@ -38,20 +38,20 @@ void doInit()
 {
 	__asm
 	{
-		call init1
-		call init2
+		call Sys_InitializeCriticalSections
+		call Sys_InitMainThread
 		push 0
-		call init3
+		call Win_InitLocalization
 		add esp, 4
-		call init4
-		call init5
-		call init6
-		call init7
-		call init8
-		call init9
-		call init10
+		call SL_Init
+		call Swap_Init
+		call Com_AllocMemInfo
+		call PMem_Init
+		call DB_InitThread
+		call Com_InitDvars
+		call R_RegisterDvars
 		call init11
-		call init12
+		call FS_InitFilesystem
 	}
 }
 
@@ -152,7 +152,7 @@ void RunTool()
 	Com_Printf("Done IW4 Initialization!\n");
 
 	// allow us to load weapons from disk
-	__asm call setupWeaponDef
+	__asm call G_SetupWeaponDef
 
 	if (console) { RunConsole(); return; }
 
