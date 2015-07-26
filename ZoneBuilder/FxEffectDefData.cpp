@@ -274,7 +274,7 @@ FxFieldDef_s* getFxFieldByName(char* name)
 
 void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == 0)
+	if(dataLen < 0)
 	{
 		FxEffectDef* def = getEffectFromRef((FxEffectDefRef*)&data);
 		// add nested effects

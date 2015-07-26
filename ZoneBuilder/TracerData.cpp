@@ -14,11 +14,7 @@ void writeTracer(zoneInfo_t* info, ZStream* buf, Tracer* data)
 
 void * addTracer(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if (dataLen != 0) 
-	{
-		Com_Error(0, "Can only export built in Tracers!"); 
-		return NULL;
-	}
+	if (dataLen > 0)  { Com_Error(false, "Can only export built in Tracers!");  return NULL; }
 
 	Tracer* t = (Tracer*)data;
 	addAsset(info, ASSET_TYPE_MATERIAL, t->material->name, addMaterial(info, t->material->name, (char*)t->material, 0));

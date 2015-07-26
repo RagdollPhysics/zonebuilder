@@ -14,6 +14,7 @@ void writeLocalize(zoneInfo_t* info, ZStream* buf, Localize* data)
 
 void* addLocalize(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if (dataLen > 0) { Com_Error(false, "no custom localized files yet\n"); return NULL; }
-	return data;
+	if (dataLen < 0) return data;
+
+	Com_Error(false, "no custom localized files yet\n"); return NULL;
 }

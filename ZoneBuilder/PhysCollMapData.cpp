@@ -55,5 +55,5 @@ void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data)
 
 void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	return data;
+	if (dataLen < 0) return data;
 }

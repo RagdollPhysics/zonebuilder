@@ -49,7 +49,7 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 
 void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == 0)
+	if(dataLen < 0)
 	{
 		MapEnts* asset = (MapEnts*)data;
 

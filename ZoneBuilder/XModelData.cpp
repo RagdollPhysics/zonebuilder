@@ -164,7 +164,7 @@ void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
 	if (data == NULL) return NULL;
 
-	if(dataLen == 0)
+	if(dataLen < 0)
 	{
 		XModel * model = (XModel*)data;
 		short* boneNames = new short[model->numBones];

@@ -130,7 +130,7 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 
 void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if (dataLen == 0)
+	if (dataLen < 0)
 	{
 		XAnim* a = (XAnim*)data;
 		// fix these if we are dumping a pre loaded anim

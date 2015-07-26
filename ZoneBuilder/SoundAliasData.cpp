@@ -92,7 +92,7 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if (dataLen == 0) 
+	if (dataLen < 0) 
 	{
 		SoundAliasList* lst = (SoundAliasList*)data;
 		if (lst->head->soundFile->type != SAT_STREAMED)

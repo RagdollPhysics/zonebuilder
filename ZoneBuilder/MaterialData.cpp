@@ -182,34 +182,11 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 {
 	if (data == NULL) return NULL;
 
-	if(dataLen == 0) 
+	if(dataLen < 0) 
 	{
-		/*
 		Material* mat = (Material*)data;
-		strncpy(baseMatName, mat->name, 64);
-		int materialMapCount = mat->textureCount;
-
-		for (int i = 0; i<mat->textureCount; i++)
-		{
-			switch(mat->textureTable[i].nameStart)
-			{
-			case 'c':
-				materialMaps[i] = R_HashString("colorMap");
-				break;
-			case 'n':
-				materialMaps[i] = R_HashString("normalMap");
-				break;
-			case 's':
-				materialMaps[i] = R_HashString("specularMap");
-				break;
-			case 'd':
-				materialMaps[i] = R_HashString("detailMap");
-				break;
-			}
-
-			strncpy(materialTextureNames[i], mat->textureTable[i].info.image->name, 64);
-		}
-		*/
+		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, 0);
+		return;
 	}
 	else
 	{

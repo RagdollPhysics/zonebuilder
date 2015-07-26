@@ -10,6 +10,10 @@ char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0',
 
 zoneInfo_t* currentInfo;
 
+// loading functions leftover in the game
+typedef WeaponVariantDef* (__cdecl * BG_LoadWeaponDef_LoadObj_t)(const char* filename);
+BG_LoadWeaponDef_LoadObj_t BG_LoadWeaponDef_LoadObj = (BG_LoadWeaponDef_LoadObj_t)0x57B5F0;
+
 void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name)
 {
 	if(containsAsset(info, type, name) > 0) return;
@@ -27,15 +31,10 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		data = (char*)DB_FindXAssetHeader(type, name);
 		if(DB_IsAssetDefault(type, name)) 
 		{
-#if ZB_DEBUG
 			Com_Debug("Got Default asset! Make sure this is correct\n");
-#else
-			Com_Error(false, "Missing asset %s!\n", filename);
-			return;
-#endif
 		}
 
-		size = 0;
+		size = -1;
 	}
 	else
 	{
@@ -47,16 +46,11 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 
 			if(DB_IsAssetDefault(type, filename)) 
 			{
-#if ZB_DEBUG
 				Com_Debug("Got Default asset! Make sure this is correct\n");
-#else
-				Com_Error(false, "Missing asset %s!\n", filename);
-				return;
-#endif
 			}
 			if (type == ASSET_TYPE_LOCALIZE) ((Localize*)data)->name = (char*)name;
 			else ((Rawfile*)data)->name = name;
-			size = 0;
+			size = -1;
 		}
 	}
 
@@ -108,12 +102,17 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		//asset = addFxEffectDef(info, name, data, size);
 		break;
 	case ASSET_TYPE_WEAPON:
-		asset = addWeaponVariantDef(info, name, (char*)filename, size);
+	{
+		// its either already loaded or we need to load it here
+		if (size > 0)
+			asset = addWeaponVariantDef(info, name, (char*)BG_LoadWeaponDef_LoadObj(filename), -1);
+		else
+			asset = addWeaponVariantDef(info, name, data, -1);
 		break;
+	}
 	case ASSET_TYPE_TRACER:
 		asset = addTracer(info, name, data, size);
 		break;
-#if ZB_DEBUG
 	case ASSET_TYPE_TECHSET:
 	{
 		MaterialTechniqueSet* techset = (MaterialTechniqueSet*)data;
@@ -136,11 +135,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		break;
 	case ASSET_TYPE_LEADERBOARDDEF:
 		break;
-#else
-	case ASSET_TYPE_TECHSET:
-	case ASSET_TYPE_SNDDRIVERGLOBALS:
-	case ASSET_TYPE_LEADERBOARDDEF:
-#endif
+
 	case ASSET_TYPE_PIXELSHADER:
 	case ASSET_TYPE_VERTEXSHADER:
 	case ASSET_TYPE_VERTEXDECL:

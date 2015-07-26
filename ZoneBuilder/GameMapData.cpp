@@ -26,7 +26,7 @@ void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data)
 
 void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == 0)
+	if(dataLen < 0)
 	{
 		GameMap_MP* asset =(GameMap_MP*)data;
 
@@ -43,7 +43,7 @@ void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t data
 
 void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
-	if(dataLen == 0)
+	if(dataLen < 0)
 	{
 		GameMap_MP* asset = new GameMap_MP;
 

@@ -58,6 +58,9 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 
 void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 {
+	// no fixups here
+	if (dataLen < 0) return data;
+
 	strtk::token_grid::options options;
 	options.set_row_delimiters("\r\n");
 	options.set_column_delimiters(",");
