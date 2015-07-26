@@ -131,10 +131,8 @@ struct Font
 
 struct Localize
 {
-	char * localizedString;
-	char * name;
-	char * unk; // dont even know if this exists
-	// its supposedly 0xC long but the rest is never referenced
+	const char * localizedString;
+	const char * name;
 };
 
 struct ImpactFX

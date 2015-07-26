@@ -16,19 +16,19 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 
 	if(dest->brushes.unk1)
 	{
-		buf->write(data->brushes.unk1, 8 * dest->brushes.unkCount1, 1);
+		buf->write(data->brushes.unk1, 8 * dest->brushes.unkCount1 << 3, 1);
 		dest->brushes.unk1 = (char*)-1;
 	}
 
 	if(dest->brushes.unk2)
 	{
-		buf->write(data->brushes.unk2, 32 * dest->brushes.unkCount2, 1);
+		buf->write(data->brushes.unk2, dest->brushes.unkCount2 << 5, 1);
 		dest->brushes.unk2 = (char*)-1;
 	}
 
 	if(dest->brushes.unk3)
 	{
-		buf->write(data->brushes.unk3, 20 * dest->brushes.unkCount3, 1);
+		buf->write(data->brushes.unk3, (dest->brushes.unkCount3 << 2) + dest->brushes.unkCount3 << 2, 1);
 		dest->brushes.unk3 = (char*)-1;
 	}
 

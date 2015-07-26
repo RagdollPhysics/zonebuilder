@@ -346,6 +346,7 @@ void PrintNameOfAsset(void* data, int userdata)
 
 void decryptFastfile(const char* param);
 void dumpStuff(const char* param);
+void buildDefaults();
 
 void printHelp()
 {
@@ -443,6 +444,12 @@ void RunConsole()
 		{
 			printHelp();
 		}
+#if ZB_DEBUG
+		else if (cmd.first == "defaults")
+		{
+			buildDefaults();
+		}
+#endif
 		else
 		{
 			Com_Error(false, "Error: Command '%s' unrecognized", cmd.first.c_str());

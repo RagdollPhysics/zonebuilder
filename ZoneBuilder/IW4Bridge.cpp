@@ -135,6 +135,7 @@ void GetMaterialConstants(void* varMaterial, int handle)
 	}
 }
 
+
 XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
 						   { "localized_code_pre_gfx_mp", 0, 0 },
 						   { "code_post_gfx_mp", 0, 0 },
@@ -435,6 +436,7 @@ void InitBridge()
 	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
 	ReallocateAssetPool(ASSET_TYPE_WEAPON, 2000);
 	//ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
+	ReallocateAssetPool(ASSET_TYPE_RAWFILE, 2048);
 	// causes heap issues
 }
 

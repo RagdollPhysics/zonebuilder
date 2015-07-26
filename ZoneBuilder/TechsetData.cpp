@@ -23,6 +23,7 @@ void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
 }
 
+
 void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 {
 	// get all our pointers straight

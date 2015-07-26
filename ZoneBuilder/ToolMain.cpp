@@ -25,11 +25,14 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	if(filename == NULL) // stock asset
 	{
 		data = (char*)DB_FindXAssetHeader(type, name);
-
 		if(DB_IsAssetDefault(type, name)) 
 		{
-			Com_Error(false, "Missing asset %s!\n", name);
+#if ZB_DEBUG
+			Com_Debug("Got Default asset! Make sure this is correct\n");
+#else
+			Com_Error(false, "Missing asset %s!\n", filename);
 			return;
+#endif
 		}
 
 		size = 0;
@@ -44,11 +47,15 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 
 			if(DB_IsAssetDefault(type, filename)) 
 			{
+#if ZB_DEBUG
+				Com_Debug("Got Default asset! Make sure this is correct\n");
+#else
 				Com_Error(false, "Missing asset %s!\n", filename);
 				return;
+#endif
 			}
-
-			((Rawfile*)data)->name = name;
+			if (type == ASSET_TYPE_LOCALIZE) ((Localize*)data)->name = (char*)name;
+			else ((Rawfile*)data)->name = name;
 			size = 0;
 		}
 	}
@@ -57,65 +64,96 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 
 	switch(type)
 	{
-		case ASSET_TYPE_XANIM:
-			asset = addXAnim(info, name, data, size);
-			break;
-		case ASSET_TYPE_RAWFILE:
-			asset = addRawfile(info, name, data, size);
-			break;
-		case ASSET_TYPE_MATERIAL:
-			asset = addMaterial(info, name, data, size);
-			break;
-		case ASSET_TYPE_XMODEL:
-			asset = addXModel(info, name, data, size);
-			break;
-		case ASSET_TYPE_COL_MAP_MP:
-			//asset = addColMap(info, name, data, size);
-			break;
-		case ASSET_TYPE_MAP_ENTS:
-			asset = addMapEnts(info, name, data, size);
-			break;
-		case ASSET_TYPE_COM_MAP:
-			//asset = addComWorld(info, name, data, size);
-			break;
-		case ASSET_TYPE_GAME_MAP_MP:
-			asset = addGameMap_MP(info, name, data, size);
-			break;
-		case ASSET_TYPE_GAME_MAP_SP:
-			asset = addGameMap_SP(info, name, data, size);
-			type = ASSET_TYPE_GAME_MAP_MP;
-			break;
-		case ASSET_TYPE_STRINGTABLE:
-			asset = addStringTable(info, name, data, size);
-			break;
-		case ASSET_TYPE_SOUND:
-			asset = addSoundAlias(info, name, data, size);
-			break;
-		case ASSET_TYPE_FX:
-			//asset = addFxEffectDef(info, name, data, size);
-			break;
-		case ASSET_TYPE_WEAPON:
-			asset = addWeaponVariantDef(info, name, (char*)filename, size);
-			break;
-		case ASSET_TYPE_TRACER:
-			asset = addTracer(info, name, data, size);
-			break;
-		case ASSET_TYPE_TECHSET:
-		case ASSET_TYPE_PIXELSHADER:
-		case ASSET_TYPE_VERTEXSHADER:
-		case ASSET_TYPE_VERTEXDECL:
-		case ASSET_TYPE_IMAGE:
-		case ASSET_TYPE_LOADED_SOUND:
-		case ASSET_TYPE_SNDCURVE:
-		case ASSET_TYPE_MPTYPE:
-		case ASSET_TYPE_AITYPE:
-		case ASSET_TYPE_CHARACTER:
-		case ASSET_TYPE_XMODELALIAS:
-		case ASSET_TYPE_ADDON_MAP_ENTS:
-		case ASSET_TYPE_SNDDRIVERGLOBALS:
-		case ASSET_TYPE_LEADERBOARDDEF:
-			Com_Error(0, "Cannot define a new asset of type %s! Ignoring asset and continuing...\n");
-			return;
+	case ASSET_TYPE_PHYSPRESET:
+		asset = addPhysPreset(info, name, data, size);
+		break;
+	case ASSET_TYPE_PHYS_COLLMAP:
+		asset = addPhysCollmap(info, name, data, size);
+		break;
+	case ASSET_TYPE_XANIM:
+		asset = addXAnim(info, name, data, size);
+		break;
+	case ASSET_TYPE_RAWFILE:
+		asset = addRawfile(info, name, data, size);
+		break;
+	case ASSET_TYPE_MATERIAL:
+		asset = addMaterial(info, name, data, size);
+		break;
+	case ASSET_TYPE_XMODEL:
+		asset = addXModel(info, name, data, size);
+		break;
+	case ASSET_TYPE_COL_MAP_MP:
+		//asset = addColMap(info, name, data, size);
+		break;
+	case ASSET_TYPE_MAP_ENTS:
+		asset = addMapEnts(info, name, data, size);
+		break;
+	case ASSET_TYPE_COM_MAP:
+		//asset = addComWorld(info, name, data, size);
+		break;
+	case ASSET_TYPE_GAME_MAP_MP:
+		asset = addGameMap_MP(info, name, data, size);
+		break;
+	case ASSET_TYPE_GAME_MAP_SP:
+		asset = addGameMap_SP(info, name, data, size);
+		type = ASSET_TYPE_GAME_MAP_MP;
+		break;
+	case ASSET_TYPE_STRINGTABLE:
+		asset = addStringTable(info, name, data, size);
+		break;
+	case ASSET_TYPE_SOUND:
+		asset = addSoundAlias(info, name, data, size);
+		break;
+	case ASSET_TYPE_FX:
+		//asset = addFxEffectDef(info, name, data, size);
+		break;
+	case ASSET_TYPE_WEAPON:
+		asset = addWeaponVariantDef(info, name, (char*)filename, size);
+		break;
+	case ASSET_TYPE_TRACER:
+		asset = addTracer(info, name, data, size);
+		break;
+#if ZB_DEBUG
+	case ASSET_TYPE_TECHSET:
+	{
+		MaterialTechniqueSet* techset = (MaterialTechniqueSet*)data;
+
+		for (int i = 0; i<48; i++)
+		{
+			MaterialTechnique* tech = techset->techniques[i];
+			if (!tech) continue;
+
+			if (tech->numPasses != 1) Com_Error(true, "Um why does this technique have more than 1 pass?");
+			addAsset(info, ASSET_TYPE_VERTEXDECL, tech->passes[0].vertexDecl->name, tech->passes[0].vertexDecl);
+			addAsset(info, ASSET_TYPE_VERTEXSHADER, tech->passes[0].vertexShader->name, tech->passes[0].vertexShader);
+			addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);
+		}
+
+		asset = techset;
+		break;
+	}
+	case ASSET_TYPE_SNDDRIVERGLOBALS:
+		break;
+	case ASSET_TYPE_LEADERBOARDDEF:
+		break;
+#else
+	case ASSET_TYPE_TECHSET:
+	case ASSET_TYPE_SNDDRIVERGLOBALS:
+	case ASSET_TYPE_LEADERBOARDDEF:
+#endif
+	case ASSET_TYPE_PIXELSHADER:
+	case ASSET_TYPE_VERTEXSHADER:
+	case ASSET_TYPE_VERTEXDECL:
+	case ASSET_TYPE_IMAGE:
+	case ASSET_TYPE_LOADED_SOUND:
+	case ASSET_TYPE_SNDCURVE:
+	case ASSET_TYPE_MPTYPE:
+	case ASSET_TYPE_AITYPE:
+	case ASSET_TYPE_CHARACTER:
+	case ASSET_TYPE_XMODELALIAS:
+	case ASSET_TYPE_ADDON_MAP_ENTS:
+		Com_Error(0, "Cannot define a new asset of type %s! Ignoring asset and continuing...\n", getAssetStringForType(type));
+		return;
 	}
 
 	if (asset == NULL) Com_Error(false, "Failed to add asset %s!\n", name);

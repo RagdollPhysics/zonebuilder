@@ -131,3 +131,42 @@ void dumpStuff(const char* param)
 
 	__asm int 3
 }
+
+#if ZB_DEBUG
+const char** defaultAssetNames = (const char**)0x799958;
+void buildDefaults()
+{
+	zoneInfo_t* info = getZoneInfo("defaults");
+	for (int i = 0; i < ASSET_TYPE_MAX; i++)
+	{
+		const char* name = defaultAssetNames[i];
+		const char* grabName = "THIS_SHOULDNT_EXIST";
+		if (i == ASSET_TYPE_XMODELSURFS) continue;
+		if (i == ASSET_TYPE_IMAGE) continue;
+		if (i == ASSET_TYPE_PIXELSHADER) continue;
+		if (i == ASSET_TYPE_VERTEXSHADER) continue;
+		if (i == ASSET_TYPE_VERTEXDECL) continue;
+
+		if (i == ASSET_TYPE_WEAPON) grabName = "defaultweapon_mp";
+
+		if (i == ASSET_TYPE_LOCALIZE)
+		{
+			Localize* loc = new Localize;
+			loc->name = name;
+			loc->localizedString = NULL;
+			addAsset(info, i, name, loc);
+			continue;
+		}
+
+		if (strlen(name))
+		{
+			Com_Printf("%s - %s\n", getAssetStringForType(i), name);
+			loadAsset(info, i, grabName, name);
+		}
+	}
+	Sleep(100);
+
+	ZStream* file = writeZone(info);
+
+}
+#endif

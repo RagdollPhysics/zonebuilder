@@ -151,6 +151,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 
 // PhysPresetData
 void writePhysPreset(zoneInfo_t* info, ZStream* buf, PhysPreset* data);
+void* addPhysPreset(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
 
 // PhysCollMapData
 void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data);
@@ -163,3 +164,7 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 // TracerData
 void writeTracer(zoneInfo_t* info, ZStream* buf, Tracer* data);
 void * addTracer(zoneInfo_t* info, const char* name, char* data, size_t dataLen);
+
+// LocalizeData
+void writeLocalize(zoneInfo_t* info, ZStream* buf, Localize* data);
+void * addLocalize(zoneInfo_t* info, const char* name, char* data, size_t dataLen);

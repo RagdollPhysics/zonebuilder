@@ -53,17 +53,21 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 
 	switch(asset->type)
 	{
-	case ASSET_TYPE_RAWFILE:
-		writeRawfile(info, buf, (Rawfile*)asset->data);
+	case ASSET_TYPE_PHYSPRESET:
+		writePhysPreset(info, buf, (PhysPreset*)asset->data);
+		break;
+	case ASSET_TYPE_PHYS_COLLMAP:
+		writePhysCollmap(info, buf, (PhysGeomList*)asset->data);
 		break;
 	case ASSET_TYPE_XANIM:
 		writeXAnim(info, buf, (XAnim*)asset->data);
 		break;
+	// ASSET_TYPE_XMODELSURFS - handled by xmodel
+	case ASSET_TYPE_XMODEL:
+		writeXModel(info, buf, (XModel*)asset->data);
+		break;
 	case ASSET_TYPE_MATERIAL:
 		writeMaterial(info, buf, (Material*)asset->data);
-		break;
-	case ASSET_TYPE_TECHSET:
-		writeTechset(info, buf, (MaterialTechniqueSet*)asset->data);
 		break;
 	case ASSET_TYPE_PIXELSHADER:
 		writePixelShader(info, buf, (PixelShader*)asset->data);
@@ -74,14 +78,19 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	case ASSET_TYPE_VERTEXDECL:
 		writeVertexDecl(info, buf, (VertexDecl*)asset->data);
 		break;
-	case ASSET_TYPE_XMODEL:
-		writeXModel(info, buf, (XModel*)asset->data);
+	case ASSET_TYPE_TECHSET:
+		writeTechset(info, buf, (MaterialTechniqueSet*)asset->data);
+		break;
+	// ASSET_TYPE_IMAGE - handled by material
+	case ASSET_TYPE_SOUND:
+		writeSoundAlias(info, buf, (SoundAliasList*)asset->data);
+		break;
+	case ASSET_TYPE_SNDCURVE:
+	case ASSET_TYPE_LOADED_SOUND:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
 		break;
 	case ASSET_TYPE_COL_MAP_MP:
 		//writeColMap(info, buf, (Col_Map*)asset->data);
-		break;
-	case ASSET_TYPE_MAP_ENTS:
-		writeMapEnts(info, buf, (MapEnts*)asset->data);
 		break;
 	case ASSET_TYPE_COM_MAP:
 		//writeComWorld(info, buf, (ComWorld*)asset->data);
@@ -90,20 +99,58 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	case ASSET_TYPE_GAME_MAP_SP:
 		writeGameMap(info, buf, (GameMap_MP*)asset->data);
 		break;
-	case ASSET_TYPE_STRINGTABLE:
-		writeStringTable(info, buf, (StringTable*)asset->data);
+	case ASSET_TYPE_MAP_ENTS:
+		writeMapEnts(info, buf, (MapEnts*)asset->data);
 		break;
-	case ASSET_TYPE_SOUND:
-		writeSoundAlias(info, buf, (SoundAliasList*)asset->data);
+	case ASSET_TYPE_FX_MAP:
+	case ASSET_TYPE_GFX_MAP:
+	case ASSET_TYPE_LIGHTDEF:
+	case ASSET_TYPE_UI_MAP:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
 		break;
-	case ASSET_TYPE_FX:
-		//writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
+	case ASSET_TYPE_FONT:
+		break;
+	case ASSET_TYPE_MENUFILE:
+	case ASSET_TYPE_MENU:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
+		break;
+	case ASSET_TYPE_LOCALIZE:
+		writeLocalize(info, buf, (Localize*)asset->data);
 		break;
 	case ASSET_TYPE_WEAPON:
 		writeWeaponVariantDef(info, buf, (WeaponVariantDef*)asset->data);
 		break;
+	case ASSET_TYPE_SNDDRIVERGLOBALS:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
+		break;
+	case ASSET_TYPE_FX:
+		writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
+		break;
+	case ASSET_TYPE_IMPACTFX:
+		break;
+	case ASSET_TYPE_AITYPE:
+	case ASSET_TYPE_MPTYPE:
+	case ASSET_TYPE_CHARACTER:
+	case ASSET_TYPE_XMODELALIAS:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
+		break;
+	case ASSET_TYPE_RAWFILE:
+		writeRawfile(info, buf, (Rawfile*)asset->data);
+		break;
+	case ASSET_TYPE_STRINGTABLE:
+		writeStringTable(info, buf, (StringTable*)asset->data);
+		break;
+	case ASSET_TYPE_LEADERBOARDDEF:
+	case ASSET_TYPE_STRUCTUREDDATADEF:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
+		break;
 	case ASSET_TYPE_TRACER:
 		writeTracer(info, buf, (Tracer*)asset->data);
+		break;
+	case ASSET_TYPE_VEHICLE:
+	case ASSET_TYPE_ADDON_MAP_ENTS:
+		Com_Error(true, "How did you get an asset that you can't write?\n");
+		break;
 	}
 
 	asset->written = true;
