@@ -24,7 +24,7 @@ void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data)
 	}
 }
 
-void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen < 0)
 	{
@@ -41,7 +41,7 @@ void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, size_t data
 	return NULL;
 }
 
-void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addGameMap_SP(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen < 0)
 	{

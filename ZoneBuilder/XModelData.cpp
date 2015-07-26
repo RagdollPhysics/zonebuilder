@@ -160,7 +160,7 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 	}
 }
 
-void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void* addXModel(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (data == NULL) return NULL;
 
@@ -189,7 +189,7 @@ void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 			}
 			else
 			{
-				asset = addMaterial(info, model->materials[i]->name, (char*)model->materials[i], 0);
+				asset = addMaterial(info, model->materials[i]->name, (char*)model->materials[i], -1);
 			}
 
 			addAsset(info, ASSET_TYPE_MATERIAL, model->materials[i]->name, asset);
@@ -362,7 +362,7 @@ void* addXModel(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 		else
 		{
 			asset->materials[i] = (Material*)DB_FindXAssetHeader(ASSET_TYPE_MATERIAL, matName);
-			addMaterial(info, matName, (char*)asset->materials[i], 0);
+			addMaterial(info, matName, (char*)asset->materials[i], -1);
 		}
 
 		addAsset(info, ASSET_TYPE_MATERIAL, matName, asset->materials[i]);		

@@ -128,7 +128,7 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 	}
 }
 
-void * addXAnim(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (dataLen < 0)
 	{

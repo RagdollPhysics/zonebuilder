@@ -178,15 +178,15 @@ GfxImage* LoadImageFromIWI(const char* name, char semantic, char category, char 
 	return ret;
 }
 
-void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (data == NULL) return NULL;
 
 	if(dataLen < 0) 
 	{
 		Material* mat = (Material*)data;
-		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, 0);
-		return;
+		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
+		return data;
 	}
 	else
 	{
@@ -242,7 +242,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 
 	// add techset to our DB here
 	// this one is weird and is all handled internally cause of the shit it does
-	addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, 0);
+	addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
 
 	return mat;
 }

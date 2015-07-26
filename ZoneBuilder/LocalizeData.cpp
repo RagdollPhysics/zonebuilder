@@ -12,7 +12,7 @@ void writeLocalize(zoneInfo_t* info, ZStream* buf, Localize* data)
 	WRITE_NAME(data);
 }
 
-void* addLocalize(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void* addLocalize(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (dataLen < 0) return data;
 

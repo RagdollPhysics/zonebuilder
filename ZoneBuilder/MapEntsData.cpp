@@ -47,7 +47,7 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 	}
 }
 
-void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen < 0)
 	{

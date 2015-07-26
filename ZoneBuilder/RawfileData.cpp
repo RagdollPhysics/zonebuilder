@@ -13,7 +13,7 @@ void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 	buf->write(data->compressedData, data->sizeCompressed, 1);
 }
 
-void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addRawfile(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen < 0) return data; // no fixups needed here
 

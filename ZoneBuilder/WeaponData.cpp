@@ -448,7 +448,7 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 	}
 }
 
-void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (dataLen > 0) Com_Error(true, "This shouldn't happen...\n");
 
@@ -490,7 +490,7 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 
 	// now require all sub-assets
 	// materials
-#define save_material(mat) if (mat) addAsset(info, ASSET_TYPE_MATERIAL, mat->name, addMaterial(info, mat->name, (char*)mat, 0));
+#define save_material(mat) if (mat) addAsset(info, ASSET_TYPE_MATERIAL, mat->name, addMaterial(info, mat->name, (char*)mat, -1));
 	save_material(ret->killIcon);
 	save_material(ret->dpadIcon);
 	save_material(ret->WeaponDef->reticleCenter);
@@ -505,7 +505,7 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 #undef save_material
 
 	// xmodel
-#define save_model(model) if (model) addAsset(info, ASSET_TYPE_XMODEL, model->name, addXModel(info, model->name, (char*)model, 0));
+#define save_model(model) if (model) addAsset(info, ASSET_TYPE_XMODEL, model->name, addXModel(info, model->name, (char*)model, -1));
 	for (int i = 0; i < 16; i++)
 	{
 		save_model(ret->WeaponDef->gunXModel[i]);
@@ -528,19 +528,19 @@ void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, size_
 	if (ret->WeaponDef->collisions)
 	{
 		addAsset(info, ASSET_TYPE_PHYS_COLLMAP, ret->WeaponDef->collisions->name,
-		addPhysCollmap(info, ret->WeaponDef->collisions->name, (char*)ret->WeaponDef->collisions, 0));
+		addPhysCollmap(info, ret->WeaponDef->collisions->name, (char*)ret->WeaponDef->collisions, -1));
 	}
 
 	if (ret->WeaponDef->tracer)
 	{
 		addAsset(info, ASSET_TYPE_TRACER, ret->WeaponDef->tracer->name,
-		addTracer(info, ret->WeaponDef->tracer->name, (char*)ret->WeaponDef->tracer, 0));
+		addTracer(info, ret->WeaponDef->tracer->name, (char*)ret->WeaponDef->tracer, -1));
 	}
 
 	// fx
 	// null these for now because I'm not certain effect writing works
 
-#define save_fx(model) if (model) addAsset(info, ASSET_TYPE_FX, model->name, addFxEffectDef(info, model->name, (char*)model, 0));
+#define save_fx(model) if (model) addAsset(info, ASSET_TYPE_FX, model->name, addFxEffectDef(info, model->name, (char*)model, -1));
 	/*
 	save_fx(ret->WeaponDef->viewFlashEffect);
 	save_fx(ret->WeaponDef->worldFlashEffect);

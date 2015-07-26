@@ -3,7 +3,7 @@
 
 // NOTE: None of these assets can be added... only exported
 
-void addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen > 0) { Com_Error(false, "How did we get a non bulitin techset?"); return; }
 

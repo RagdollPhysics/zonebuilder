@@ -42,13 +42,17 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	if(asset->written) return asset->offset;
 	asset->offset = getOffsetForWrite(info, 0x03, buf);
 
+	const char* name = ((Rawfile*)asset->data)->name;
+	if (asset->type == ASSET_TYPE_LOCALIZE)
+		name = ((Localize*)asset->data)->name;
+
 	// hide the useless assets that we can't change
 	if (asset->type != ASSET_TYPE_TECHSET &&
 		asset->type != ASSET_TYPE_PIXELSHADER &&
 		asset->type != ASSET_TYPE_VERTEXSHADER &&
 		asset->type != ASSET_TYPE_VERTEXDECL)
 	{
-		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", ((Rawfile*)asset->data)->name, getAssetStringForType(asset->type), (asset->offset));
+		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", name, getAssetStringForType(asset->type), (asset->offset));
 	}
 
 	switch(asset->type)

@@ -169,7 +169,7 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, Col_Map* data)
 	delete[] modelOffset;
 }
 
-void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addColMap(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen == 0)
 	{

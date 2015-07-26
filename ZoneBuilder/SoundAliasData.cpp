@@ -90,7 +90,7 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 
 }
 
-void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (dataLen < 0) 
 	{

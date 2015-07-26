@@ -25,7 +25,7 @@ void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data)
 	}
 }
 
-void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addComWorld(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen == 0)
 	{

@@ -56,7 +56,7 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 	outST->data = (char**)-1;
 }
 
-void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addStringTable(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	// no fixups here
 	if (dataLen < 0) return data;

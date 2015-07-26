@@ -272,7 +272,7 @@ FxFieldDef_s* getFxFieldByName(char* name)
 	return NULL;
 }
 
-void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen < 0)
 	{
@@ -283,7 +283,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 			if(def->elemDefs[i].effectEmitted) 
 			{
 				FxEffectDef* e = getEffectFromRef(def->elemDefs[i].effectEmitted);
-				void * a = addFxEffectDef(info, e->name, (char*)e, 0);
+				void * a = addFxEffectDef(info, e->name, (char*)e, -1);
 
 				addAsset(info, ASSET_TYPE_FX, e->name, a);
 				def->elemDefs[i].effectEmitted->name = e->name;
@@ -292,7 +292,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 			if(def->elemDefs[i].effectOnImpact)
 			{
 				FxEffectDef* e = getEffectFromRef(def->elemDefs[i].effectOnImpact);
-				void * a = addFxEffectDef(info, e->name, (char*)e, 0);
+				void * a = addFxEffectDef(info, e->name, (char*)e, -1);
 
 				addAsset(info, ASSET_TYPE_FX, e->name, a);
 				def->elemDefs[i].effectOnImpact->name = e->name;
@@ -301,7 +301,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 			if(def->elemDefs[i].effectOnDeath)
 			{
 				FxEffectDef* e = getEffectFromRef(def->elemDefs[i].effectOnDeath);
-				void * a = addFxEffectDef(info, e->name, (char*)e, 0);
+				void * a = addFxEffectDef(info, e->name, (char*)e, -1);
 
 				addAsset(info, ASSET_TYPE_FX, e->name, a);
 				def->elemDefs[i].effectOnDeath->name = e->name;
@@ -316,8 +316,8 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 						Material* m1 = def->elemDefs[i].visuals.markArray[j].data[0];
 						Material* m2 = def->elemDefs[i].visuals.markArray[j].data[1];
 
-						void* m1data = addMaterial(info, m1->name, (char*)m1, 0);
-						void* m2data = addMaterial(info, m2->name, (char*)m2, 0);
+						void* m1data = addMaterial(info, m1->name, (char*)m1, -1);
+						void* m2data = addMaterial(info, m2->name, (char*)m2, -1);
 
 						addAsset(info, ASSET_TYPE_MATERIAL, m1->name, m1data);
 						addAsset(info, ASSET_TYPE_MATERIAL, m2->name, m2data);
@@ -330,7 +330,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 					case 7:
 						{
 							XModel* m = def->elemDefs[i].visuals.array[j].xmodel;
-							void *a = addXModel(info, m->name, (char*)m, 0);
+							void *a = addXModel(info, m->name, (char*)m, -1);
 
 							addAsset(info, ASSET_TYPE_XMODEL, m->name, a);
 							break;
@@ -338,7 +338,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 					case 12:
 						{
 							FxEffectDef* fx = getEffectFromRef(def->elemDefs[i].visuals.array[j].effectDef);
-							void * a =  addFxEffectDef(info, fx->name, (char*)fx, 0);
+							void * a =  addFxEffectDef(info, fx->name, (char*)fx, -1);
 
 							addAsset(info, ASSET_TYPE_FX, fx->name, a);
 							def->elemDefs[i].visuals.array[j].effectDef->name = fx->name;
@@ -354,7 +354,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 							if(def->elemDefs[i].elemType != 8 && def->elemDefs[i].elemType != 9)
 							{
 								Material* m = def->elemDefs[i].visuals.array[j].material;
-								void * a = addMaterial(info, m->name, (char*)m, 0);
+								void * a = addMaterial(info, m->name, (char*)m, -1);
 
 								addAsset(info, ASSET_TYPE_MATERIAL, m->name, a);
 								break;
@@ -369,7 +369,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 					case 7:
 						{
 							XModel* m = def->elemDefs[i].visuals.instance.xmodel;
-							void *a = addXModel(info, m->name, (char*)m, 0);
+							void *a = addXModel(info, m->name, (char*)m, -1);
 
 							addAsset(info, ASSET_TYPE_XMODEL, m->name, a);
 							break;
@@ -377,7 +377,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 					case 12:
 						{
 							FxEffectDef* fx = getEffectFromRef(def->elemDefs[i].visuals.instance.effectDef);
-							void * a =  addFxEffectDef(info, fx->name, (char*)fx, 0);
+							void * a =  addFxEffectDef(info, fx->name, (char*)fx, -1);
 
 							addAsset(info, ASSET_TYPE_FX, fx->name, a);
 							def->elemDefs[i].visuals.instance.effectDef->name = fx->name;
@@ -393,7 +393,7 @@ void * addFxEffectDef(zoneInfo_t* info, const char* name, char* data, size_t dat
 							if(def->elemDefs[i].elemType != 8 && def->elemDefs[i].elemType != 9)
 							{
 								Material* m = def->elemDefs[i].visuals.instance.material;
-								void * a = addMaterial(info, m->name, (char*)m, 0);
+								void * a = addMaterial(info, m->name, (char*)m, -1);
 
 								addAsset(info, ASSET_TYPE_MATERIAL, m->name, a);
 								break;

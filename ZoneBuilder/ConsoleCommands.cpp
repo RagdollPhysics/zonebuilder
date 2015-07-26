@@ -134,39 +134,70 @@ void dumpStuff(const char* param)
 
 #if ZB_DEBUG
 const char** defaultAssetNames = (const char**)0x799958;
+extern char header[];
 void buildDefaults()
 {
 	zoneInfo_t* info = getZoneInfo("defaults");
-	for (int i = 0; i < ASSET_TYPE_MAX; i++)
-	{
-		const char* name = defaultAssetNames[i];
-		const char* grabName = "THIS_SHOULDNT_EXIST";
-		if (i == ASSET_TYPE_XMODELSURFS) continue;
-		if (i == ASSET_TYPE_IMAGE) continue;
-		if (i == ASSET_TYPE_PIXELSHADER) continue;
-		if (i == ASSET_TYPE_VERTEXSHADER) continue;
-		if (i == ASSET_TYPE_VERTEXDECL) continue;
+	loadAsset(info, ASSET_TYPE_PHYSPRESET, "THIS_SHOULDNT_EXIST", "default");
+	loadAsset(info, ASSET_TYPE_PHYS_COLLMAP, "THIS_SHOULDNT_EXIST", "void");
+	loadAsset(info, ASSET_TYPE_XANIM, "THIS_SHOULDNT_EXIST", "void");
+	loadAsset(info, ASSET_TYPE_PIXELSHADER, "THIS_SHOULDNT_EXIST", "null.hlsl");
+	loadAsset(info, ASSET_TYPE_VERTEXSHADER, "THIS_SHOULDNT_EXIST", "transform_only.hlsl");
+	loadAsset(info, ASSET_TYPE_VERTEXDECL, "THIS_SHOULDNT_EXIST", "pp");
+	loadAsset(info, ASSET_TYPE_TECHSET, "THIS_SHOULDNT_EXIST", "default");
+	loadAsset(info, ASSET_TYPE_IMAGE, "THIS_SHOULDNT_EXIST", "");
+	loadAsset(info, ASSET_TYPE_MATERIAL, "THIS_SHOULDNT_EXIST", "$default");
+	loadAsset(info, ASSET_TYPE_XMODEL, "THIS_SHOULDNT_EXIST", "void");
+	loadAsset(info, ASSET_TYPE_SOUND, "THIS_SHOULDNT_EXIST", "");
+	//loadAsset(info, ASSET_TYPE_SNDCURVE, "THIS_SHOULDNT_EXIST", "");
+	//loadAsset(info, ASSET_TYPE_LOADED_SOUND, "THIS_SHOULDNT_EXIST", "");
+	//loadAsset(info, ASSET_TYPE_LIGHTDEF, "THIS_SHOULDNT_EXIST", "");
+	//loadAsset(info, ASSET_TYPE_FONT, "THIS_SHOULDNT_EXIST", "");
+	//loadAsset(info, ASSET_TYPE_MENUFILE, "THIS_SHOULDNT_EXIST", "ui/default.menu");
+	//loadAsset(info, ASSET_TYPE_MENU, "THIS_SHOULDNT_EXIST", "default_menu");
+	Localize* loc = new Localize;
+	loc->name = "CGAME_UNKNOWN";
+	loc->localizedString = NULL;
+	addAsset(info, ASSET_TYPE_LOCALIZE, "CGAME_UNKNOWN", loc);
+	loadAsset(info, ASSET_TYPE_FX, "THIS_SHOULDNT_EXIST", "misc/missing_fx");
+	loadAsset(info, ASSET_TYPE_RAWFILE, "THIS_SHOULDNT_EXIST", "codescripts/$default");
+	loadAsset(info, ASSET_TYPE_STRINGTABLE, "THIS_SHOULDNT_EXIST", "mp/defaultStringTable.csv");
+	//loadAsset(info, ASSET_TYPE_LEADERBOARDDEF, "THIS_SHOULDNT_EXIST", "DEFAULT_LB");
+	//loadAsset(info, ASSET_TYPE_STRUCTUREDDATADEF, "THIS_SHOULDNT_EXIST", "mp/defaultStructuredData.def");
+	loadAsset(info, ASSET_TYPE_TRACER, "THIS_SHOULDNT_EXIST", "defaulttracer");
+	//loadAsset(info, ASSET_TYPE_VEHICLE, "THIS_SHOULDNT_EXIST", "defaultvehicle");
 
-		if (i == ASSET_TYPE_WEAPON) grabName = "defaultweapon_mp";
+	loadAsset(info, ASSET_TYPE_WEAPON, "defaultweapon_mp", "defaultweapon_mp");
 
-		if (i == ASSET_TYPE_LOCALIZE)
-		{
-			Localize* loc = new Localize;
-			loc->name = name;
-			loc->localizedString = NULL;
-			addAsset(info, i, name, loc);
-			continue;
-		}
-
-		if (strlen(name))
-		{
-			Com_Printf("%s - %s\n", getAssetStringForType(i), name);
-			loadAsset(info, i, grabName, name);
-		}
-	}
 	Sleep(100);
 
-	ZStream* file = writeZone(info);
+	ZStream* buf = writeZone(info);
+
+	BUFFER* compressed = buf->compressZlib();
+	delete buf;
+
+	Com_Printf("Writing to Disk...");
+	CreateDirectoryA("zone", NULL);
+
+	//const char* outputdir = ((char*(*)())0x45CBA0)();
+	const char* outputdir = "alter";
+
+	FILE* out = fopen("zone\\alter\\defaults.ff", "wb");
+	_setmode(_fileno(out), _O_BINARY); // it was fucking up zlib output
+
+	FILETIME time;
+	GetSystemTimeAsFileTime(&time);
+
+	*((int*)&header[13]) = time.dwHighDateTime;
+	*((int*)&header[17]) = time.dwLowDateTime;
+
+	fwrite(header, 21, 1, out);
+	compressed->writetofile(out);
+	delete compressed;
+
+	fclose(out);
+
+	Com_Printf("Done!\n");
 
 }
 #endif
