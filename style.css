@@ -4,20 +4,6 @@ body
 	background-color: #2D3035;
 }
 
-ul
-{
-    text-align: left;
-}
-
-img
-{
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: block;
-}
-
 a
 {
     color: black;
@@ -38,6 +24,65 @@ hr
     background: #333;
 }
 
+#assets
+{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.asset-table
+{
+    border: 1px solid black;
+}
+
+.row
+{
+    height: 20px;
+}
+
+.cell1
+{
+    width: 15%;
+    border: 1px solid black;
+    color: black;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+.cell2
+{
+    width: 8%;
+    border: 1px solid black;
+    color: black;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+.cell3
+{
+    width: 8%;
+    border: 1px solid black;
+    color: black;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+.yes
+{
+    background-color: green;
+}
+
+.no
+{
+    background-color: red;
+}
+
+.wip
+{
+    background-color: yellow;
+}
+
 /* text alignment classes */
 .align-left
 {
@@ -54,7 +99,6 @@ hr
     text-align: center;
 }
 
-/* div classes */
 .banner-image
 {
     position: relative;
@@ -130,42 +174,12 @@ hr
     display: block;
 }
 
-.post-header
-{
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
-}
-
-.navbar
-{
-	margin-left: 12.5%;
-    margin-bottom: 5px;
-}
-
-.navbar > a
-{
-	color: #FFFFFF;
-	font-size: 16px;
-	font-family: monospace;
-	text-decoration: none;
-	margin-left: 5px;
-}
-.navbar > a:hover
-{
-	color: #C9C9C9;
-}
-
 .footer
 {
     background-color: white;
     text-align: center;
 }
 
-.spacer-100px
-{
-    height: 100px;
-    display: block;
-}
 
 /* clearfix */
 .clearfix:after {

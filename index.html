@@ -1,21 +1,49 @@
 <html>
     <link href="style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="jquery.csv-0.71.min.js"></script>
+    
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: '',
+                url: 'https://raw.githubusercontent.com/TheApadayo/zonebuilder/master/assets.csv',
                 async: false,
                 success: function (csvd) {
-                    data = $.csv.toArrays(csvd);
-                    $('#content').append('<table class="">\n');
-                    
-                    $('#content').append('</table>\n');
+                    try
+                    {
+                        var data = $.csv.toArrays(csvd);
+                        var table = $('<table>');
+                        table.addClass('asset-table');
+                        for(i=0; i<data.length; i++)
+                        {
+                            var tr = $('<tr>');
+                            tr.addClass('row');
+
+                            var td1 = $('<td>');
+                            td1.addClass('cell1');
+                            td1.append(data[i][0]);
+                            tr.append(td1);
+
+                            var td2 = $('<td>');
+                            td2.addClass('cell2 align-center ' + data[i][1]);
+                            td2.append(data[i][1]);
+                            tr.append(td2);
+
+                            var td3 = $('<td>');
+                            td3.addClass('cell2 align-center ' + data[i][2]);
+                            td3.append(data[i][2]);
+                            tr.append(td3);
+                            
+                            table.append(tr);
+                        }
+
+                        $('#assets').append(table);
+                    } catch (e) {
+                        $('#assets').append('<p>Error loading asset table...</p>\n' + 
+                                            '<p>Try here: <a href=\"https://raw.githubusercontent.com/TheApadayo/zonebuilder/master/assets.csv\">https://raw.githubusercontent.com/TheApadayo/zonebuilder/master/assets.csv</a>');
+                    }
                 },
-                dataType: 'text',
-                complete: function () {
-                    // call a function on complete 
-                }
+                dataType: 'text'
             });
         });
     </script>
@@ -30,8 +58,12 @@
     </head>
     
     <body>
-        <div class="content-area" id="content">
-            
+        <div class="content-area">
+            <p class="header2">About the Project</p>
+            <p>ZoneBuilder is written by TheApadayo, DidUknowiPwn, and momo5502.  The goal of the project is to create custom assets for the IW4 Engine by creating custom fastfiles.  The source code is freely available on GitHub <a href="https://github.com/TheApadayo/zonebuilder">here</a>.</p>
+            <p>If you wish to contribute or get involved with the project please contact TheApadayo on Steam (TheApadayo) or create an issue on the project page.</p>
+            <p class="header2">Available asset types in Zonebuilder:</p>
+            <div id="assets"></div>
         </div>
         <div class="clearfix"></div>
     </body>
