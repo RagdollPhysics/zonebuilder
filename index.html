@@ -25,12 +25,14 @@
                             tr.append(td1);
 
                             var td2 = $('<td>');
-                            td2.addClass('cell2 align-center ' + data[i][1]);
+                            if(data[i][1] == 'N/A') td2.addClass('cell2 align-center na');
+                            else td2.addClass('cell2 align-center ' + data[i][1]);
                             td2.append(data[i][1]);
                             tr.append(td2);
 
                             var td3 = $('<td>');
-                            td3.addClass('cell2 align-center ' + data[i][2]);
+                            if(data[i][2] == 'N/A') td3.addClass('cell3 align-center na');
+                            else td3.addClass('cell3 align-center ' + data[i][2]);
                             td3.append(data[i][2]);
                             tr.append(td3);
                             
