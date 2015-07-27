@@ -1,6 +1,21 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data)
+{
+	GfxImage * img = (GfxImage*)buf->at();
+
+	buf->write(data, sizeof(GfxImage), 1);
+	buf->write(data->name, strlen(data->name) + 1, 1);
+	img->name = (char*)-1;
+
+	if (data->texture)
+	{
+		buf->write(data->texture, sizeof(GfxImageLoadDef), 1);
+		img->texture = (GfxImageLoadDef*)-1;
+	}
+}
+
 void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 {
 	// require this asset
@@ -25,17 +40,8 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 
 	for (int i = 0; i<data->textureCount; i++)
 	{
-		GfxImage * img = (GfxImage*)buf->at();
-
-		buf->write(data->textureTable[i].info.image, sizeof(GfxImage), 1);
-		buf->write(data->textureTable[i].info.image->name, strlen(data->textureTable[i].info.image->name) + 1, 1);
-		img->name = (char*)-1;
-
-		if (data->textureTable[i].info.image->texture)
-		{
-			buf->write(data->textureTable[i].info.image->texture, sizeof(GfxImageLoadDef), 1);
-			img->texture = (GfxImageLoadDef*)-1;
-		}
+		// TODO, make with work with water images too
+		writeGfxImage(info, buf, data->textureTable[i].info.image);
 	}
 
 	dest->textureTable = (MaterialTextureDef*)-1;

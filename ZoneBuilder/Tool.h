@@ -113,8 +113,10 @@ extern void * addMaterial(zoneInfo_t* info, const char* name, char* data, int da
 extern void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data);
 
 // TechsetData
-// addTechset is special... yay
-extern void addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen);
+extern void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen);
+extern void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen);
+extern void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen);
+extern void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen);
 extern void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data);
 extern void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data);
 extern void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data);

@@ -3,7 +3,7 @@
 
 // NOTE: None of these assets can be added... only exported
 
-void addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
+void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen > 0) { Com_Error(false, "How did we get a non bulitin techset?"); return; }
 
@@ -20,7 +20,8 @@ void addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 		addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);		
 	}
 
-	addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
+	//addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
+	return data;
 }
 
 
@@ -75,6 +76,12 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 
 }
 
+void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "no custom pixel shaders yet\n"); return NULL; }
+	return data;
+}
+
 void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 {
 	PixelShader* dest = (PixelShader*)buf->at();
@@ -85,6 +92,12 @@ void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 
 	dest->name = (char*)-1;
 	dest->bytecode = (DWORD*)-1;
+}
+
+void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "no custom vertex shaders yet\n"); return NULL; }
+	return data;
 }
 
 void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
@@ -99,6 +112,12 @@ void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
 	dest->bytecode = (DWORD*)-1;
 }
 
+void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "no custom vertex decls yet\n"); return NULL; }
+	return data;
+}
+
 void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data)
 {
 	VertexDecl* dest = (VertexDecl*)buf->at();
@@ -106,5 +125,4 @@ void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data)
 	buf->write(data, sizeof(VertexDecl), 1);
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
-	// seems too easy....
 }
