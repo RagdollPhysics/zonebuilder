@@ -163,7 +163,7 @@ void buildDefaults()
 	//loadAsset(info, ASSET_TYPE_IMPACTFX, "THIS_SHOULDNT_EXIST", "default");
 	loadAsset(info, ASSET_TYPE_RAWFILE, "THIS_SHOULDNT_EXIST", "codescripts/$default");
 	loadAsset(info, ASSET_TYPE_STRINGTABLE, "THIS_SHOULDNT_EXIST", "mp/defaultStringTable.csv");
-	//loadAsset(info, ASSET_TYPE_LEADERBOARDDEF, "THIS_SHOULDNT_EXIST", "DEFAULT_LB");
+	loadAsset(info, ASSET_TYPE_LEADERBOARDDEF, "THIS_SHOULDNT_EXIST", "DEFAULT_LB");
 	//loadAsset(info, ASSET_TYPE_STRUCTUREDDATADEF, "THIS_SHOULDNT_EXIST", "mp/defaultStructuredData.def");
 	loadAsset(info, ASSET_TYPE_TRACER, "THIS_SHOULDNT_EXIST", "defaulttracer");
 	//loadAsset(info, ASSET_TYPE_VEHICLE, "THIS_SHOULDNT_EXIST", "defaultvehicle");
@@ -178,9 +178,6 @@ void buildDefaults()
 
 	Com_Printf("Writing to Disk...");
 	CreateDirectoryA("zone", NULL);
-
-	//const char* outputdir = ((char*(*)())0x45CBA0)();
-	const char* outputdir = "alter";
 
 	FILE* out = fopen("zone\\alter\\defaults.ff", "wb");
 	_setmode(_fileno(out), _O_BINARY); // it was fucking up zlib output

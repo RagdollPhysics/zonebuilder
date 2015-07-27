@@ -65,6 +65,9 @@ extern void setAssetName(int type, void* data, const char* name);
 extern int getArgc();
 extern LPSTR* getArgs();
 extern unsigned int alignTo(unsigned int value, unsigned int alignment);
+#define ALIGN_TO_4 3
+#define ALIGN_TO_8 7
+#define ALIGN_TO_16 15
 extern long flength(FILE* fp);
 extern void debugChecks();
 extern void Com_LoadZones(XZoneInfo* zones, int count);
@@ -194,3 +197,7 @@ void * addFont(zoneInfo_t* info, const char* name, char* data, int dataLen);
 // GfxLightDefData
 void writeGfxLightDef(zoneInfo_t* info, ZStream* buf, GfxLightDef* data);
 void * addGfxLightDef(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// LeaderboardDef
+void writeLeaderboardDef(zoneInfo_t* info, ZStream* buf, LeaderboardDef* data);
+void * addLeaderboardDef(zoneInfo_t* info, const char* name, char* data, int dataLen);

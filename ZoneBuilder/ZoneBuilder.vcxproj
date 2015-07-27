@@ -176,6 +176,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="GfxWorldData.cpp" />
     <ClCompile Include="Hooking.cpp" />
     <ClCompile Include="IW4Bridge.cpp" />
+    <ClCompile Include="LeaderboardDefData.cpp" />
     <ClCompile Include="LocalizeData.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MapEntsData.cpp" />

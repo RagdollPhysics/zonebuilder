@@ -146,10 +146,26 @@ struct ImpactFX
 	char pad[4];
 };
 
+struct LbColumnDef
+{
+	const char* title;
+	int id;
+	int propertyId;
+	int unk1;
+	const char* statName;
+	int unk2;
+	int unk3;
+	int unk4;
+};
+
 struct LeaderboardDef
 {
 	const char* name;
-	char pad[32];
+	int id;
+	int columnCount;
+	int xpColId;
+	int prestigeColId;
+	LbColumnDef* columns;
 };
 
 struct Tracer

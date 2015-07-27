@@ -139,7 +139,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		asset = addFont(info, name, data, size);
 		break;
 	case ASSET_TYPE_FX:
-		//asset = addFxEffectDef(info, name, data, size);
+		asset = addFxEffectDef(info, name, data, size);
 		break;
 	case ASSET_TYPE_WEAPON:
 	{
@@ -153,14 +153,14 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	case ASSET_TYPE_TRACER:
 		asset = addTracer(info, name, data, size);
 		break;
-	case ASSET_TYPE_SNDDRIVERGLOBALS:
-		break;
 	case ASSET_TYPE_LEADERBOARDDEF:
+		asset = addLeaderboardDef(info, name, data, size);
 		break;
 	case ASSET_TYPE_MPTYPE:
 	case ASSET_TYPE_AITYPE:
 	case ASSET_TYPE_CHARACTER:
 	case ASSET_TYPE_XMODELALIAS:
+	case ASSET_TYPE_SNDDRIVERGLOBALS:
 	case ASSET_TYPE_ADDON_MAP_ENTS:
 		Com_Error(0, "Cannot define a new asset of type %s! Ignoring asset and continuing...\n", getAssetStringForType(type));
 		return;

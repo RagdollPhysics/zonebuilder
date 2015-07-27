@@ -132,9 +132,6 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	case ASSET_TYPE_WEAPON:
 		writeWeaponVariantDef(info, buf, (WeaponVariantDef*)asset->data);
 		break;
-	case ASSET_TYPE_SNDDRIVERGLOBALS:
-		Com_Error(true, "How did you get an asset that you can't write?\n");
-		break;
 	case ASSET_TYPE_FX:
 		writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
 		break;
@@ -147,6 +144,8 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeStringTable(info, buf, (StringTable*)asset->data);
 		break;
 	case ASSET_TYPE_LEADERBOARDDEF:
+		writeLeaderboardDef(info, buf, (LeaderboardDef*)asset->data);
+		break;
 	case ASSET_TYPE_STRUCTUREDDATADEF:
 		Com_Error(true, "How did you get an asset that you can't write?\n");
 		break;
@@ -186,7 +185,7 @@ ZStream* writeZone(zoneInfo_t * info)
     }
 
 	info->index_start = buf->getStreamOffset(3) - 56;
-	info->index_start = alignTo(info->index_start, 4) + 1; // align it to 4 bytes
+	info->index_start = alignTo(info->index_start, ALIGN_TO_4); // align it to 4 bytes
 
 	Com_Debug("Index start is at 0x%x", info->index_start);
 
