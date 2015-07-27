@@ -191,7 +191,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen)
 	if(dataLen < 0) 
 	{
 		Material* mat = (Material*)data;
-		addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
+		addAsset(info, ASSET_TYPE_TECHSET, mat->techniqueSet->name, addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1));
 		return data;
 	}
 	else
@@ -248,7 +248,7 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen)
 
 	// add techset to our DB here
 	// this one is weird and is all handled internally cause of the shit it does
-	addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1);
+	addAsset(info, ASSET_TYPE_TECHSET, mat->techniqueSet->name, addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1));
 
 	return mat;
 }

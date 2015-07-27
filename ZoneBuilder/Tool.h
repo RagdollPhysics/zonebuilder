@@ -9,10 +9,15 @@
 #define MAX_SCRIPT_STRINGS 2048
 
 #if ZB_DEBUG
-#define Com_Debug Com_Debug_
+#define Com_Debug(fmt, ...) Com_Debug_(false, fmt, __VA_ARGS__)
+#define Com_Debug_logOnly(fmt, ...) Com_Debug_(true, fmt, __VA_ARGS__)
 #else
-#define Com_Debug
+#define Com_Debug(fmt, ...)
+#define Com_Debug_logOnly(fmt, ...)
 #endif
+
+#define Com_Printf(fmt, ...) Com_Printf_(false, fmt, __VA_ARGS__)
+#define Com_Printf_logOnly(fmt, ...) Com_Printf_(true, fmt, __VA_ARGS__)
 
 typedef struct
 {
@@ -49,9 +54,10 @@ extern void loadAsset(zoneInfo_t* info, int type, const char* filename, const ch
 extern void ZoneBuild(char* toBuild);;
 
 // Util
-extern void Com_Printf(const char* format, ...);
+extern void Com_Printf_(bool logOnly, const char* format, ...);
 extern void Com_Error(bool exit, const char* format, ...);
-extern void Com_Debug_(const char* format, ...);
+extern void Com_Debug_(bool logOnly, const char* format, ...);
+extern void Com_Quit();
 extern int getAssetTypeForString(const char* str);
 extern const char* getAssetStringForType(int type);
 extern int getArgc();

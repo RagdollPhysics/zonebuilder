@@ -176,6 +176,7 @@ void Sys_Print(const char* message)
 	RefreshOutput();
 }
 
+extern void Com_Quit();
 void Sys_Error(const char* format, ...)
 {
 	static char buffer[32768];
@@ -197,7 +198,7 @@ void Sys_Error(const char* format, ...)
 		DebugBreak();
 	}
 
-	TerminateProcess(GetCurrentProcess(), 0xDEADDEAD);
+	Com_Quit();
 }
 
 static char consoleLineBuffer[1024];
@@ -438,7 +439,7 @@ void RunConsole()
 		}
 		else if (cmd.first == "quit")
 		{
-			TerminateProcess(GetCurrentProcess(), 0x0);
+			Com_Quit();
 		}
 		else if (cmd.first == "help")
 		{

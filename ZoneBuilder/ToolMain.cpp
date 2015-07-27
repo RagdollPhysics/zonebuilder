@@ -73,6 +73,36 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	case ASSET_TYPE_MATERIAL:
 		asset = addMaterial(info, name, data, size);
 		break;
+	case ASSET_TYPE_PIXELSHADER:
+		asset = addPixelShader(info, name, data, size);
+		break;
+	case ASSET_TYPE_VERTEXSHADER:
+		asset = addVertexShader(info, name, data, size);
+		break;
+	case ASSET_TYPE_VERTEXDECL:
+		asset = addVertexDecl(info, name, data, size);
+		break;
+	case ASSET_TYPE_IMAGE:
+		//asset = addPixelShader(info, name, data, size);
+		break;
+	case ASSET_TYPE_TECHSET:
+	{
+		MaterialTechniqueSet* techset = (MaterialTechniqueSet*)data;
+
+		for (int i = 0; i<48; i++)
+		{
+			MaterialTechnique* tech = techset->techniques[i];
+			if (!tech) continue;
+
+			if (tech->numPasses != 1) Com_Error(true, "Um why does this technique have more than 1 pass?");
+			addAsset(info, ASSET_TYPE_VERTEXDECL, tech->passes[0].vertexDecl->name, tech->passes[0].vertexDecl);
+			addAsset(info, ASSET_TYPE_VERTEXSHADER, tech->passes[0].vertexShader->name, tech->passes[0].vertexShader);
+			addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);
+		}
+
+		asset = techset;
+		break;
+	}
 	case ASSET_TYPE_XMODEL:
 		asset = addXModel(info, name, data, size);
 		break;
@@ -113,33 +143,10 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	case ASSET_TYPE_TRACER:
 		asset = addTracer(info, name, data, size);
 		break;
-	case ASSET_TYPE_TECHSET:
-	{
-		MaterialTechniqueSet* techset = (MaterialTechniqueSet*)data;
-
-		for (int i = 0; i<48; i++)
-		{
-			MaterialTechnique* tech = techset->techniques[i];
-			if (!tech) continue;
-
-			if (tech->numPasses != 1) Com_Error(true, "Um why does this technique have more than 1 pass?");
-			addAsset(info, ASSET_TYPE_VERTEXDECL, tech->passes[0].vertexDecl->name, tech->passes[0].vertexDecl);
-			addAsset(info, ASSET_TYPE_VERTEXSHADER, tech->passes[0].vertexShader->name, tech->passes[0].vertexShader);
-			addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);
-		}
-
-		asset = techset;
-		break;
-	}
 	case ASSET_TYPE_SNDDRIVERGLOBALS:
 		break;
 	case ASSET_TYPE_LEADERBOARDDEF:
 		break;
-
-	case ASSET_TYPE_PIXELSHADER:
-	case ASSET_TYPE_VERTEXSHADER:
-	case ASSET_TYPE_VERTEXDECL:
-	case ASSET_TYPE_IMAGE:
 	case ASSET_TYPE_LOADED_SOUND:
 	case ASSET_TYPE_SNDCURVE:
 	case ASSET_TYPE_MPTYPE:

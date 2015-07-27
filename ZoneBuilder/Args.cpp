@@ -12,7 +12,7 @@ void printUsage()
 {
 	Com_Printf("usage: ZoneBuilder.exe zone name [-b] [-v] [-sSourceZone] [-dBuildFolder]\n");
 	Com_Printf("Or run with no arguments for console.\n");
-	TerminateProcess(GetCurrentProcess(), 0);
+	Com_Quit();
 }
 
 void parseArgs()

@@ -5,7 +5,7 @@
 
 void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if(dataLen > 0) { Com_Error(false, "How did we get a non bulitin techset?"); return; }
+	if(dataLen > 0) { Com_Error(false, "How did we get a non bulitin techset?"); return NULL; }
 
 	MaterialTechniqueSet* asset = (MaterialTechniqueSet*)data;
 

@@ -145,6 +145,7 @@ XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
 
 void RunTool()
 {
+	
 	doInit();
 
 	Com_Printf("Loading Base Zones...\n");
@@ -320,7 +321,7 @@ void InitBridge()
 	if (strcmp((char*)0x6E9638, "177"))
 	{
 		printf("Error loading IW4!\n");
-		TerminateProcess(GetCurrentProcess(), 0);
+		Com_Quit();
 	}
 
 	PatchMW2_Load(); // load fastfiles from dlc and alter

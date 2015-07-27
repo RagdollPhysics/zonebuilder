@@ -54,6 +54,10 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	{
 		Com_Debug("\nWriting asset %s, of type %s at offset 0x%x", name, getAssetStringForType(asset->type), (asset->offset));
 	}
+	else
+	{
+		Com_Debug_logOnly("\nWriting asset %s, of type %s at offset 0x%x", name, getAssetStringForType(asset->type), (asset->offset));
+	}
 
 	switch(asset->type)
 	{

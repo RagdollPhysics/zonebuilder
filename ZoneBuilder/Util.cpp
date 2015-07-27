@@ -4,24 +4,34 @@
 extern bool console;
 void Sys_Print(const char* message);
 
-void Com_Printf(const char* format, ...)
+CRITICAL_SECTION logfile_cs;
+FILE* logfile;
+
+void Com_Logging_Init(const char* file)
 {
-	static char buffer[32768] = { 0 };
-
-	va_list va;
-	va_start(va, format);
-
-	//vprintf(format, va);
-	_vsnprintf(buffer, sizeof(buffer), format, va);
-	va_end(va);
-
-	if (console)
-		Sys_Print(buffer);
-	else
-		printf(buffer);
+#if ZB_DEBUG
+	InitializeCriticalSection(&logfile_cs);
+	logfile = fopen(file, "w");
+#endif
 }
 
-void Com_Debug_(const char* format, ...)
+void Com_Logging_Quit()
+{
+#if ZB_DEBUG
+	EnterCriticalSection(&logfile_cs);
+	fclose(logfile);
+	LeaveCriticalSection(&logfile_cs);
+	DeleteCriticalSection(&logfile_cs);
+#endif
+}
+
+void Com_Quit()
+{
+	Com_Logging_Quit();
+	TerminateProcess(GetCurrentProcess(), -1);
+}
+
+void Com_Printf_(bool logOnly, const char* format, ...)
 {
 	static char buffer[32768] = { 0 };
 
@@ -32,16 +42,52 @@ void Com_Debug_(const char* format, ...)
 	_vsnprintf(buffer, sizeof(buffer), format, va);
 	va_end(va);
 
-	if (console){
-		Sys_Print("^3");
-		Sys_Print(buffer);
-		Sys_Print("^7");
+	if (!logOnly)
+	{
+		if (console)
+			Sys_Print(buffer);
+		else
+			printf(buffer);
 	}
-	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
-		printf(buffer);
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+#if ZB_DEBUG
+	EnterCriticalSection(&logfile_cs);
+	fprintf(logfile, buffer);
+	fflush(logfile);
+	LeaveCriticalSection(&logfile_cs);
+#endif
+}
+
+void Com_Debug_(bool logOnly, const char* format, ...)
+{
+	static char buffer[32768] = { 0 };
+
+	va_list va;
+	va_start(va, format);
+
+	//vprintf(format, va);
+	_vsnprintf(buffer, sizeof(buffer), format, va);
+	va_end(va);
+	if (!logOnly)
+	{
+		if (console){
+			Sys_Print("^3");
+			Sys_Print(buffer);
+			Sys_Print("^7");
+		}
+		else {
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
+			printf(buffer);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+		}
 	}
+
+#if ZB_DEBUG
+	EnterCriticalSection(&logfile_cs);
+	fprintf(logfile, buffer);
+	fflush(logfile);
+	LeaveCriticalSection(&logfile_cs);
+#endif
 }
 
 void Com_Error(bool exit, const char* format, ...)
@@ -66,13 +112,20 @@ void Com_Error(bool exit, const char* format, ...)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	}
 
+#if ZB_DEBUG
+	EnterCriticalSection(&logfile_cs);
+	fprintf(logfile, "ERROR: %s\n", buffer);
+	fflush(logfile);
+	LeaveCriticalSection(&logfile_cs);
+#endif
+
 	if (exit)
 	{
 		if (IsDebuggerPresent())
 		{
 			DebugBreak();
 		}
-		TerminateProcess(GetCurrentProcess(), -1);
+		Com_Quit();
 	}
 }
 
