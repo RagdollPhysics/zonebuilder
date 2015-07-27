@@ -201,7 +201,7 @@ int getAssetTypeForString(const char* str)
 {
 	int i = 42;
 
-	while(i > 0)
+	while(i > -1)
 	{
 		if(!strcmp(assetTypeStrings[i], str)) return i;
 		i--;
@@ -289,4 +289,70 @@ void debugChecks()
 	ASSERT(sizeof(SoundFile) == 12);
 	ASSERT(sizeof(WeaponVariantDef) == 0x74);
 	ASSERT(sizeof(WeaponDef) == 0x684)
+}
+
+#define	BIG_INFO_STRING		8192  // used for system info key only
+#define	BIG_INFO_KEY		  8192
+#define	BIG_INFO_VALUE		8192
+
+/*
+===============
+Info_ValueForKey
+
+Searches the string for the given
+key and returns the associated value, or an empty string.
+FIXME: overflow check?
+===============
+*/
+char *Info_ValueForKey(const char *s, const char *key)
+{
+	char	pkey[BIG_INFO_KEY];
+	static	char value[2][BIG_INFO_VALUE];	// use two buffers so compares
+	// work without stomping on each other
+	static	int	valueindex = 0;
+	char	*o;
+
+	// If neither argument is supplied.
+	if (!s || !key) {
+		return "";
+	}
+
+	// Overflow check..
+	if (strlen(s) >= BIG_INFO_STRING) {
+		Com_Error(1, "Info_ValueForKey: oversize infostring");
+		return "";
+	}
+
+	valueindex ^= 1;
+	if (*s == '\\')
+		s++;
+	while (1)
+	{
+		o = pkey;
+		while (*s != '\\')
+		{
+			if (!*s)
+				return "";
+			*o++ = *s++;
+		}
+		*o = 0;
+		s++;
+
+		o = value[valueindex];
+
+		while (*s != '\\' && *s)
+		{
+			*o++ = *s++;
+		}
+		*o = 0;
+
+		if (!_stricmp(key, pkey))
+			return value[valueindex];
+
+		if (!*s)
+			break;
+		s++;
+	}
+
+	return "";
 }

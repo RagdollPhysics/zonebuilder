@@ -675,6 +675,9 @@ extern SL_GetString_t SL_GetString;
 typedef short (__cdecl * SL_GetString_system_t)(const char* string, int a2);
 extern SL_GetString_system_t SL_GetString_2;
 
+typedef char* (__cdecl * SE_Load_t)(char* file, int Unk);
+extern SE_Load_t SE_Load;
+
 // other stuff
 extern CommandCB_t Cbuf_AddServerText_f;
 

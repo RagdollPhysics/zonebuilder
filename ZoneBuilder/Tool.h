@@ -72,6 +72,7 @@ extern long flength(FILE* fp);
 extern void debugChecks();
 extern void Com_LoadZones(XZoneInfo* zones, int count);
 extern void Com_UnloadZones(int group);
+extern char *Info_ValueForKey(const char *s, const char *key);
 
 // console
 extern void InitConsole();
@@ -201,3 +202,7 @@ void * addGfxLightDef(zoneInfo_t* info, const char* name, char* data, int dataLe
 // LeaderboardDef
 void writeLeaderboardDef(zoneInfo_t* info, ZStream* buf, LeaderboardDef* data);
 void * addLeaderboardDef(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// FxImpactTableData
+void writeFxImpactTable(zoneInfo_t* info, ZStream* buf, FxImpactTable* data);
+void * addFxImpactTable(zoneInfo_t* info, const char* name, char* data, int dataLen);

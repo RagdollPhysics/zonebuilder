@@ -160,7 +160,7 @@ void buildDefaults()
 	loc->localizedString = NULL;
 	addAsset(info, ASSET_TYPE_LOCALIZE, "CGAME_UNKNOWN", loc);
 	loadAsset(info, ASSET_TYPE_FX, "THIS_SHOULDNT_EXIST", "misc/missing_fx");
-	//loadAsset(info, ASSET_TYPE_IMPACTFX, "THIS_SHOULDNT_EXIST", "default");
+	loadAsset(info, ASSET_TYPE_IMPACTFX, "THIS_SHOULDNT_EXIST", "default");
 	loadAsset(info, ASSET_TYPE_RAWFILE, "THIS_SHOULDNT_EXIST", "codescripts/$default");
 	loadAsset(info, ASSET_TYPE_STRINGTABLE, "THIS_SHOULDNT_EXIST", "mp/defaultStringTable.csv");
 	loadAsset(info, ASSET_TYPE_LEADERBOARDDEF, "THIS_SHOULDNT_EXIST", "DEFAULT_LB");

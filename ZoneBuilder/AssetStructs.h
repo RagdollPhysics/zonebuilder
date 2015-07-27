@@ -24,12 +24,11 @@ struct Font;
 //struct MenuFile;
 //struct Menu;
 struct Localize;
-//struct SndDriverGlobals;
-//struct FX;
-//struct ImpactFX;
+struct FXEffectDef;
+struct FxImpactTable;
 struct Rawfile;
 struct StringTable;
-//struct LeaderboardDef;
+struct LeaderboardDef;
 struct StructuredDataDefSet;
 struct Tracer;
 //struct Vehicle;
@@ -140,10 +139,16 @@ struct Localize
 	const char * name;
 };
 
-struct ImpactFX
+struct FxImpactEntry
 {
-	const char* name;
-	char pad[4];
+	FxEffectDef *nonflesh[31];
+	FxEffectDef *flesh[4];
+};
+
+struct FxImpactTable
+{
+	const char *name;
+	FxImpactEntry *table;
 };
 
 struct LbColumnDef

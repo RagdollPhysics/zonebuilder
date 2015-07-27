@@ -136,6 +136,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeFxEffectDef(info, buf, (FxEffectDef*)asset->data);
 		break;
 	case ASSET_TYPE_IMPACTFX:
+		writeFxImpactTable(info, buf, (FxImpactTable*)asset->data);
 		break;
 	case ASSET_TYPE_RAWFILE:
 		writeRawfile(info, buf, (Rawfile*)asset->data);

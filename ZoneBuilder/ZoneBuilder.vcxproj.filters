@@ -201,6 +201,9 @@
     <ClCompile Include="LeaderboardDefData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FxImpactTableData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SteamFriends005.h">

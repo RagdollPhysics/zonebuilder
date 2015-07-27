@@ -87,6 +87,8 @@ SL_ConvertToString_t SL_ConvertToString = (SL_ConvertToString_t)0x4EC1D0;
 SL_GetString_t SL_GetString = (SL_GetString_t)0x48F890;
 SL_GetString_system_t SL_GetString_2 = (SL_GetString_system_t)0x4CDC10;
 
+SE_Load_t SE_Load = (SE_Load_t)0x502A30;
+
 // other stuff
 CommandCB_t Cbuf_AddServerText_f = (CommandCB_t)0x4BB9B0;
 

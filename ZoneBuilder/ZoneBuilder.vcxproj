@@ -170,6 +170,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="DumpStuff.cpp" />
     <ClCompile Include="FontData.cpp" />
     <ClCompile Include="FxEffectDefData.cpp" />
+    <ClCompile Include="FxImpactTableData.cpp" />
     <ClCompile Include="GameMapData.cpp" />
     <ClCompile Include="ComWorldData.cpp" />
     <ClCompile Include="GfxLightDefData.cpp" />
