@@ -148,10 +148,10 @@ void buildDefaults()
 	loadAsset(info, ASSET_TYPE_IMAGE, "THIS_SHOULDNT_EXIST", "$white");
 	loadAsset(info, ASSET_TYPE_MATERIAL, "THIS_SHOULDNT_EXIST", "$default");
 	loadAsset(info, ASSET_TYPE_XMODEL, "THIS_SHOULDNT_EXIST", "void");
-	//loadAsset(info, ASSET_TYPE_SOUND, "THIS_SHOULDNT_EXIST", "");
-	//loadAsset(info, ASSET_TYPE_SNDCURVE, "THIS_SHOULDNT_EXIST", "");
-	//loadAsset(info, ASSET_TYPE_LOADED_SOUND, "THIS_SHOULDNT_EXIST", "");
-	//loadAsset(info, ASSET_TYPE_LIGHTDEF, "THIS_SHOULDNT_EXIST", "");
+	loadAsset(info, ASSET_TYPE_SOUND, "THIS_SHOULDNT_EXIST", "null");
+	loadAsset(info, ASSET_TYPE_SNDCURVE, "THIS_SHOULDNT_EXIST", "default");
+	loadAsset(info, ASSET_TYPE_LOADED_SOUND, "THIS_SHOULDNT_EXIST", "null.wav");
+	//loadAsset(info, ASSET_TYPE_LIGHTDEF, "THIS_SHOULDNT_EXIST", "light_dynamic");
 	loadAsset(info, ASSET_TYPE_FONT, "THIS_SHOULDNT_EXIST", "fonts/consolefont");
 	//loadAsset(info, ASSET_TYPE_MENUFILE, "THIS_SHOULDNT_EXIST", "ui/default.menu");
 	//loadAsset(info, ASSET_TYPE_MENU, "THIS_SHOULDNT_EXIST", "default_menu");
@@ -160,13 +160,13 @@ void buildDefaults()
 	loc->localizedString = NULL;
 	addAsset(info, ASSET_TYPE_LOCALIZE, "CGAME_UNKNOWN", loc);
 	loadAsset(info, ASSET_TYPE_FX, "THIS_SHOULDNT_EXIST", "misc/missing_fx");
+	//loadAsset(info, ASSET_TYPE_IMPACTFX, "THIS_SHOULDNT_EXIST", "default");
 	loadAsset(info, ASSET_TYPE_RAWFILE, "THIS_SHOULDNT_EXIST", "codescripts/$default");
 	loadAsset(info, ASSET_TYPE_STRINGTABLE, "THIS_SHOULDNT_EXIST", "mp/defaultStringTable.csv");
 	//loadAsset(info, ASSET_TYPE_LEADERBOARDDEF, "THIS_SHOULDNT_EXIST", "DEFAULT_LB");
 	//loadAsset(info, ASSET_TYPE_STRUCTUREDDATADEF, "THIS_SHOULDNT_EXIST", "mp/defaultStructuredData.def");
 	loadAsset(info, ASSET_TYPE_TRACER, "THIS_SHOULDNT_EXIST", "defaulttracer");
 	//loadAsset(info, ASSET_TYPE_VEHICLE, "THIS_SHOULDNT_EXIST", "defaultvehicle");
-
 	loadAsset(info, ASSET_TYPE_WEAPON, "defaultweapon_mp", "defaultweapon_mp");
 
 	Sleep(100);

@@ -158,6 +158,10 @@ void * addStringTable(zoneInfo_t* info, const char* name, char* data, int dataLe
 // SoundAliasData
 void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data);
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeSndCurve(zoneInfo_t* info, ZStream* buf, SndCurve* data);
+void * addSndCurve(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeLoadedSound(zoneInfo_t* info, ZStream* buf, LoadedSound* data);
+void * addLoadedSound(zoneInfo_t* info, const char* name, char* data, int dataLen);
 
 // FxEffectDefData
 void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data);

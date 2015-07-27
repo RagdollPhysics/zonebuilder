@@ -1,6 +1,27 @@
 #include "StdInc.h"
 #include "Tool.h"
 
+void writeSndCurve(zoneInfo_t* info, ZStream* buf, SndCurve* data)
+{
+	SndCurve* curve = (SndCurve*)buf->at();
+	buf->write(data, sizeof(SndCurve), 1);
+	buf->write(curve->name, strlen(curve->name) + 1, 1);
+
+	curve->name = (char*)-1;
+}
+
+void writeLoadedSound(zoneInfo_t* info, ZStream* buf, LoadedSound* data)
+{
+	LoadedSound* dest = (LoadedSound*)buf->at();
+	buf->write(data, sizeof(LoadedSound), 1);
+
+	buf->write(data->name, 1, strlen(data->name) + 1);
+	dest->name = (const char*)-1;
+
+	buf->write(data->data.soundData, 1, data->data.dataLenth);
+	dest->data.soundData = (char*)-1;
+}
+
 void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 {
 	SoundAliasList* list = (SoundAliasList*)buf->at();
@@ -49,7 +70,7 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 			SoundFile* stream = (SoundFile*)buf->at();
 			buf->write(alias->soundFile, sizeof(SoundFile), 1);
 
-			if (alias->soundFile->type != SAT_STREAMED)
+			if (alias->soundFile->type == SAT_STREAMED)
 			{
 				if (alias->soundFile->data.stream.dir) 
 				{
@@ -63,17 +84,18 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 					stream->data.stream.name = (char*)-1;
 				}
 			}
+			else if (alias->soundFile->type == SAT_LOADED)
+			{
+				writeLoadedSound(info, buf, alias->soundFile->data.loaded);
+				stream->data.loaded = (LoadedSound*)-1;
+			}
 
 			alias->soundFile = (SoundFile*)-1;
 		}
 
 		if (alias->volumeFalloffCurve)
 		{
-			SndCurve* curve = (SndCurve*)buf->at();
-			buf->write(alias->volumeFalloffCurve, sizeof(SndCurve), 1);
-			buf->write(curve->name, strlen(curve->name) + 1, 1);
-
-			curve->name = (char*)-1;
+			writeSndCurve(info, buf, alias->volumeFalloffCurve);
 			alias->volumeFalloffCurve = (SndCurve*)-1;
 		}
 
@@ -90,17 +112,29 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 
 }
 
+void * addSndCurve(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "Can't add new sndCurves!"); return NULL; }
+	return data;
+}
+
+void * addLoadedSound(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "Can't add new loaded_sounds!"); return NULL; }
+	return data;
+}
+
 void * addSoundAlias(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (dataLen < 0) 
 	{
 		SoundAliasList* lst = (SoundAliasList*)data;
-		if (lst->head->soundFile->type != SAT_STREAMED)
+		if (lst->head->soundFile->type == SAT_STREAMED || lst->head->soundFile->type == SAT_LOADED)
 		{
-			Com_Error(0, "Can't export sounds that aren't type SAT_STREAMED!\n");
-			return NULL;
+			return data; // no fixups needed
 		}
-		return data; // no fixups needed
+		Com_Error(false, "Unknown sound type %d!\n", lst->head->soundFile->type);
+		return NULL;
 	}
 
 	// why the hell can't I fucking do string parsing?

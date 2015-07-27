@@ -126,6 +126,12 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	case ASSET_TYPE_SOUND:
 		asset = addSoundAlias(info, name, data, size);
 		break;
+	case ASSET_TYPE_SNDCURVE:
+		asset = addSndCurve(info, name, data, size);
+		break;
+	case ASSET_TYPE_LOADED_SOUND:
+		asset = addLoadedSound(info, name, data, size);
+		break;
 	case ASSET_TYPE_FONT:
 		asset = addFont(info, name, data, size);
 		break;
@@ -148,8 +154,6 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		break;
 	case ASSET_TYPE_LEADERBOARDDEF:
 		break;
-	case ASSET_TYPE_LOADED_SOUND:
-	case ASSET_TYPE_SNDCURVE:
 	case ASSET_TYPE_MPTYPE:
 	case ASSET_TYPE_AITYPE:
 	case ASSET_TYPE_CHARACTER:

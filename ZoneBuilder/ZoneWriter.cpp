@@ -94,8 +94,10 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeSoundAlias(info, buf, (SoundAliasList*)asset->data);
 		break;
 	case ASSET_TYPE_SNDCURVE:
+		writeSndCurve(info, buf, (SndCurve*)asset->data);
+		break;
 	case ASSET_TYPE_LOADED_SOUND:
-		Com_Error(true, "How did you get an asset that you can't write?\n");
+		writeLoadedSound(info, buf, (LoadedSound*)asset->data);
 		break;
 	case ASSET_TYPE_COL_MAP_MP:
 		//writeColMap(info, buf, (Col_Map*)asset->data);
