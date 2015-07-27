@@ -190,3 +190,7 @@ void * addLocalize(zoneInfo_t* info, const char* name, char* data, int dataLen);
 // FontData
 void writeFont(zoneInfo_t* info, ZStream* buf, Font* data);
 void * addFont(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// GfxLightDefData
+void writeGfxLightDef(zoneInfo_t* info, ZStream* buf, GfxLightDef* data);
+void * addGfxLightDef(zoneInfo_t* info, const char* name, char* data, int dataLen);

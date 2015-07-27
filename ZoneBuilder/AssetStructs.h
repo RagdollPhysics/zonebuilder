@@ -14,28 +14,25 @@ struct MaterialTechniqueSet;
 struct GfxImage;
 struct SoundAliasList;
 struct SndCurve;
-//struct Loaded_Sound;
+struct LoadedSound;
 //struct CollisionMap;
 //struct ComMap;
 //struct FxMap;
 //struct GfxMap;
-//struct LightDef;
-//struct UiMap;
+struct GfxLightDef;
 struct Font;
 //struct MenuFile;
 //struct Menu;
 struct Localize;
-//struct Weapon;
 //struct SndDriverGlobals;
 //struct FX;
 //struct ImpactFX;
 struct Rawfile;
 struct StringTable;
 //struct LeaderboardDef;
-//struct StructuredDataDef;
+struct StructuredDataDefSet;
 struct Tracer;
 //struct Vehicle;
-//struct AddonMapEnts;
 
 #include "XAnim.h"
 #include "Material.h"
@@ -44,6 +41,7 @@ struct Tracer;
 #include "FX.h"
 #include "Maps.h"
 #include "Weapon.h"
+#include "StructuredDataDef.h"
 
 struct PhysPreset
 {
@@ -96,10 +94,17 @@ struct GfxMap
 	char pad[624];
 };
 
-struct LightDef
+struct GfxLightImage
 {
-	const char* name;
-	char pad[14];
+	GfxImage *image;
+	char samplerState;
+};
+
+struct GfxLightDef
+{
+	const char *name;
+	GfxLightImage attenuation;
+	int lmapLookupStart;
 };
 
 struct FontEntry
@@ -145,12 +150,6 @@ struct LeaderboardDef
 {
 	const char* name;
 	char pad[32];
-};
-
-struct StructuredDataDef
-{
-	const char* name;
-	char pad[8];
 };
 
 struct Tracer

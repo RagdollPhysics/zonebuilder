@@ -151,7 +151,7 @@ void buildDefaults()
 	loadAsset(info, ASSET_TYPE_SOUND, "THIS_SHOULDNT_EXIST", "null");
 	loadAsset(info, ASSET_TYPE_SNDCURVE, "THIS_SHOULDNT_EXIST", "default");
 	loadAsset(info, ASSET_TYPE_LOADED_SOUND, "THIS_SHOULDNT_EXIST", "null.wav");
-	//loadAsset(info, ASSET_TYPE_LIGHTDEF, "THIS_SHOULDNT_EXIST", "light_dynamic");
+	loadAsset(info, ASSET_TYPE_LIGHTDEF, "THIS_SHOULDNT_EXIST", "light_dynamic");
 	loadAsset(info, ASSET_TYPE_FONT, "THIS_SHOULDNT_EXIST", "fonts/consolefont");
 	//loadAsset(info, ASSET_TYPE_MENUFILE, "THIS_SHOULDNT_EXIST", "ui/default.menu");
 	//loadAsset(info, ASSET_TYPE_MENU, "THIS_SHOULDNT_EXIST", "default_menu");

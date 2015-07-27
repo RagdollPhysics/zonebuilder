@@ -195,6 +195,9 @@
     <ClCompile Include="FontData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GfxLightDefData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SteamFriends005.h">
@@ -279,6 +282,9 @@
       <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
     <ClInclude Include="GfxWorld.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="StructuredDataDef.h">
       <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
   </ItemGroup>

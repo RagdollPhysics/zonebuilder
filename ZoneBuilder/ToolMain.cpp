@@ -132,6 +132,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	case ASSET_TYPE_LOADED_SOUND:
 		asset = addLoadedSound(info, name, data, size);
 		break;
+	case ASSET_TYPE_LIGHTDEF:
+		asset = addGfxLightDef(info, name, data, size);
+		break;
 	case ASSET_TYPE_FONT:
 		asset = addFont(info, name, data, size);
 		break;

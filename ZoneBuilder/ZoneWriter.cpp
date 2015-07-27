@@ -114,9 +114,10 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		break;
 	case ASSET_TYPE_FX_MAP:
 	case ASSET_TYPE_GFX_MAP:
-	case ASSET_TYPE_LIGHTDEF:
-	case ASSET_TYPE_UI_MAP:
 		Com_Error(true, "How did you get an asset that you can't write?\n");
+		break;
+	case ASSET_TYPE_LIGHTDEF:
+		writeGfxLightDef(info, buf, (GfxLightDef*)asset->data);
 		break;
 	case ASSET_TYPE_FONT:
 		writeFont(info, buf, (Font*)asset->data);
@@ -139,12 +140,6 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		break;
 	case ASSET_TYPE_IMPACTFX:
 		break;
-	case ASSET_TYPE_AITYPE:
-	case ASSET_TYPE_MPTYPE:
-	case ASSET_TYPE_CHARACTER:
-	case ASSET_TYPE_XMODELALIAS:
-		Com_Error(true, "How did you get an asset that you can't write?\n");
-		break;
 	case ASSET_TYPE_RAWFILE:
 		writeRawfile(info, buf, (Rawfile*)asset->data);
 		break;
@@ -159,7 +154,6 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeTracer(info, buf, (Tracer*)asset->data);
 		break;
 	case ASSET_TYPE_VEHICLE:
-	case ASSET_TYPE_ADDON_MAP_ENTS:
 		Com_Error(true, "How did you get an asset that you can't write?\n");
 		break;
 	}

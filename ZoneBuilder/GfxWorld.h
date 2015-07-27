@@ -72,21 +72,6 @@ struct GfxWorldVertexData
 	IDirect3DVertexBuffer9* worldVb;
 };
 
-#pragma pack(push, 4)
-struct GfxLightImage
-{
-	GfxImage *image;
-	char samplerState;
-};
-#pragma pack(pop)
-
-struct GfxLightDef
-{
-	const char *name;
-	GfxLightImage attenuation;
-	int lmapLookupStart;
-};
-
 struct GfxLight
 {
 	char type;

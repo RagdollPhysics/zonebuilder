@@ -276,8 +276,13 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen)
 
 void* addGfxImage(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if (dataLen > 0) { Com_Error(false, "Can't create GfxImage's directly. Use Materials\n"); return NULL; }
+	if (dataLen > 0) 
+	{
+		GfxImage* ret = LoadImageFromIWI(name, SEMANTIC_COLOR_MAP, 0, 0);
+		return ret;
+	}
 
+	// need to fix it to have a correct loadDef here
 	char fname[64] = { 0 };
 	_snprintf(fname, sizeof(fname), "images/%s.iwi", name);
 
