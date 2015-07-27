@@ -86,7 +86,7 @@ extern void parseArgs();
 //extern void writeZone(zoneInfo_t * info);
 extern ZStream* writeZone(zoneInfo_t * info);
 extern int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf);
-extern int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf);
+extern int requireAsset(zoneInfo_t* info, int type, const char* name, ZStream* buf);
 
 // ZoneData
 extern zoneInfo_t * getZoneInfo(const char * zoneName);
@@ -182,3 +182,7 @@ void * addTracer(zoneInfo_t* info, const char* name, char* data, int dataLen);
 // LocalizeData
 void writeLocalize(zoneInfo_t* info, ZStream* buf, Localize* data);
 void * addLocalize(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// FontData
+void writeFont(zoneInfo_t* info, ZStream* buf, Font* data);
+void * addFont(zoneInfo_t* info, const char* name, char* data, int dataLen);

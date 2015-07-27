@@ -14,7 +14,7 @@ typedef struct
 xZoneMemory memory = { 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 
 // must be called before you write anything in your asset!!!
-int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
+int requireAsset(zoneInfo_t* info, int type, const char* name, ZStream* buf)
 {
 	int a = containsAsset(info, type, name);
 
@@ -117,6 +117,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		Com_Error(true, "How did you get an asset that you can't write?\n");
 		break;
 	case ASSET_TYPE_FONT:
+		writeFont(info, buf, (Font*)asset->data);
 		break;
 	case ASSET_TYPE_MENUFILE:
 	case ASSET_TYPE_MENU:

@@ -168,6 +168,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="ConsoleCommands.cpp" />
     <ClCompile Include="CSVFile.cpp" />
     <ClCompile Include="DumpStuff.cpp" />
+    <ClCompile Include="FontData.cpp" />
     <ClCompile Include="FxEffectDefData.cpp" />
     <ClCompile Include="GameMapData.cpp" />
     <ClCompile Include="ComWorldData.cpp" />

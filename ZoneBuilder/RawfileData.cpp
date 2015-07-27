@@ -6,14 +6,15 @@ void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 	Rawfile* dest = (Rawfile*)buf->at();
 	buf->write(data, sizeof(Rawfile), 1);
 
-	if (data->sizeCompressed == 0) data->compressedData = NULL;
-
-	dest->name = (const char*)-1;
+	unsigned int writeLen = data->sizeCompressed;
+	if (writeLen == 0) writeLen = data->sizeUnCompressed + 1;
 
 	buf->write(data->name, strlen(data->name) + 1, 1);
+	dest->name = (const char*)-1;
+
 	if (data->compressedData)
 	{
-		buf->write(data->compressedData, data->sizeCompressed, 1);
+		buf->write(data->compressedData, writeLen, 1);
 		dest->compressedData = (char*)-1;
 	}
 }
