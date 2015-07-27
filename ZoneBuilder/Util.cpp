@@ -215,6 +215,20 @@ const char* getAssetStringForType(int type)
 	return assetTypeStrings[type];
 }
 
+const char* getAssetName(int type, void* data)
+{
+	if (type == ASSET_TYPE_LOCALIZE) return ((Localize*)data)->name;
+	if (type == ASSET_TYPE_IMAGE) return ((GfxImage*)data)->name;
+	return ((Rawfile*)data)->name;
+}
+
+void setAssetName(int type, void* data, const char* name)
+{
+	if (type == ASSET_TYPE_LOCALIZE) ((Localize*)data)->name = strdup(name);
+	else if (type == ASSET_TYPE_IMAGE) ((GfxImage*)data)->name = strdup(name);
+	else ((Rawfile*)data)->name = strdup(name);
+}
+
 int iArgCount = 0;
 
 int getArgc()
@@ -249,6 +263,11 @@ long flength(FILE* fp)
 	long ret = ftell(fp);
 	fseek(fp, i, SEEK_SET);
 	return ret;
+}
+
+unsigned int alignTo(unsigned int value, unsigned int alignment)
+{
+	return (~alignment & (alignment + value));
 }
 
 extern unsigned int R_HashString(const char* string);

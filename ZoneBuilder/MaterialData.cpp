@@ -122,13 +122,8 @@ int parseMatFile(char* data, size_t dataLen)
 	return 0;
 }
 
-GfxImage* LoadImageFromIWI(const char* name, char semantic, char category, char flags)
+_IWI* LoadIWIHeader(const char* name)
 {
-	GfxImage* ret = new GfxImage;
-	memset(ret, 0, sizeof(GfxImage));
-	ret->texture = new GfxImageLoadDef;
-	memset(ret->texture, 0, sizeof(GfxImageLoadDef));
-
 	char fname[64] = { 0 };
 	_snprintf(fname, sizeof(fname), "images/%s.iwi", name);
 
@@ -141,12 +136,50 @@ GfxImage* LoadImageFromIWI(const char* name, char semantic, char category, char 
 	{
 		Com_Error(1, "Image does not exist: %s!", fname);
 		delete buf;
-		delete ret;
 		return NULL;
 	}
 
 	FS_Read(buf, sizeof(_IWI), handle);
 	FS_FCloseFile(handle);
+	return buf;
+}
+
+GfxImageLoadDef* GenerateLoadDef(GfxImage* image, short iwi_format )
+{
+	GfxImageLoadDef* texture = new GfxImageLoadDef;
+	memset(texture, 0, sizeof(GfxImageLoadDef));
+
+	switch (iwi_format)
+	{
+	case IWI_ARGB:
+		texture->format = 21;
+		break;
+	case IWI_RGB8:
+		texture->format = 20;
+		break;
+	case IWI_DXT1:
+		texture->format = 0x31545844;
+		break;
+	case IWI_DXT3:
+		texture->format = 0x33545844;
+		break;
+	case IWI_DXT5:
+		texture->format = 0x35545844;
+		break;
+	}
+	texture->dimensions[0] = image->width;
+	texture->dimensions[1] = image->height;
+	texture->dimensions[2] = image->depth;
+
+	return texture;
+}
+
+GfxImage* LoadImageFromIWI(const char* name, char semantic, char category, char flags)
+{
+	GfxImage* ret = new GfxImage;
+	memset(ret, 0, sizeof(GfxImage));
+
+	_IWI* buf = LoadIWIHeader(name);
 
 	ret->height = buf->xsize;
 	ret->width = buf->ysize;
@@ -159,27 +192,9 @@ GfxImage* LoadImageFromIWI(const char* name, char semantic, char category, char 
 	ret->flags = flags;
 	ret->mapType = 3; // hope that works lol
 
-	switch (buf->format)
-	{
-	case IWI_ARGB:
-		ret->texture->format = 21;
-		break;
-	case IWI_RGB8:
-		ret->texture->format = 20;
-		break;
-	case IWI_DXT1:
-		ret->texture->format = 0x31545844;
-		break;
-	case IWI_DXT3:
-		ret->texture->format = 0x33545844;
-		break;
-	case IWI_DXT5:
-		ret->texture->format = 0x35545844;
-		break;
-	}
-	ret->texture->dimensions[0] = ret->width;
-	ret->texture->dimensions[1] = ret->height;
-	ret->texture->dimensions[2] = ret->depth;
+	ret->texture = GenerateLoadDef(ret, buf->format);
+
+	delete buf;
 
 	return ret;
 }
@@ -188,9 +203,15 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (data == NULL) return NULL;
 
-	if(dataLen < 0) 
+	if (dataLen < 0)
 	{
 		Material* mat = (Material*)data;
+		for (int i = 0; i < mat->textureCount; i++)
+		{
+			_IWI* buf = LoadIWIHeader(mat->textureTable[i].info.image->name);
+			mat->textureTable[i].info.image->texture = GenerateLoadDef(mat->textureTable[i].info.image, buf->format);
+			delete buf;
+		}
 		addAsset(info, ASSET_TYPE_TECHSET, mat->techniqueSet->name, addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1));
 		return data;
 	}
@@ -251,4 +272,23 @@ void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen)
 	addAsset(info, ASSET_TYPE_TECHSET, mat->techniqueSet->name, addTechset(info, mat->techniqueSet->name, (char*)mat->techniqueSet, -1));
 
 	return mat;
+}
+
+void* addGfxImage(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "Can't create GfxImage's directly. Use Materials\n"); return NULL; }
+
+	char fname[64] = { 0 };
+	_snprintf(fname, sizeof(fname), "images/%s.iwi", name);
+
+	_IWI* buf = LoadIWIHeader(name);
+
+	GfxImage* ret = new GfxImage;
+	memcpy(ret, data, sizeof(GfxImage));
+
+	ret->texture = GenerateLoadDef(ret, buf->format);
+
+	delete buf;
+
+	return ret;
 }

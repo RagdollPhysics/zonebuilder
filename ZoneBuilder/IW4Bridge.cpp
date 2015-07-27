@@ -14,7 +14,6 @@ void PatchMW2_StringList();
 void PatchMW2_CryptoFiles();
 void PatchMW2_CModels();
 void PatchMW2_FifthInfinity();
-void PatchMW2_FilePointers();
 void PatchMW2_AssetRestrict();
 void doWeaponEntries();
 
@@ -251,18 +250,17 @@ void AddEntryNameHookFunc(int type, const char* name, void* asset)
 		return;
 	}
 
-	// cant be changed so hide them
-	if (type == ASSET_TYPE_PIXELSHADER ||
-		type == ASSET_TYPE_VERTEXSHADER ||
-		type == ASSET_TYPE_VERTEXDECL ||
-		type == ASSET_TYPE_TECHSET)
-		return;
-
 	char blah[1024] = { 0 };
 	_snprintf(blah, sizeof(blah), "%s,%s\n", getAssetStringForType(type), name);
 
 	//OutputDebugString(blah);
-	Com_Printf(blah);
+	if (type == ASSET_TYPE_PIXELSHADER ||
+		type == ASSET_TYPE_VERTEXSHADER ||
+		type == ASSET_TYPE_VERTEXDECL ||
+		type == ASSET_TYPE_TECHSET)
+		Com_Printf_logOnly(blah);
+	else
+		Com_Printf(blah);
 }
 
 void __declspec(naked) AddEntryNameHookStub()
@@ -312,8 +310,7 @@ const char* soundLoadingHook(const char* ptr)
 void InitBridge()
 {
 	parseArgs();
-	if (console)
-		InitConsole();
+	InitConsole();
 
 	Com_Printf("Initializing IW4...\n");
 
@@ -328,7 +325,7 @@ void InitBridge()
 	//PatchMW2_StringList(); // for some reason the SL is messed up?
 	PatchMW2_CryptoFiles(); // let us pull from iw4c fastfiles
 	PatchMW2_CModels();
-	PatchMW2_FifthInfinity();
+	//PatchMW2_FifthInfinity();
 	PatchMW2_AssetRestrict();
 
 	SetConsoleTitle("ZoneBuilder"); // branding

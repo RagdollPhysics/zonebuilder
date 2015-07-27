@@ -5,7 +5,7 @@
 
 void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if(dataLen > 0) { Com_Error(false, "How did we get a non bulitin techset?"); return NULL; }
+	if (dataLen > 0) { Com_Error(false, "Can't create Techsets directly. Use Materials\n"); return NULL; }
 
 	MaterialTechniqueSet* asset = (MaterialTechniqueSet*)data;
 
@@ -20,7 +20,6 @@ void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 		addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);		
 	}
 
-	//addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
 	return data;
 }
 
@@ -50,10 +49,13 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 	buf->write(data, sizeof(MaterialTechniqueSet), 1);
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
+	dest->remappedTechniques = NULL;
 
 	for(int i=0; i<48; i++)
 	{
 		if(!dest->techniques[i]) continue;
+
+		if (dest->techniques[i]->numPasses > 1) Com_Error(true, "Error in techset %s: more than one pass in technique?\n", data->name);
 
 		MaterialTechnique* tech = (MaterialTechnique*)buf->at();
 		buf->write(dest->techniques[i], sizeof(MaterialTechnique), 1);
@@ -78,7 +80,7 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 
 void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if (dataLen > 0) { Com_Error(false, "no custom pixel shaders yet\n"); return NULL; }
+	if (dataLen > 0) { Com_Error(false, "Can't create PixelShaders directly. Use Materials\n"); return NULL; }
 	return data;
 }
 
@@ -96,7 +98,7 @@ void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 
 void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if (dataLen > 0) { Com_Error(false, "no custom vertex shaders yet\n"); return NULL; }
+	if (dataLen > 0) { Com_Error(false, "Can't create VertexShaders directly. Use Materials\n"); return NULL; }
 	return data;
 }
 
@@ -114,7 +116,7 @@ void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
 
 void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if (dataLen > 0) { Com_Error(false, "no custom vertex decls yet\n"); return NULL; }
+	if (dataLen > 0) { Com_Error(false, "Can't create VertexDecl's directly. Use Materials\n"); return NULL; }
 	return data;
 }
 

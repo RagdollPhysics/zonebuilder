@@ -48,8 +48,6 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 			{
 				Com_Debug("Got Default asset! Make sure this is correct\n");
 			}
-			if (type == ASSET_TYPE_LOCALIZE) ((Localize*)data)->name = (char*)name;
-			else ((Rawfile*)data)->name = name;
 			size = -1;
 		}
 	}
@@ -83,7 +81,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		asset = addVertexDecl(info, name, data, size);
 		break;
 	case ASSET_TYPE_IMAGE:
-		//asset = addPixelShader(info, name, data, size);
+		asset = addGfxImage(info, name, data, size);
 		break;
 	case ASSET_TYPE_TECHSET:
 	{

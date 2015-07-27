@@ -60,8 +60,11 @@ extern void Com_Debug_(bool logOnly, const char* format, ...);
 extern void Com_Quit();
 extern int getAssetTypeForString(const char* str);
 extern const char* getAssetStringForType(int type);
+extern const char* getAssetName(int type, void* data);
+extern void setAssetName(int type, void* data, const char* name);
 extern int getArgc();
 extern LPSTR* getArgs();
+extern unsigned int alignTo(unsigned int value, unsigned int alignment);
 extern long flength(FILE* fp);
 extern void debugChecks();
 extern void Com_LoadZones(XZoneInfo* zones, int count);
@@ -116,7 +119,10 @@ extern void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data);
 
 // MaterialData
 extern void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen);
+extern void* addGfxImage(zoneInfo_t* info, const char* name, char* data, int dataLen);
 extern void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data);
+extern void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data);
+
 
 // TechsetData
 extern void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen);

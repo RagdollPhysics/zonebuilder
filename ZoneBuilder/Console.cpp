@@ -313,6 +313,8 @@ void InitConsole()
 	sysErrorHook.initialize(HOOK_Sys_Error, Sys_Error);
 	sysErrorHook.installHook();
 
+	if (!console) return;
+
 	consoleInputHook.initialize(HOOK_Sys_ConsoleInput, Sys_ConsoleInput);
 	consoleInputHook.installHook();
 

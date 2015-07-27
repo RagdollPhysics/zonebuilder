@@ -68,15 +68,10 @@ int addAsset(zoneInfo_t* info, int type, const char* name, void* data)
 	if(a >= 0) return a;
 
 	// force data to have correct name
-	const char* assetName = *(const char**)data;
-	if (type == ASSET_TYPE_LOCALIZE)
-		assetName = ((Localize*)data)->name;
+	const char* assetName = getAssetName(type, data);
 	if (strcmp(assetName, name))
 	{
-		if (type == ASSET_TYPE_LOCALIZE)
-			((Localize*)data)->name = strdup(name);
-		else
-			*(const char**)data = strdup(name);
+		setAssetName(type, data, name);
 	}
 
 	info->assets[info->assetCount].name = R_HashString(name);

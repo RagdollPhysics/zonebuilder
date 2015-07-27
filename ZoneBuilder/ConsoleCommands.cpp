@@ -145,7 +145,7 @@ void buildDefaults()
 	loadAsset(info, ASSET_TYPE_VERTEXSHADER, "THIS_SHOULDNT_EXIST", "transform_only.hlsl");
 	loadAsset(info, ASSET_TYPE_VERTEXDECL, "THIS_SHOULDNT_EXIST", "pp");
 	loadAsset(info, ASSET_TYPE_TECHSET, "THIS_SHOULDNT_EXIST", "default");
-	loadAsset(info, ASSET_TYPE_IMAGE, "THIS_SHOULDNT_EXIST", "");
+	loadAsset(info, ASSET_TYPE_IMAGE, "THIS_SHOULDNT_EXIST", "$white");
 	loadAsset(info, ASSET_TYPE_MATERIAL, "THIS_SHOULDNT_EXIST", "$default");
 	loadAsset(info, ASSET_TYPE_XMODEL, "THIS_SHOULDNT_EXIST", "void");
 	loadAsset(info, ASSET_TYPE_SOUND, "THIS_SHOULDNT_EXIST", "");

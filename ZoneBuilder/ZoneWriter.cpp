@@ -25,7 +25,7 @@ int requireAsset(zoneInfo_t* info, int type, char* name, ZStream* buf)
 		// we are returning the offset to the pointer in the asset index which isn't generated until load time
 		// go figure
 		if (desiredFFVersion == 276)
-			return (3 << 28) | ((info->index_start + (8 * (a + 1))) & 0x0FFFFFFF);
+			return (3 << 28) | ((info->index_start + (8 * a) + 4) & 0x0FFFFFFF) + 1;
 		else if (desiredFFVersion == 277)
 			return off | 0xF0000000;
 	}
@@ -42,9 +42,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	if(asset->written) return asset->offset;
 	asset->offset = getOffsetForWrite(info, 0x03, buf);
 
-	const char* name = ((Rawfile*)asset->data)->name;
-	if (asset->type == ASSET_TYPE_LOCALIZE)
-		name = ((Localize*)asset->data)->name;
+	const char* name = name = getAssetName(asset->type, asset->data);
 
 	// hide the useless assets that we can't change
 	if (asset->type != ASSET_TYPE_TECHSET &&
@@ -89,7 +87,9 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 	case ASSET_TYPE_TECHSET:
 		writeTechset(info, buf, (MaterialTechniqueSet*)asset->data);
 		break;
-	// ASSET_TYPE_IMAGE - handled by material
+	case ASSET_TYPE_IMAGE:
+		writeGfxImage(info, buf, (GfxImage*)asset->data);
+		break;
 	case ASSET_TYPE_SOUND:
 		writeSoundAlias(info, buf, (SoundAliasList*)asset->data);
 		break;
@@ -189,6 +189,9 @@ ZStream* writeZone(zoneInfo_t * info)
     }
 
 	info->index_start = buf->getStreamOffset(3) - 56;
+	info->index_start = alignTo(info->index_start, 4) + 1; // align it to 4 bytes
+
+	Com_Debug("Index start is at 0x%x", info->index_start);
 
 	int neg1 = -1;
     for(int i=0; i<info->assetCount; i++)
