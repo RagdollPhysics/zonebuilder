@@ -70,22 +70,22 @@ hr
 
 .yes
 {
-    background-color: green;
+    background-color: hsl(120, 66%, 35%);
 }
 
 .no
 {
-    background-color: red;
+    background-color: hsl(0, 100%, 35%);
 }
 
 .wip
 {
-    background-color: yellow;
+    background-color: hsl(60, 100%, 35%);
 }
 
 .na
 {
-    background-color: orange;
+    background-color: #818181;
 }
 
 /* text alignment classes */
