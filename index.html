@@ -1,45 +1,42 @@
 <html>
-<link href="style.css" rel="stylesheet" type="text/css">
-<title>RagdollPhysics</title>
-<head>
-<h1>RagdollPhysics</h1></br>
-</head>
-<body>
-<div>
-<div class="navbar" style="">
-<a href="/TheApadayo/">Home</a>
-<a href="/TheApadayo/projects.html">Projects</a>
-<a href="http://ragdollphysics.wordpress.com/">Blog</a>
-<a href="http://www.youtube.com/user/TheApadayo">Youtube</a>
-</div>
-<div class="content-area" style="">
-Well Hey.... didn't think you would actually get here.....</p>
-Anyways.....</p>
-Blog: <a href="http://ragdollphysics.wordpress.com">http://ragdollphysics.wordpress.com</a></p>
-Youtube: <a href="http://www.youtube.com/user/TheApadayo">http://www.youtube.com/user/TheApadayo</a>
-</p>
-<b>Some Quotes</b></p>
-</p>
-<ul style="text-align: left">
-<li>We're not shooting for realism... We're shooting for awesome.</li>
-<li>Some people say that Obama was responsible for the hurricane. Now, I'm more likely to vote for the guy who is able to control the weather.</li>
-<li>You can't fix stupid.</li>
-<li>When life gives you lemons, make orange juice. And leave everyone wondering how the fuck you did it.</li>
-<li>C makes it easy to shoot yourself in the foot; c++ makes it harder, but when you do, it blows away your whole leg.</li>
-<li>Thre are 10 types of people in this world, those who understand binary, and those who don't and those who weren't expecting a base 3 joke.</li>
-<li>Black holes are where God divided by zero.</li>
-<li>For every complex problem, there is an answer that is clear, easy, simple, and wrong.</li>
-<li>Programming today is a race between programmers making bigger and better idiot-proof programs while the universe makes bigger and better idiots. So far, the Universe is winning.</li>
-<li>The generation of random numbers is too imporant to be left to chance.</li>
-<li>It's always funny until someone gets hurt. Then it's funnier.</li>
-<li>Some say the world will end in fire... others say it will end in segfaults.</li>
-<li>When something doesn't work, come back to it later and it will work for no fucking reason at all.</li>
-<li>Never assume something is a bug, unless it really pisses you off.</li>
-<li>The internet was created for arguing over long distances.</li>
-<li>People who say records are meant to be broken have never held one.</li>
-<li>Gravity is a Lie.</li>
-</ul>
-</div>
-</div>
-</body>
+    <link href="style.css" rel="stylesheet">
+    <script src="jquery.csv-0.71.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '',
+                async: false,
+                success: function (csvd) {
+                    data = $.csv.toArrays(csvd);
+                    $('#content').append('<table class="">\n');
+                    
+                    $('#content').append('</table>\n');
+                },
+                dataType: 'text',
+                complete: function () {
+                    // call a function on complete 
+                }
+            });
+        });
+    </script>
+    <title>ZoneBuilder</title>
+    
+        <head>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+        <div class="banner-image" style="width: 1280px;height: 200px">
+            <div class="banner-text align-center">ZoneBuilder</div>
+        <div class="banner-subtext align-center">The IW4 fastfile creator</div>
+        </div>
+    </head>
+    
+    <body>
+        <div class="content-area" id="content">
+            
+        </div>
+        <div class="clearfix"></div>
+    </body>
+    
+    <div class="footer">
+        <p>&copy; 2015 TheApadayo</p>
+    </div>
 </html>
