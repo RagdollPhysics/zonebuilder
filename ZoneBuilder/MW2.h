@@ -18,7 +18,7 @@ typedef enum assetType_e
 	ASSET_TYPE_PHYSPRESET = 0,
 	ASSET_TYPE_PHYS_COLLMAP = 1,
 	ASSET_TYPE_XANIM = 2,
-	ASSET_TYPE_XModelSurfaces = 3,
+	ASSET_TYPE_XMODELSURFS = 3,
 	ASSET_TYPE_XMODEL = 4,
 	ASSET_TYPE_MATERIAL = 5,
 	ASSET_TYPE_PIXELSHADER = 6,
@@ -205,209 +205,6 @@ typedef struct
 	float x, y, z;
 } Vector3;
 
-/*typedef struct
-{
-	float x;
-	float y;
-	float w;
-	float h;
-} rectangleDef_t;
-
-typedef rectangleDef_t Rectangle;*/
-
-typedef struct  
-{
-	int type;
-	int id;
-	void* extraData;
-} menuExpToken_t;
-
-typedef struct  
-{
-	int count;
-	menuExpToken_t* tokens;
-} menuExpression_t;
-
-typedef struct  
-{
-	void* data;
-	int type;
-} menuStatement_t;
-
-typedef struct  
-{
-	int numStatements;
-	menuStatement_t** statements;
-} menuScript_t;
-
-typedef struct
-{
-	char* name;
-	vec4_t rect;
-	char rectAlignX;
-	char rectAlignY;
-	// 22
-	char pad[2];
-	// 24
-	float originX;
-	float originY;
-	// 32
-	char pad2[12];
-	// 44
-	char* group;
-	// 48
-	int style;
-	int border;
-	int ownerDraw;
-	int ownerDrawFlags;
-	float borderSize;
-	// 68
-	int flags1;
-	int flags2;
-	int unknown1;
-	// 80
-	vec4_t foreColor;
-	vec4_t backColor;
-	vec4_t borderColor;
-	vec4_t outlineColor;
-	// 144
-	vec4_t unknownColor;
-	// 160
-	void* background;
-} windowDef_t;
-
-typedef windowDef_t Window;
-
-#define MAX_LB_COLUMNS 16
-
-typedef struct columnInfo_s {
-	int pos;
-	int width;
-	int maxChars;
-	int unknown;
-} columnInfo_t;
-
-typedef struct listBoxDef_s {
-	int cursorPos;
-	int unk;
-	int startPos;
-	int endPos;
-	float elementWidth;
-	float elementHeight;
-	int elementStyle;
-	int numColumns;
-	columnInfo_t columnInfo[MAX_LB_COLUMNS];
-	menuScript_t* doubleClick;
-	int notselectable;
-	int noscrollbars;
-	int usepaging;
-} listBoxDef_t;
-
-typedef struct  
-{
-	int type;
-	menuExpression_t* expression;
-} componentExpression_t;
-
-typedef struct
-{
-	int expression;
-	char* comp1;
-	char* comp2;
-} componentExpressionDef_t;
-
-componentExpressionDef_t* componentExpressions = (componentExpressionDef_t*)0x745FA0;
-
-typedef struct execKey_s
-{
-	union
-	{
-		char key[4];
-		int keyInt;
-	};
-	menuScript_t* script;
-	execKey_s* next;
-} execKey_t;
-
-typedef struct  
-{
-	Window window;
-	// 164
-	char pad1[20];
-	// 184
-	int type;
-	int unknownType;
-	int align;
-	int textFont;
-	int textAlign;
-	float textAlignX;
-	float textAlignY;
-	float textScale;
-	int textStyle;
-	int unknown;
-	int unknown2;
-	char* text;
-	int unknown3;
-	int unknown4;
-	menuScript_t* mouseEnterText;
-	menuScript_t* mouseExitText;
-	menuScript_t* mouseEnter;
-	menuScript_t* mouseExit;
-	menuScript_t* action;
-	menuScript_t* accept;
-	menuScript_t* onFocus;
-	menuScript_t* leaveFocus;
-	char* dvar;
-	char* dvarTest;
-	execKey_t* execKeys;
-	void* testDvarValue;
-	char* localVar;
-	int testDvarType;
-	char** focusSound;
-	float feeder;
-	int cursorPos;
-	void* typeData;
-	char pad2[4];
-	int numExpressions;
-	componentExpression_t* expressions;
-	menuExpression_t* visibleExp;
-	menuExpression_t* disabledExp;
-	menuExpression_t* textExp;
-	menuExpression_t* materialExp;
-} itemDef_t;
-
-typedef struct
-{
-	Window window;
-	int unknown2;
-	int fullscreen;
-	int numItems;
-	int unknown3;
-	int unknown4;
-	int fadeCycle;
-	float fadeClamp;
-	float fadeAmount;
-	float fadeInAmount;
-	float blurWorld;
-	menuScript_t* onOpen;
-	menuScript_t* onRequestClose;
-	menuScript_t* onClose;
-	menuScript_t* onESC;
-	execKey_t* execKeys;
-	void* visibleExp;
-	char* allowedBinding;
-	char* soundLoop;
-	int unknown5;
-	vec4_t focusColor;
-	void* rectXExp;
-	void* rectYExp;
-	void* rectHExp;
-	void* rectWExp;
-	void* openSoundExp;
-	void* closeSoundExp;
-	itemDef_t** items;
-} menuDef_t;
-
 typedef struct
 {
 	char			pakFilename[256];			// c:\quake3\baseq3\pak0.pk3
@@ -545,6 +342,12 @@ extern DB_FindXAssetHeader_t DB_FindXAssetHeader;
 typedef void* (__cdecl * DB_IsAssetDefault_t)(int type, const char* filename);
 extern DB_IsAssetDefault_t DB_IsAssetDefault;
 
+typedef int (__cdecl * DB_GetXAssetTypeSize_t)(int type);
+extern DB_GetXAssetTypeSize_t DB_GetXAssetTypeSize;
+
+typedef void(__cdecl * DB_EnumXAssets_t)(assetType_t type, void(*handler)(void*, int), int userData);
+extern DB_EnumXAssets_t DB_EnumXAssets;
+
 typedef dvar_t* (__cdecl * Dvar_RegisterBool_t)(const char* name, bool default, int flags, const char* description);
 extern Dvar_RegisterBool_t Dvar_RegisterBool;
 
@@ -668,6 +471,9 @@ extern SL_GetString_t SL_GetString;
 
 typedef short (__cdecl * SL_GetString_system_t)(const char* string, int a2);
 extern SL_GetString_system_t SL_GetString_2;
+
+typedef char* (__cdecl * SE_Load_t)(char* file, int Unk);
+extern SE_Load_t SE_Load;
 
 // other stuff
 extern CommandCB_t Cbuf_AddServerText_f;

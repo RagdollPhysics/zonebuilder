@@ -28,7 +28,7 @@ int StringTableHash(char* data)
 	return hash;
 }
 
-void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data)
+void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 {
 	StringTable* outST = (StringTable*)buf->at();
 	buf->write(data, sizeof(StringTable), 1);
@@ -40,10 +40,11 @@ void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data)
 	{
 		for(int ci=0; ci<data->columns; ci++)
 		{
-			buf->write(-1, 1);
-			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 1);
+			buf->write(&pad, 4, 1);
+			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 4, 1);
 		}
 	}
+
 	for(int ri=0; ri<data->rows; ri++)
 	{
 		for(int ci=0; ci<data->columns; ci++)
@@ -51,11 +52,15 @@ void writeStringTable(zoneInfo_t* info, BUFFER* buf, StringTable* data)
 			buf->write(data->data[((ri * data->columns) + ci) * 2], strlen(data->data[((ri * data->columns) + ci) * 2]) + 1, 1);
 		}
 	}
+
 	outST->data = (char**)-1;
 }
 
-void * addStringTable(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addStringTable(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
+	// no fixups here
+	if (dataLen < 0) return data;
+
 	strtk::token_grid::options options;
 	options.set_row_delimiters("\r\n");
 	options.set_column_delimiters(",");

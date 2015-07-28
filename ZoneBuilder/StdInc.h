@@ -11,12 +11,22 @@
 
 #pragma once
 
+#define MAJOR_VERSION 2
+#define MINOR_VERSION 0
+
 #ifdef _DEBUG
 #define ZB_DEBUG 1
 #endif
 #ifndef _DEBUG
 #define ZB_DEBUG 0
 #endif
+
+// libfiles
+#pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "dbghelp.lib")
+#pragma comment(lib, "tommath.lib")
+#pragma comment(lib, "tomcrypt.lib")
+#pragma comment(lib, "pdcurses.lib")
 
 #define KEY_DISABLED
 
@@ -48,6 +58,7 @@
 using namespace std;
 
 #include "Buffers.h"
+#include "ZStream.h"
 
 // OSW headers
 #define NO_STEAM // to reduce header amount needed
@@ -75,6 +86,9 @@ using namespace std;
 
 // complete structures
 #include "AssetStructs.h"
+
+// version
+#include "buildnumber.h"
 
 // more names
 void PatchMW2();
@@ -105,3 +119,10 @@ void G_SayToAll(DWORD color, const char* name, const char* text);
 
 #undef strcpy_s
 #define strcpy_s StringCbCopy
+
+extern int zero;
+extern int pad;
+extern int desiredFFVersion;
+
+// custom assert stuff
+#define ASSERT(expr) if((expr) != true) { Com_Error(true, "Error in assertion at line %d in file %s\n\t" #expr "\n", __LINE__, __FILE__);}

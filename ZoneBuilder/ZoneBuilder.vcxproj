@@ -51,8 +51,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>call "$(SolutionDir)dependencies/gitrev.bat"</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -66,14 +65,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>StdInc.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -89,11 +89,7 @@
       <IgnoreSpecificDefaultLibraries>MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>if "$(SolutionDir)" == "C:\Users\Intricate\Desktop\Desktop\SVN\ZoneBuilder\" (
-    copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\SteamApps\common\Call of Duty Modern Warfare 2 - REKT\zonetool.dll"
-) 
-
-if "$(SolutionDir)" == "C:\dev\mw2dev\ZoneBuilder\" (
+      <Command>if "$(SolutionDir)" == "C:\dev\COD Archive\iw4\ZoneBuilder\" (
     copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"
 )
 
@@ -102,8 +98,7 @@ echo $(SolutionDir)</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>call "$(SolutionDir)dependencies/gitrev.bat"</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -121,14 +116,15 @@ echo $(SolutionDir)</Command>
       <ExceptionHandling>Sync</ExceptionHandling>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <LinkTimeCodeGeneration>
@@ -140,11 +136,7 @@ echo $(SolutionDir)</Command>
       <IgnoreSpecificDefaultLibraries>MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>if "$(SolutionDir)" == "C:\Users\Intricate\Desktop\Desktop\SVN\ZoneBuilder\" (
-    copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\SteamApps\common\Call of Duty Modern Warfare 2 - REKT\zonetool.dll"
-) 
-
-if "$(SolutionDir)" == "C:\dev\mw2dev\ZoneBuilder\" (
+      <Command>if "$(SolutionDir)" == "C:\dev\COD Archive\iw4\ZoneBuilder\" (
     copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"
 )
 
@@ -162,22 +154,31 @@ echo $(SolutionDir)</Command>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Args.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="ColMapData.cpp" />
+    <ClCompile Include="ConsoleCommands.cpp" />
     <ClCompile Include="CSVFile.cpp" />
     <ClCompile Include="DumpStuff.cpp" />
+    <ClCompile Include="FontData.cpp" />
     <ClCompile Include="FxEffectDefData.cpp" />
+    <ClCompile Include="FxImpactTableData.cpp" />
     <ClCompile Include="GameMapData.cpp" />
     <ClCompile Include="ComWorldData.cpp" />
+    <ClCompile Include="GfxLightDefData.cpp" />
     <ClCompile Include="GfxWorldData.cpp" />
     <ClCompile Include="Hooking.cpp" />
     <ClCompile Include="IW4Bridge.cpp" />
+    <ClCompile Include="LeaderboardDefData.cpp" />
+    <ClCompile Include="LocalizeData.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MapEntsData.cpp" />
     <ClCompile Include="MaterialData.cpp" />
+    <ClCompile Include="MenuData.cpp" />
     <ClCompile Include="MW2.cpp" />
+    <ClCompile Include="PatchMW2AssetRestrict.cpp" />
     <ClCompile Include="PatchMW2CModels.cpp" />
-    <ClCompile Include="PatchMW2Console.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="PatchMW2CryptoFiles.cpp" />
     <ClCompile Include="PatchMW2CryptoZone.cpp" />
     <ClCompile Include="PatchMW2FilePointers.cpp" />
@@ -204,24 +205,35 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="SteamUser012.cpp" />
     <ClCompile Include="SteamUtils005.cpp" />
     <ClCompile Include="StringTableData.cpp" />
+    <ClCompile Include="StructuredDataDefData.cpp" />
     <ClCompile Include="TechsetData.cpp" />
     <ClCompile Include="ToolMain.cpp" />
+    <ClCompile Include="TracerData.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="VehicleData.cpp" />
+    <ClCompile Include="WeaponData.cpp" />
     <ClCompile Include="WriteMacros.h" />
     <ClCompile Include="XAnimData.cpp" />
     <ClCompile Include="XModelData.cpp" />
     <ClCompile Include="ZoneData.cpp" />
     <ClCompile Include="ZoneWriter.cpp" />
+    <ClCompile Include="ZStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetStructs.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="CSVFile.h" />
+    <ClInclude Include="FX.h" />
     <ClInclude Include="FxParsing.h" />
+    <ClInclude Include="GfxWorld.h" />
     <ClInclude Include="Hooking.h" />
+    <ClInclude Include="Maps.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="MW2.h" />
     <ClInclude Include="s10e5.h" />
+    <ClInclude Include="SoundAlias.h" />
     <ClInclude Include="StdInc.h" />
     <ClInclude Include="SteamFriends005.h" />
     <ClInclude Include="SteamGameServer009.h" />
@@ -231,9 +243,15 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="SteamRemoteStorage002.h" />
     <ClInclude Include="SteamUser012.h" />
     <ClInclude Include="SteamUtils005.h" />
+    <ClInclude Include="StructuredDataDef.h" />
     <ClInclude Include="Tool.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponDef.h" />
+    <ClInclude Include="XAnim.h" />
+    <ClInclude Include="XModel.h" />
+    <ClInclude Include="ZStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

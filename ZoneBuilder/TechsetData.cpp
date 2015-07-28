@@ -3,10 +3,12 @@
 
 // NOTE: None of these assets can be added... only exported
 
-void * addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if(dataLen != -1) { Com_Error(false, "How did we get a non bulitin techset?"); return NULL; }
+	if (dataLen > 0) { Com_Error(false, "Can't create Techsets directly. Use Materials\n"); return NULL; }
+
 	MaterialTechniqueSet* asset = (MaterialTechniqueSet*)data;
+
 	for(int i=0; i<48; i++)
 	{
 		MaterialTechnique* tech = asset->techniques[i];
@@ -17,18 +19,22 @@ void * addTechset(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 		addAsset(info, ASSET_TYPE_VERTEXSHADER, tech->passes[0].vertexShader->name, tech->passes[0].vertexShader);
 		addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);		
 	}
-	addAsset(info, ASSET_TYPE_TECHSET, asset->name, asset);
+
+	return data;
 }
 
-void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data)
+
+void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 {
 	// get all our pointers straight
 	int vshader[48];
 	int pshader[48];
 	int vdecl[48];
+
 	memset(&vshader, 0, 48 * 4);
 	memset(&pshader, 0, 48 * 4);
 	memset(&vdecl, 0, 48 * 4);
+
 	for(int i=0; i<48; i++)
 	{
 		MaterialTechnique* tech = data->techniques[i];
@@ -43,15 +49,21 @@ void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data)
 	buf->write(data, sizeof(MaterialTechniqueSet), 1);
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
+	dest->remappedTechniques = NULL;
 
 	for(int i=0; i<48; i++)
 	{
 		if(!dest->techniques[i]) continue;
+
+		if (dest->techniques[i]->numPasses > 1) Com_Error(true, "Error in techset %s: more than one pass in technique?\n", data->name);
+
 		MaterialTechnique* tech = (MaterialTechnique*)buf->at();
 		buf->write(dest->techniques[i], sizeof(MaterialTechnique), 1);
-		tech->passes[0].vertexDecl = (VertexDecl*)(vdecl[i] | 0xF0000000);
-		tech->passes[0].vertexShader = (VertexShader*)(vshader[i] | 0xF0000000);
-		tech->passes[0].pixelShader = (PixelShader*)(pshader[i] | 0xF0000000);
+
+		tech->passes[0].vertexDecl = (VertexDecl*)(vdecl[i]);
+		tech->passes[0].vertexShader = (VertexShader*)(vshader[i]);
+		tech->passes[0].pixelShader = (PixelShader*)(pshader[i]);
+
 		for(int k=0; k<tech->passes[0].argCount1 + tech->passes[0].argCount2 + tech->passes[0].argCount3; k++)
 		{
 			buf->write(&tech->passes[0].argumentDef[k], sizeof(ShaderArgumentDef), 1);
@@ -59,38 +71,60 @@ void writeTechset(zoneInfo_t* info, BUFFER* buf, MaterialTechniqueSet* data)
 
 		buf->write(tech->name, strlen(tech->name) + 1, 1);
 
-		tech->passes[0].argumentDef = (ShaderArgumentDef*)-1;
 		tech->name = (char*)-1;
+		tech->passes[0].argumentDef = (ShaderArgumentDef*)-1;
 		dest->techniques[i] = (MaterialTechnique*)-1;
 	}
 
 }
 
-void writePixelShader(zoneInfo_t* info, BUFFER* buf, PixelShader* data)
+void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "Can't create PixelShaders directly. Use Materials\n"); return NULL; }
+	return data;
+}
+
+void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 {
 	PixelShader* dest = (PixelShader*)buf->at();
+
 	buf->write(data, sizeof(PixelShader), 1);
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	buf->write(data->bytecode, data->codeLen * 4, 1);
+
 	dest->name = (char*)-1;
 	dest->bytecode = (DWORD*)-1;
 }
 
-void writeVertexShader(zoneInfo_t* info, BUFFER* buf, VertexShader* data)
+void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "Can't create VertexShaders directly. Use Materials\n"); return NULL; }
+	return data;
+}
+
+void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
 {
 	VertexShader* dest = (VertexShader*)buf->at();
+
 	buf->write(data, sizeof(VertexShader), 1);
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	buf->write(data->bytecode, data->codeLen * 4, 1);
+
 	dest->name = (char*)-1;
 	dest->bytecode = (DWORD*)-1;
 }
 
-void writeVertexDecl(zoneInfo_t* info, BUFFER* buf, VertexDecl* data)
+void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen)
+{
+	if (dataLen > 0) { Com_Error(false, "Can't create VertexDecl's directly. Use Materials\n"); return NULL; }
+	return data;
+}
+
+void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data)
 {
 	VertexDecl* dest = (VertexDecl*)buf->at();
+
 	buf->write(data, sizeof(VertexDecl), 1);
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
-	// seems too easy....
 }

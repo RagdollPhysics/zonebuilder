@@ -1,7 +1,9 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeComWorld(zoneInfo_t* info, BUFFER* buf, ComWorld* data)
+/*
+
+void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data)
 {
 	ComWorld* dest = (ComWorld*)buf->at();
 	buf->write(data, sizeof(ComWorld), 1);
@@ -23,7 +25,7 @@ void writeComWorld(zoneInfo_t* info, BUFFER* buf, ComWorld* data)
 	}
 }
 
-void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addComWorld(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen == 0)
 	{
@@ -36,3 +38,5 @@ void * addComWorld(zoneInfo_t* info, const char* name, char* data, size_t dataLe
 
 	return NULL;
 }
+
+*/

@@ -73,10 +73,11 @@ void Main_SetSafeInit()
 	}
 }
 
-extern "C" void __declspec(dllimport) CCAPI_Initialize();
+void Com_Logging_Init(const char* file);
 
 bool __stdcall DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
+	Com_Logging_Init("zonetool.log");
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		// check for anything IW4-related

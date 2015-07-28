@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data)
+void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 {
 	MapEnts* dest = (MapEnts*)buf->at();
 	buf->write(data, sizeof(MapEnts), 1);
@@ -16,19 +16,19 @@ void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data)
 
 	if(dest->brushes.unk1)
 	{
-		buf->write(data->brushes.unk1, 8 * dest->brushes.unkCount1, 1);
+		buf->write(data->brushes.unk1, 8 * dest->brushes.unkCount1 << 3, 1);
 		dest->brushes.unk1 = (char*)-1;
 	}
 
 	if(dest->brushes.unk2)
 	{
-		buf->write(data->brushes.unk2, 32 * dest->brushes.unkCount2, 1);
+		buf->write(data->brushes.unk2, dest->brushes.unkCount2 << 5, 1);
 		dest->brushes.unk2 = (char*)-1;
 	}
 
 	if(dest->brushes.unk3)
 	{
-		buf->write(data->brushes.unk3, 20 * dest->brushes.unkCount3, 1);
+		buf->write(data->brushes.unk3, (dest->brushes.unkCount3 << 2) + dest->brushes.unkCount3 << 2, 1);
 		dest->brushes.unk3 = (char*)-1;
 	}
 
@@ -36,22 +36,26 @@ void writeMapEnts(zoneInfo_t* info, BUFFER* buf, MapEnts* data)
 	{
 		Stage* stages = (Stage*)buf->at();
 		buf->write(data->stages, sizeof(Stage), data->stageCount);
+
 		for(int i=0; i<dest->stageCount; i++)
 		{
 			buf->write(data->stages[i].name, strlen(data->stages[i].name) + 1, 1);
 			stages[i].name = (const char*)-1;
 		}
+
 		dest->stages = (Stage*)-1;
 	}
 }
 
-void * addMapEnts(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if(dataLen == 0)
+	if(dataLen < 0)
 	{
 		MapEnts* asset = (MapEnts*)data;
-		char bspName[256];
-		_snprintf(bspName, 256, "maps/mp/%s.d3dbsp", info->name);
+
+		char bspName[256] = { 0 };
+		_snprintf(bspName, sizeof(bspName), "maps/mp/%s.d3dbsp", info->name);
+
 		asset->name = strdup(bspName);
 		return data;
 	}

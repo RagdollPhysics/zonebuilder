@@ -6,6 +6,9 @@
 //			 parsing utils
 //***************************************
 
+// this has been modified to specifically reflect the intrests of this particular project
+// you have been warned
+
 #include "StdInc.h"
 #include "Tool.h"
 
@@ -29,6 +32,7 @@ BUFFER::BUFFER(size_t size)
 	_maxsize = 0;
 	_freeOnDestroy = true;
 }
+
 BUFFER::~BUFFER()
 {
 	if(_freeOnDestroy)
@@ -84,7 +88,7 @@ size_t BUFFER::write(const void * _str, size_t size, size_t count)
 size_t BUFFER::write(int value, size_t count)
 {
 	size_t ret = 0;
-	for(int i=0; i<count; i++)
+	for(size_t i=0; i<count; i++)
 	{
 		ret += write(&value, 4, 1);
 	}
@@ -134,13 +138,18 @@ char * BUFFER::data()
 size_t BUFFER::readstr(register char* str, size_t max_size)
 {
     size_t count = 0;
-    do {
+
+    do 
+	{
         *str = (char) *_location;
         count++;
 		_location++;
 		_offset++;
-    } while ((*str++ != '\0') && (count < max_size));
+    } 
+	while ((*str++ != '\0') && (count < max_size));
+
 	if(_offset > _maxsize) _maxsize = _offset;
+
     return count;
 }
 
@@ -151,14 +160,19 @@ void BUFFER::writetofile(FILE * file)
 
 bool BUFFER::find(char* _str, size_t len)
 {
-	int at = _offset;
-	while(at < _size) {
-		if(!memcmp(_str, _origin+at, len)) {
+	size_t at = _offset;
+
+	while(at < _size) 
+	{
+		if(!memcmp(_str, _origin+at, len)) 
+		{
 			_offset = at;
 			return true;
 		}
+
 		at++;
 	}
+
 	return false;
 }
 
@@ -166,9 +180,12 @@ BUFFER* BUFFER::compressZlib()
 {
 	z_stream strm;
 	int ret;
+
 	memset(&strm, 0, sizeof(z_stream));
 	char* dest = (char*)malloc(_size*2); // WHY IS IT BIGGER!!!!!?
+
 	if(deflateInit(&strm, Z_BEST_COMPRESSION) != Z_OK) { Com_Error(false, "Failed to compress zlib buffer!"); free(dest); return NULL; }
+
 	strm.next_out = (Bytef*)dest;
 	strm.next_in = (Bytef*)_origin;
 	strm.avail_out = _size*2;
@@ -176,8 +193,10 @@ BUFFER* BUFFER::compressZlib()
 	
 	ret = deflate(&strm, Z_FINISH);
 	if(ret != Z_STREAM_END) { Com_Error(false, "Failed to compress zlib buffer!"); return NULL; }
+
 	ret = deflateEnd(&strm);
 	if(ret != Z_OK) { Com_Error(false, "Failed to compress zlib buffer!"); return NULL; }
+
 	return new BUFFER(dest, strm.total_out);
 }
 

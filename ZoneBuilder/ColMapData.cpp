@@ -1,7 +1,9 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data)
+/*
+
+void writeColMap(zoneInfo_t* info, ZStream* buf, Col_Map* data)
 {
 	int * modelOffset = new int[data->numStaticModels];
 	for(int i=0; i<data->numStaticModels; i++)
@@ -10,7 +12,7 @@ void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data)
 		modelOffset[i] = requireAsset(info, ASSET_TYPE_XMODEL, m->name, buf);
 	}
 
-	data->mapEnts = (MapEnts*)(0xF0000000 | requireAsset(info, ASSET_TYPE_MAP_ENTS, (char*)data->name, buf));
+	data->mapEnts = (MapEnts*)(requireAsset(info, ASSET_TYPE_MAP_ENTS, (char*)data->name, buf));
 
 	Col_Map* dest = (Col_Map*)buf->at();
 	buf->write(data, sizeof(Col_Map), 1);
@@ -167,7 +169,7 @@ void writeColMap(zoneInfo_t* info, BUFFER* buf, Col_Map* data)
 	delete[] modelOffset;
 }
 
-void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addColMap(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if(dataLen == 0)
 	{
@@ -185,3 +187,5 @@ void * addColMap(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
 	}
 	return data;
 }
+
+*/

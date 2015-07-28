@@ -9,60 +9,48 @@
 #include "Tool.h"
 #include "WeaponDef.h"
 
-#pragma comment(linker,"/FIXED /BASE:0x8000000")
-
-void PatchMW2_Console();
 void PatchMW2_Load();
 void PatchMW2_StringList();
 void PatchMW2_CryptoFiles();
+void PatchMW2_CModels();
 void PatchMW2_FifthInfinity();
-void PatchMW2_FilePointers();
+void PatchMW2_AssetRestrict();
 void doWeaponEntries();
 
-DWORD init1 = 0x42F0A0;
-DWORD init2 = 0x4301B0;
-DWORD init3 = 0x406D10;
-DWORD init4 = 0x4D2280;
-DWORD init5 = 0x47F390;
-DWORD init6 = 0x420830;
-DWORD init7 = 0x64A020;
-DWORD init8 = 0x4E0FB0;
-DWORD init9 = 0x60AD10;
-DWORD init10 = 0x5196C0;
+DWORD Sys_InitializeCriticalSections = 0x42F0A0;
+DWORD Sys_InitMainThread = 0x4301B0;
+DWORD Win_InitLocalization = 0x406D10;
+DWORD SL_Init = 0x4D2280;
+DWORD Swap_Init = 0x47F390;
+DWORD Com_AllocMemInfo = 0x420830;
+DWORD PMem_Init = 0x64A020;
+DWORD DB_InitThread = 0x4E0FB0;
+DWORD Com_InitDvars = 0x60AD10;
+DWORD R_RegisterDvars = 0x5196C0;
 DWORD init11 = 0x4A62A0;
-DWORD init12 = 0x429080;
+DWORD FS_InitFilesystem = 0x429080;
+DWORD G_SetupWeaponDef = 0x4E1F30;
 
-bool loadedFastfiles = false;
-bool dumping = false;
-bool verify = false;
 bool useEntryNames = false;
-
-void ZoneBuild(char* toBuild);
-
-list<string> sources;
-string zoneToBuild;
-string toDump;
-int dumpType;
-void dumpModel(char * name);
 
 void doInit()
 {
 	__asm
 	{
-		call init1
-		call init2
+		call Sys_InitializeCriticalSections
+		call Sys_InitMainThread
 		push 0
-		call init3
+		call Win_InitLocalization
 		add esp, 4
-		call init4
-		call init5
-		call init6
-		call init7
-		call init8
-		call init9
-		call init10
+		call SL_Init
+		call Swap_Init
+		call Com_AllocMemInfo
+		call PMem_Init
+		call DB_InitThread
+		call Com_InitDvars
+		call R_RegisterDvars
 		call init11
-		call init12
+		call FS_InitFilesystem
 	}
 }
 
@@ -116,134 +104,125 @@ LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 
 	Com_Error(true, "Fatal error (0x%08x) at 0x%08x.\n%s", ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionAddress, error);	
 
-	__asm
-	{
-		mov esp, origStack
-	}
+	__asm mov esp, origStack
 
 	delete[] tempStack;
 
 	return 0;
 }
 
+list<string> constants;
+int constantHash[256];
+int constantCount = 0;
+
+void GetMaterialConstants(void* varMaterial, int handle)
+{
+	Material* mat = (Material*)varMaterial;
+	for (int i = 0; i < mat->constantCount; i++)
+	{
+		bool found = false;
+		for (int j = 0; j < constantCount; j++)
+		{
+			if (mat->constantTable[i].nameHash == constantHash[j]) {
+				found = true;
+				break;
+			}
+		}
+		if (found) continue;
+		constants.push_back(mat->constantTable[i].name);
+		constantHash[constantCount++] = mat->constantTable[i].nameHash;
+	}
+}
+
+/*
+XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
+						   { "localized_code_pre_gfx_mp", 0, 0 },
+						   { "code_post_gfx_mp", 0, 0 },
+						   { "localized_code_post_gfx_mp", 0, 0 },
+						   { "common_mp", 0, 0 },
+						 };
+*/
+
+XZoneInfo baseZones[] = { 
+							{ "defaults", 0, 0 },
+							{ "shaders", 0, 0 } 
+						};
+
 void RunTool()
 {
 	doInit();
 
-	printf("Loading Source Zones...\n");
-	// load source files
-	XZoneInfo* info = new XZoneInfo[9];
-	int i=0;
-	if(sources.size() == 0) loadedFastfiles = true;
-	for(list<string>::iterator it = sources.begin(); it != sources.end(); ++it)
+	Com_Printf("Loading Base Zones...\n");
+	Com_LoadZones(baseZones, 2);
+	Com_Printf("Done IW4 Initialization!\n");
+
+	// allow us to load weapons from disk
+	__asm call G_SetupWeaponDef
+
+	if (console) { RunConsole(); return; }
+
+	// this gives us a list of material constants
+	//DB_EnumXAssets(ASSET_TYPE_MATERIAL, GetMaterialConstants, 0);
+
+	if (build)
 	{
-		info[i].name = strdup((*it).c_str());
-		info[i].type1 = 3;
-		info[i].type2 = 0;
-		if(i >= 8)
+		if (sources.size())
 		{
-			DB_LoadXAssets(info, i, 0);
-			i = 0;
+			XZoneInfo* srcInfo = new XZoneInfo[sources.size()];
+			int i = 0;
+			for (auto it = sources.begin(); it != sources.end(); ++it)
+			{
+				srcInfo[i].name = strdup(it->c_str());
+				srcInfo[i].type1 = 3;
+				srcInfo[i].type2 = 0;
+				i++;
+				if (i == 9) { Com_Error(false, "Max of 9 source zones! Ignoring extra.\n"); break; }
+			}
+			Com_Printf("Loading source zones...\n");
+			Com_LoadZones(srcInfo, i);
 		}
-		else
-			i++;
+		ZoneBuild((char*)zoneToBuild.c_str());
 	}
-	if(i > 0)
-		DB_LoadXAssets(info, i, 0);
-	while(!loadedFastfiles) Sleep(100);
 
-	if(dumping)
+	if (verify)
 	{
-		printf("dumping stuff now");
-		if(dumpType == ASSET_TYPE_XMODEL)
-			dumpModel((char*)toDump.c_str());
+		Com_Printf("Verifying fastfile integrity...\n");
+		if(!build) useEntryNames = true; // only dump names when we arent building
+		XZoneInfo verify;
+		verify.name = zoneToBuild.c_str();
+		verify.type1 = 3;
+		verify.type2 = 0;
+		Com_LoadZones(&verify, 1);
+
+		Com_Printf("Done!");
+	}
+
+	if (IsDebuggerPresent())
+	{
 		getchar();
-		return;
 	}
 
-	if(verify)
-	{
-		useEntryNames = true;
-		XZoneInfo info;
-		info.name = zoneToBuild.c_str();
-		info.type1 = 3;
-		info.type2 = 0;
-		loadedFastfiles = false;
-		DB_LoadXAssets(&info, 1, 0);
-		while(!loadedFastfiles) Sleep(100);
-		return;
-	}
-
-	ZoneBuild((char*)zoneToBuild.c_str());
+	DestroyConsole();
 }
 
 DWORD LoadFFDBThread = 0x5BC800;
 
+extern bool waitingOnLoad;
+extern const char* zoneWaitingOn;
 void CheckZoneLoad(char* name, int atype)
 {
-	__asm {
+	__asm 
+	{
 		push atype
 		push name
 		call LoadFFDBThread
 		add esp, 8
 	}
-	if(!strcmp(name, sources.back().c_str()))
-	{
-		printf("Done IW4 Initialization!\n");
-		loadedFastfiles = true;
-	}
-	if(!strcmp(name, zoneToBuild.c_str()))
-	{
-		loadedFastfiles = true;
-	}
-}
 
-void printUsage()
-{
-	printf("usage: ZoneBuilder.exe [zone name] -sSourceZones\n");
-	TerminateProcess(GetCurrentProcess(), 0);
-}
-
-void parseArgs()
-{
-	sources.push_back(string("code_pre_gfx_mp"));
-	sources.push_back(string("localized_code_pre_gfx_mp"));
-	sources.push_back(string("code_post_gfx_mp"));
-	sources.push_back(string("localized_code_post_gfx_mp"));
-	sources.push_back(string("common_mp"));
-	char** argv = getArgs();
-	int argc = getArgc();
-	if(argc == 1) printUsage();
-
-	if(!strncmp("-v", argv[1], 2))
+	if(!strcmp(name, zoneWaitingOn))
 	{
-		verify = true;
-		//sources.clear();
-		zoneToBuild = string(argv[2]);
-		return;
+		waitingOnLoad = false;
 	}
-	for(int i=1; i<argc; i++)
-	{
-		if(!strncmp("-s", argv[i], 2))
-		{
-			sources.push_back(string(argv[i] + 2));
-		}
-		else if(!strncmp("-d", argv[i], 2))
-		{
-			char line[3];
-			strncpy(line, argv[i] + 2, 2);
-			line[2] = 0;
-			dumpType = atoi(line);
-			toDump = string(argv[i] + 4);
-			dumping = true;
-		}
-		else
-		{
-			if(strlen(zoneToBuild.c_str())) { printf("Can't build more than one zone!\n"); TerminateProcess(GetCurrentProcess(), 0); }
-			zoneToBuild = string(argv[i]);
-		}
-	}
-	if(!strlen(zoneToBuild.c_str()) && !dumping) { printf("No zone specefied to build!\n"); TerminateProcess(GetCurrentProcess(), 0); }
 }
 
 typedef int (__cdecl * DB_GetXAssetSizeHandler_t)();
@@ -256,8 +235,9 @@ DB_GetXAssetSizeHandler_t* DB_GetXAssetSizeHandlers = (DB_GetXAssetSizeHandler_t
 void* ReallocateAssetPool(assetType_t type, unsigned int newSize)
 {
 	int elSize = DB_GetXAssetSizeHandlers[type]();
-	void* poolEntry = malloc(newSize * elSize);
-	DB_XAssetPool[type] = poolEntry;
+	char* poolEntry = (char*)malloc(newSize * elSize + 1);
+	*poolEntry = type;
+	DB_XAssetPool[type] = (poolEntry + 1);
 	g_poolSize[type] = newSize;
 	return poolEntry;
 }
@@ -268,62 +248,113 @@ static DWORD gameWorldMP;
 CallHook addEntryNameHook;
 DWORD addEntryNameHookLoc = 0x5BB697;
 
-void AddEntryNameHookFunc(int type, const char* name)
+void AddEntryNameHookFunc(int type, const char* name, void* asset)
 {
 	if (!useEntryNames)
 	{
 		return;
 	}
 
-	if(type == ASSET_TYPE_PIXELSHADER ||
+	char blah[1024] = { 0 };
+	_snprintf(blah, sizeof(blah), "%s,%s\n", getAssetStringForType(type), name);
+
+	//OutputDebugString(blah);
+	if (type == ASSET_TYPE_PIXELSHADER ||
 		type == ASSET_TYPE_VERTEXSHADER ||
 		type == ASSET_TYPE_VERTEXDECL ||
 		type == ASSET_TYPE_TECHSET)
-		return;
-
-	char blah[1024];
-	_snprintf(blah, 1024, "%s,%s\n", getAssetStringForType(type), name);
-	OutputDebugString(blah);
-	printf(blah);
+		Com_Printf_logOnly(blah);
+	else
+		Com_Printf(blah);
 }
 
 void __declspec(naked) AddEntryNameHookStub()
 {
 	__asm
 	{
+		push [esp + 36]
 		push ecx
 		push eax
 		call AddEntryNameHookFunc
 		pop eax
 		pop ecx
+		add esp, 4
 		jmp addEntryNameHook.pOriginal
 	}
 }
 
+int weaponNamesprintfHook(char* dest, size_t len, const char* format, ...)
+{
+	va_list va;
+	va_start(va, format);
+
+	char* type = va_arg(va, char*);
+	char* name = va_arg(va, char*);
+
+	return _snprintf(dest, len, "%s", name);
+}
+
+int __cdecl comErrorHook(int a1, char* format, ...)
+{
+	int result;
+	va_list va;
+	va_start(va, format);
+
+	char dest[1024] = { 0 };
+	result = _vsnprintf(dest, sizeof(dest), format + 1, va);
+
+	Com_Error(false, "%s\n", dest);
+	return 0;
+}
+
+const char* soundLoadingHook(const char* ptr)
+{
+	return strdup(ptr);
+}
+
 void InitBridge()
 {
-	printf("Initializing IW4...\n");
+#if ZB_DEBUG
+	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s (Debug)\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
+#else
+	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
+#endif
+
 	parseArgs();
+	InitConsole();
+
+	Com_Printf("Initializing IW4...\n");
 
 	// check version
 	if (strcmp((char*)0x6E9638, "177"))
 	{
 		printf("Error loading IW4!\n");
-		TerminateProcess(GetCurrentProcess(), 0);
+		Com_Quit();
 	}
 
-	PatchMW2_Console(); // redirect output
 	PatchMW2_Load(); // load fastfiles from dlc and alter
 	//PatchMW2_StringList(); // for some reason the SL is messed up?
-	// no but why not
 	PatchMW2_CryptoFiles(); // let us pull from iw4c fastfiles
-	PatchMW2_FifthInfinity();
+	PatchMW2_CModels();
+	//PatchMW2_FifthInfinity();
+	PatchMW2_AssetRestrict();
 
 	SetConsoleTitle("ZoneBuilder"); // branding
 
 	// add our entry point
 	call(0x6BABA1, RunTool, PATCH_CALL);
 	call(0x5BCA85, CheckZoneLoad, PATCH_CALL);
+
+	// redirect com_error so it doesn't longjmp
+	call(0x4B22D0, comErrorHook, PATCH_JUMP);
+
+	// redirect loading point of weapon files
+	call(0x57AEC1, weaponNamesprintfHook, PATCH_CALL);
+	call(0x57AF35, weaponNamesprintfHook, PATCH_CALL);
+	call(0x57B38F, weaponNamesprintfHook, PATCH_CALL);
+
+	// disable loading of sounds in weapon loading
+	call(0x64A8A1, soundLoadingHook, PATCH_CALL);
 
 	// fuck exceptions
 	memset((DWORD*)0x6114B1, 0x90, 10);
@@ -383,10 +414,11 @@ void InitBridge()
 	memset((void *)0x51E5CB, 0x90, 5);
 
 	// fs_basegame
-	*(DWORD*)0x6431D1 = (DWORD)"zonebuilder";
+	*(DWORD*)0x6431D1 = (DWORD)fs_basegame;
 
 	// r_registerDvars hack
 	*(BYTE*)0x51B1CD = 0xC3;
+
 
 	// weapon entries stuff here
 	//doWeaponEntries();
@@ -411,107 +443,7 @@ void InitBridge()
 	ReallocateAssetPool(ASSET_TYPE_VERTEXDECL, 196);
 	ReallocateAssetPool(ASSET_TYPE_GAME_MAP_SP, 1);
 	ReallocateAssetPool(ASSET_TYPE_WEAPON, 2000);
-	ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
-}
-
-
-typedef struct weaponEntry_s
-{
-	const char* name;
-	int offset;
-	int type;
-} weaponEntry_t;
-
-#define NUM_ENTRIES 672
-
-#define WEAPON_DO_ARRAY(ar, c) \
-{ \
-	for (int _l_1 = 0; _l_1 < c; _l_1++) \
-	{ \
-		if (*(int*)data == _l_1) \
-		{ \
-			fprintf(file, "%s", ((char**)ar)[_l_1]); /* why do I have to explicitly define ar as being a char**? */ \
-		} \
-	} \
-}
-
-weaponEntry_t* weaponEntries = (weaponEntry_t*)0x795F00;
-
-typedef struct 
-{
-	int offsetStart;
-	int pointerOrigin;
-} rtOffsetMap_t;
-
-#define NUM_OFFSET_MAPS 14
-
-static rtOffsetMap_t offsetMap[] =
-{
-	{ 116, 4 },
-	{ 1784, 12 },
-	{ 1848, 16 },
-	{ 1996, 120 },
-	{ 2060, 128 },
-	{ 2208, 132 },
-	{ 2356, 140 },
-	{ 2388, 144 },
-	{ 2420, 148 },
-	{ 2452, 152 },
-	{ 2484, 588 },
-	{ 2548, 1208 },
-	{ 2672, 1212 },
-	{ 2796, 1576 },
-	{ 0, 0 }
-};
-
-char* MapOffsetToPointer(char* origin, int offset)
-{
-	for (int i = (NUM_OFFSET_MAPS - 1); i >= 0; i--)
-	{
-		rtOffsetMap_t* current = &offsetMap[i];
-		rtOffsetMap_t* next = &offsetMap[i + 1];
-
-		int max = next->offsetStart;
-		if (max == 0) max = 0xFFFFFF;
-
-		if (offset >= current->offsetStart && offset < max)
-		{
-			char* pointer = *(char**)MapOffsetToPointer(origin, current->pointerOrigin);
-			return (pointer + (offset - current->offsetStart));
-		}
-	}
-
-	return (origin + offset);
-}
-
-bool compareEntries(weaponEntry_t* first, weaponEntry_t* second)
-{
-	return first->offset < second->offset;
-}
-
-void doWeaponEntries()
-{
-	std::list<weaponEntry_t*> entries;
-
-	for(int i=0; i<NUM_ENTRIES; i++)
-	{
-		weaponEntry_t * e = &weaponEntries[i];
-		char* filename = "entries.txt";
-
-		if(e->type >= 16 && e->type <=37)
-			filename = "special.txt";
-		if(e->type == 10)
-			filename = "effects.txt";
-		if(e->type == 11)
-			filename = "models.txt";
-		if(e->type == 12)
-			filename = "materials.txt";
-		if(e->type == 14)
-			filename = "sounds.txt";
-
-		FILE* out = fopen(filename, "a");
-		fprintf(out, "\"%s\",\n", e->name);
-		fclose(out);
-	}
-	getchar();
+	//ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
+	ReallocateAssetPool(ASSET_TYPE_RAWFILE, 2048);
+	// causes heap issues
 }

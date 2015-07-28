@@ -12,7 +12,6 @@ CSVFile::CSVFile(char* input, int count)
 	char * at = data;
 	char* start = data;
 	int curRow = 0, curCol = 0;
-	int len = strlen(input);
 	while(at < data + count)
 	{
 		if(*at == ',')
@@ -54,8 +53,13 @@ char* CSVFile::getData(int row, int col)
 {
 	map<pair<int,int>,string>::iterator it;
 	it = _data.find(make_pair(row,col));
-	if(it == _data.end())
+
+	if (it == _data.end())
+	{
 		return NULL;
+	}
 	else
+	{
 		return (char*)_data[make_pair(row, col)].c_str();
+	}
 }

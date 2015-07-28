@@ -36,6 +36,8 @@ Com_Parse_UngetToken_t Com_Parse_UngetToken = (Com_Parse_UngetToken_t)0x4AEC70;
 DB_FindXAssetHeader_t DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x407930;
 DB_LoadXAssets_t DB_LoadXAssets = (DB_LoadXAssets_t)0x4E5930;
 DB_IsAssetDefault_t DB_IsAssetDefault = (DB_IsAssetDefault_t)0x48E6A0;
+DB_GetXAssetTypeSize_t DB_GetXAssetTypeSize = (DB_GetXAssetTypeSize_t)0x491960;
+DB_EnumXAssets_t DB_EnumXAssets = (DB_EnumXAssets_t)0x42A770;
 
 Dvar_RegisterBool_t Dvar_RegisterBool = (Dvar_RegisterBool_t)0x4CE1A0;
 Dvar_RegisterFloat_t Dvar_RegisterFloat = (Dvar_RegisterFloat_t)0x648440;
@@ -84,6 +86,8 @@ Sys_SendPacket_t Sys_SendPacket = (Sys_SendPacket_t)0x48F500;
 SL_ConvertToString_t SL_ConvertToString = (SL_ConvertToString_t)0x4EC1D0;
 SL_GetString_t SL_GetString = (SL_GetString_t)0x48F890;
 SL_GetString_system_t SL_GetString_2 = (SL_GetString_system_t)0x4CDC10;
+
+SE_Load_t SE_Load = (SE_Load_t)0x502A30;
 
 // other stuff
 CommandCB_t Cbuf_AddServerText_f = (CommandCB_t)0x4BB9B0;

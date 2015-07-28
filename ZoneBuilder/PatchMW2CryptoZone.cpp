@@ -46,6 +46,7 @@ static symmetric_CTR ffCTR;
 static unsigned char ffIV[16];
 
 extern int ffVersion;
+std::string _buffer;
 
 void DB_AuthLoad_InitCrypto()
 {
@@ -102,6 +103,7 @@ void DB_AuthLoad_Inflate_compare(unsigned char* buffer, int length, unsigned cha
 	// we don't do anything return-like here, as this is just hash comparing, and we don't care about the data after this at all
 	ctr_setiv(ivValue, 16, &ffCTR);
 	ctr_decrypt(buffer, buffer, length, &ffCTR);
+	_buffer.append((char*)buffer, length);
 }
 
 void DB_AuthLoad_Inflate_decryptBaseFunc(unsigned char* buffer)
@@ -113,6 +115,7 @@ void DB_AuthLoad_Inflate_decryptBaseFunc(unsigned char* buffer)
 
 	ctr_setiv(ffIV, sizeof(ffIV), &ffCTR);
 	ctr_decrypt(buffer, buffer, 8192, &ffCTR);
+	_buffer.append((char*)buffer, 8192);
 }
 
 void __declspec(naked) DB_AuthLoad_Inflate_decryptBase()

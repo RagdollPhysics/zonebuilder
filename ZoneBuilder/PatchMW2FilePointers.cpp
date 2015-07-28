@@ -285,8 +285,11 @@ void SetUseFilePointers(bool use)
 	g_useFilePointers = use;
 }
 
+// leave these in to support loading of legacy 277 files
+// also its weird calling a newer ff version 'legacy'
 void PatchMW2_FilePointers()
 {
+	//return;
 	//filePointers.set_empty_key(0);
 	//filePointersReverse.set_empty_key(NULL);
 

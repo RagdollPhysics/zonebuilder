@@ -1,24 +1,32 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-void writeRawfile(zoneInfo_t* info, BUFFER* buf, Rawfile* data)
+void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 {
 	Rawfile* dest = (Rawfile*)buf->at();
 	buf->write(data, sizeof(Rawfile), 1);
 
-	dest->name = (const char*)-1;
-	dest->compressedData = (char*)-1;
+	unsigned int writeLen = data->sizeCompressed;
+	if (writeLen == 0) writeLen = data->sizeUnCompressed + 1;
 
 	buf->write(data->name, strlen(data->name) + 1, 1);
-	buf->write(data->compressedData, data->sizeCompressed, 1);
+	dest->name = (const char*)-1;
+
+	if (data->compressedData)
+	{
+		buf->write(data->compressedData, writeLen, 1);
+		dest->compressedData = (char*)-1;
+	}
 }
 
-void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen)
+void * addRawfile(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if(dataLen == 0) return data; // no fixups needed here
+	if(dataLen < 0) return data; // no fixups needed here
+
 	z_stream strm;
 	memset(&strm, 0, sizeof(z_stream));
 	char* dest = new char[dataLen*2];
+
 	strm.next_out = (Bytef*)dest;
 	strm.next_in = (Bytef*)data;
 	strm.avail_out = dataLen*2;
@@ -33,5 +41,6 @@ void * addRawfile(zoneInfo_t* info, const char* name, char* data, size_t dataLen
 	ret->sizeCompressed = strm.total_out;
 	ret->sizeUnCompressed = dataLen;
 	ret->compressedData = dest;
+
 	return ret;
 }

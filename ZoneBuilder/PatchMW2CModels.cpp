@@ -11,11 +11,10 @@
 
 #include "StdInc.h"
 #include <d3d9.h>
-#include <google/dense_hash_map>
 #include "Hooking.h"
 #include "Tool.h"
 
-static google::dense_hash_map<DWORD, void*> bufferMap;
+static unordered_map<DWORD, void*> bufferMap;
 
 FS_FOpenFileRead_t FS_FOpenFileReadDatabase = (FS_FOpenFileRead_t)0x42ECA0;
 
@@ -160,7 +159,7 @@ struct CModelAllocData
 	void* indexBuffer;
 };
 
-static google::dense_hash_map<DWORD, CModelAllocData*> allocData;
+static unordered_map<DWORD, CModelAllocData*> allocData;
 
 char* LoadCModel(const char* name)
 {
@@ -172,7 +171,9 @@ char* LoadCModel(const char* name)
 
 	if (handle <= 0)
 	{
-		Com_Error(1, "Error opening %s", filename);
+		Com_Printf("Warning: missing cmodel file '%s'\n", name);
+		return NULL;
+		//Com_Error(1, "Error opening %s", filename);
 	}
 
 	CModelHeader header;
@@ -262,7 +263,7 @@ void CModel_Test_f()
 	}
 
 	char* cmodel = LoadCModel(Cmd_Argv(1));
-	char* xmodel = (char*)DB_FindXAssetHeader(ASSET_TYPE_XModelSurfaces, Cmd_Argv(1));
+	char* xmodel = (char*)DB_FindXAssetHeader(ASSET_TYPE_XMODELSURFS, Cmd_Argv(1));
 
 	if (!cmodel || !xmodel)
 	{
@@ -311,6 +312,7 @@ bool Load_XModelAssetHookFunc(char* xmodel)
 		if (!surfs->surfaces)
 		{
 			char* newSurfs = LoadCModel(surfs->name);
+			if (!newSurfs) return false;
 
 			memcpy(xmodel + 76 + (44 * i), &newSurfs[12], 24);
 			memcpy(xmodel + 100 + (44 * i), &newSurfs[4], 4);
@@ -671,7 +673,7 @@ void DB_RemoveXModelSurfaces(XModelSurfaces* model)
 
 			if (!IsBadReadPtr(surface, 4) && surface->streamHandle == 0xFF)
 			{
-				google::dense_hash_map<DWORD, void*>::iterator it = bufferMap.find((DWORD)surface->indexBuffer);
+				unordered_map<DWORD, void*>::iterator it = bufferMap.find((DWORD)surface->indexBuffer);
 
 				if (it != bufferMap.end())
 				{
@@ -689,7 +691,7 @@ void DB_RemoveXModelSurfaces(XModelSurfaces* model)
 
 				DWORD allocIdx = (DWORD)surface->vertexBuffer; // save this as we free the alloc struct later on
 
-				google::dense_hash_map<DWORD, CModelAllocData*>::iterator ait = allocData.find(allocIdx);
+				unordered_map<DWORD, CModelAllocData*>::iterator ait = allocData.find(allocIdx);
 
 				if (ait != allocData.end())
 				{
@@ -708,8 +710,6 @@ void DB_RemoveXModelSurfaces(XModelSurfaces* model)
 
 void PatchMW2_CModels()
 {
-	bufferMap.set_empty_key(0);
-	allocData.set_empty_key(0);
 
 	static cmd_function_t cmodel_test;
 	static cmd_function_t xmListTags;
@@ -749,12 +749,9 @@ void PatchMW2_CModels()
 	//getBoneIndexHook2.installHook();
 }
 
-typedef void (__cdecl * DB_EnumXAssets_t)(assetType_t type, void (*handler)(void*, int), int userData);
-static DB_EnumXAssets_t DB_EnumXAssets = (DB_EnumXAssets_t)0x42A770;
-
 void ReleaseCModels()
 {
-	for (google::dense_hash_map<DWORD, void*>::const_iterator iter = bufferMap.begin(); iter != bufferMap.end(); iter++)
+	for (unordered_map<DWORD, void*>::const_iterator iter = bufferMap.begin(); iter != bufferMap.end(); iter++)
 	{
 		((IUnknown*)iter->second)->Release();
 	}
@@ -769,5 +766,5 @@ void ReloadCModel(void* varModel, int isRelease)
 
 void ReloadCModels()
 {
-	DB_EnumXAssets(ASSET_TYPE_XModelSurfaces, ReloadCModel, 0);
+	DB_EnumXAssets(ASSET_TYPE_XMODELSURFS, ReloadCModel, 0);
 }
