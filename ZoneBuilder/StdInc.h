@@ -11,6 +11,9 @@
 
 #pragma once
 
+#define MAJOR_VERSION 2
+#define MINOR_VERSION 0
+
 #ifdef _DEBUG
 #define ZB_DEBUG 1
 #endif

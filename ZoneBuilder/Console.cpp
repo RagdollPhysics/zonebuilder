@@ -118,9 +118,9 @@ void Sys_CreateConsole()
 
 	wclear(infoWindow);
 #if ZB_DEBUG
-	wprintw(infoWindow, "ZoneBuilder-%s built on %s %s %s (Debug)", COMMIT_STR, BUILDHOST, __DATE__, __TIME__);
+	wprintw(infoWindow, "ZoneBuilder-%d.%d.%d built by %s on %s at %s (Debug)", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
 #else
-	wprintw(infoWindow, "ZoneBuilder-%s built on %s %s %s", COMMIT_STR, BUILDHOST, __DATE__, __TIME__);
+	wprintw(infoWindow, "ZoneBuilder-%d.%d.%d built by %s on %s at %s", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
 #endif
 	wnoutrefresh(infoWindow);
 

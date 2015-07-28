@@ -144,7 +144,6 @@ XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
 
 void RunTool()
 {
-	
 	doInit();
 
 	Com_Printf("Loading Base Zones...\n");
@@ -309,6 +308,12 @@ const char* soundLoadingHook(const char* ptr)
 
 void InitBridge()
 {
+#if ZB_DEBUG
+	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s (Debug)\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
+#else
+	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
+#endif
+
 	parseArgs();
 	InitConsole();
 
