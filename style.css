@@ -149,24 +149,27 @@ hr
     padding-top: 12px;
     padding-bottom: 12px;
     font-family: "Arial", Arial, serif;
+    margin: 0;
 }
 
 .header2
 {
     font-size: 18px;
     font-weight: bold;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 9px;
+    padding-bottom: 9px;
     font-family: "Arial", Arial, serif;
+    margin: 0;
 }
 
 .header3
 {
     font-size: 14px;
     font-weight: bold;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 7px;
+    padding-bottom: 7px;
     font-family: "Arial", Arial, serif;
+    margin: 0;
 }
 
 .content-area
