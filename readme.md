@@ -14,7 +14,6 @@ This is the basic folder structure that needs to exist in your game folder.  If 
     + /materials
     + /sounds
     + /fx
-    + build scripts
     + any resource files needed to build fastfiles
     
 <h1>File Formats</h1>
@@ -79,7 +78,7 @@ Coming Soon...
 <h2>Custom Anims</h2>
 Coming Soon...
 <h2>Custom Materials</h2>
-Coming Soon...
+Materials by default are placed in the materials/ directory, but can be placed anywhere.  When they are referenced by an XModel, then it is required to be placed in the materials folder.  The format is described above and can be added to the csv independently of a model if wanted.
 <h2>Custom Sounds</h2>
 In order to make a custom sound you must have a compatable sound file (mp3 or wav).
 The definition for the sound alias is a text file which contains JUST the filename of the sound.
