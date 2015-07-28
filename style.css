@@ -106,17 +106,27 @@ hr
 
 .banner-image
 {
-    position: relative;
-    margin-right: auto;
-    margin-left: auto;
+    float: left;
+    width: 20%;
+    height: 200px;
     padding-bottom: 20px;
-    z-index: -1;
+    margin-left: 30%;
+    text-align: right;
+}
+
+.banner-textbox
+{
+    float: left;
+    width: 30%;
+    height: 200px;
+    padding-bottom: 20px;
+    margin-right: 20%;  
 }
 
 .banner-text
 {
-    position: absolute;
-    bottom: 100px;
+    margin-top: 75px;
+    margin-left: 10px;
     width: 100%;
     color: #FFFFFF;
     font-family: monospace;
@@ -125,8 +135,7 @@ hr
 
 .banner-subtext
 {
-    position: absolute;
-    bottom: 80px;
+    margin-left: 10px;
     width: 100%;
     color: #d6d6d6;
     font-family: monospace;
