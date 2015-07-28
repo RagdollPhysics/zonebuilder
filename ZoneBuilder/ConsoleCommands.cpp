@@ -78,8 +78,31 @@ void UnpackUnitVec(PackedUnitVec in, float* out)
 	out[2] = (float)((float)(unsigned __int8)in.array[2] - 127.0) * decodeScale;
 }
 
+XZoneInfo dumpZones[] = { 
+							{ "code_pre_gfx_mp", 2, 0 },
+							{ "localized_code_pre_gfx_mp", 2, 0 },
+							{ "code_post_gfx_mp", 2, 0 },
+							{ "localized_code_post_gfx_mp", 2, 0 },
+							{ "common_mp", 2, 0 },
+						};
+
+void dumpTechsetNames(void* data, int userdata)
+{
+	FILE* write = (FILE*)userdata;
+	MaterialTechniqueSet* tech = (MaterialTechniqueSet*)data;
+	fprintf(write, "techset,%s\n", tech->name);
+}
+
+#if ZB_DEBUG
 void dumpStuff(const char* param)
 {
+	Com_LoadZones(dumpZones, 5);
+
+	FILE* techFile = fopen("techsets.csv", "w");
+	DB_EnumXAssets(ASSET_TYPE_TECHSET, dumpTechsetNames, (int)techFile);
+	fclose(techFile);
+
+	return;
 	XZoneInfo info;
 	info.name = param;
 	info.type1 = 2;
@@ -132,7 +155,6 @@ void dumpStuff(const char* param)
 	__asm int 3
 }
 
-#if ZB_DEBUG
 const char** defaultAssetNames = (const char**)0x799958;
 extern char header[];
 void buildDefaults()
@@ -168,6 +190,8 @@ void buildDefaults()
 	loadAsset(info, ASSET_TYPE_TRACER, "THIS_SHOULDNT_EXIST", "defaulttracer");
 	loadAsset(info, ASSET_TYPE_VEHICLE, "THIS_SHOULDNT_EXIST", "defaultvehicle");
 	loadAsset(info, ASSET_TYPE_WEAPON, "defaultweapon_mp", "defaultweapon_mp");
+	loadAsset(info, ASSET_TYPE_WEAPON, NULL, "none");
+	loadAsset(info, ASSET_TYPE_RAWFILE, NULL, "mp/playeranimtypes.txt");
 
 	Sleep(100);
 

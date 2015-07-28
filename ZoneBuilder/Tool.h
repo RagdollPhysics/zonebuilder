@@ -5,7 +5,7 @@
 #include "CSVFile.h"
 #include "WriteMacros.h"
 
-#define MAX_ASSET_COUNT 2048
+#define MAX_ASSET_COUNT 4096
 #define MAX_SCRIPT_STRINGS 2048
 
 #if ZB_DEBUG
@@ -81,6 +81,7 @@ extern void RunConsole();
 
 // args
 extern char* fs_basegame;
+extern char* cfg_name;
 extern string zoneToBuild;
 extern bool build, verify, console;
 extern list<string> sources;

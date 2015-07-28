@@ -21,6 +21,13 @@
 #define ZB_DEBUG 0
 #endif
 
+// libfiles
+#pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "dbghelp.lib")
+#pragma comment(lib, "tommath.lib")
+#pragma comment(lib, "tomcrypt.lib")
+#pragma comment(lib, "pdcurses.lib")
+
 #define KEY_DISABLED
 
 // ---------------------------------------------------------

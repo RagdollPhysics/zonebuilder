@@ -18,6 +18,13 @@ dvar_t** fs_basepath = (dvar_t**)0x63D0CD4;
 char* GetZoneLocation(const char* name) {
 	static char path[MAX_PATH];
 
+	_snprintf(path, MAX_PATH, "%s\\zone\\%s\\%s.ff", (*fs_basepath)->current.string, "zonebuilder\\", name);
+
+	if (FileExists(path)) {
+		sprintf(path, "%s\\zone\\zonebuilder\\", (*fs_basepath)->current.string);
+		return path;
+	}
+
 	_snprintf(path, MAX_PATH, "%s\\zone\\%s\\%s.ff", (*fs_basepath)->current.string, "alter\\", name);
 
 	if (FileExists(path)) {

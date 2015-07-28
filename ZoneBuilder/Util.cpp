@@ -1,4 +1,5 @@
 #include "StdInc.h"
+#include "Tool.h"
 #include <shellapi.h>
 
 extern bool console;

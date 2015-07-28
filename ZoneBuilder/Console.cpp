@@ -44,52 +44,13 @@ static WINDOW* outputWindow;
 static WINDOW* inputWindow;
 static WINDOW* infoWindow;
 
-static int currentOutputTop = 0;
-static int currentOutBuffer = 0; // for initial counting of output buffer
-
-void RefreshOutput()
-{
-	prefresh(outputWindow, (currentOutputTop >= 1) ? currentOutputTop - 1 : 0, 0, 1, 0, HEIGHT - 2, WIDTH);
-}
-
-void ScrollOutput(int amount)
-{
-	currentOutputTop += amount;
-
-	if (currentOutputTop > OUTPUT_MAX_TOP)
-	{
-		currentOutputTop = OUTPUT_MAX_TOP;
-	}
-	else if (currentOutputTop < 0)
-	{
-		currentOutputTop = 0;
-	}
-
-	// make it only scroll the top if there's more than HEIGHT lines
-	if (currentOutBuffer >= 0)
-	{
-		currentOutBuffer += amount;
-
-		if (currentOutBuffer >= (HEIGHT))
-		{
-			currentOutBuffer = -1;
-		}
-
-		if (currentOutputTop < HEIGHT)
-		{
-			currentOutputTop = 0;
-		}
-	}
-}
-
 void Sys_CreateConsole()
 {
 	initscr();
 	raw();
 	noecho();
 
-	//outputWindow = newwin(HEIGHT - 1, WIDTH, 1, 0);
-	outputWindow = newpad(OUTPUT_HEIGHT, WIDTH);
+	outputWindow = newwin(HEIGHT - 2, WIDTH, 1, 0);
 	inputWindow = newwin(1, WIDTH, HEIGHT - 1, 0);
 	infoWindow = newwin(1, WIDTH, 0, 0);
 
@@ -125,9 +86,8 @@ void Sys_CreateConsole()
 	wnoutrefresh(infoWindow);
 
 	wrefresh(infoWindow);
-	//wrefresh(outputWindow);
+	wrefresh(outputWindow);
 	wrefresh(inputWindow);
-	RefreshOutput();
 }
 
 void Sys_DestroyConsole()
@@ -147,11 +107,6 @@ void Sys_Print(const char* message)
 	const char* p = message;
 	while (*p != '\0')
 	{
-		if (*p == '\n')
-		{
-			ScrollOutput(1);
-		}
-
 		if (*p == '^')
 		{
 			char color;
@@ -173,7 +128,7 @@ void Sys_Print(const char* message)
 	}
 
 	//wattron(outputWindow, COLOR_PAIR(9));
-	RefreshOutput();
+	wrefresh(outputWindow);
 }
 
 extern void Com_Quit();
@@ -191,7 +146,7 @@ void Sys_Error(const char* format, ...)
 	Sys_Print("^1ERROR: ");
 	Sys_Print(buffer);
 	Sys_Print("^7\n");
-	RefreshOutput();
+	wrefresh(outputWindow);
 
 	if (IsDebuggerPresent())
 	{
@@ -241,8 +196,7 @@ const char* Sys_ConsoleInput()
 		ShowConsolePrompt();
 		wrefresh(inputWindow);
 
-		ScrollOutput(1);
-		RefreshOutput();
+		wrefresh(outputWindow);
 
 		if (consoleLineBufferIndex)
 		{
@@ -272,12 +226,10 @@ const char* Sys_ConsoleInput()
 		}
 		break;
 	case KEY_PPAGE:
-		ScrollOutput(-1);
-		RefreshOutput();
+		wrefresh(outputWindow);
 		break;
 	case KEY_NPAGE:
-		ScrollOutput(1);
-		RefreshOutput();
+		wrefresh(outputWindow);
 		break;
 	case KEY_UP:
 		wclear(inputWindow);
@@ -348,8 +300,10 @@ void PrintNameOfAsset(void* data, int userdata)
 }
 
 void decryptFastfile(const char* param);
+#if ZB_DEBUG
 void dumpStuff(const char* param);
 void buildDefaults();
+#endif
 
 void printHelp()
 {
@@ -362,16 +316,19 @@ void printHelp()
 	Com_Printf("\tdecryptzone <zone> - decrypts an iw4c zone\n");
 	Com_Printf("\thelp - prints this message\n");
 	Com_Printf("\tquit - quits the program\n");
+#if ZB_DEBUG
+	Com_Printf("\tdump - don't even ask, this is basically a throwaway one\n");
+	Com_Printf("\tdefaults - builds defaults.ff\n");
+#endif
 }
 
 void RunConsole()
 {
-	ScrollOutput(12);
 	printHelp();	
 	while (console)
 	{
-		RefreshOutput();
-		Sleep(5);
+		wrefresh(outputWindow);
+		Sleep(50);
 
 		const char* input = Sys_ConsoleInput();
 		if (!input) continue;
@@ -431,10 +388,6 @@ void RunConsole()
 				}
 			}
 		}
-		else if (cmd.first == "dump")
-		{
-			dumpStuff(cmd.second.c_str());
-		}
 		else if (cmd.first == "decryptzone")
 		{
 			decryptFastfile(cmd.second.c_str());
@@ -448,6 +401,10 @@ void RunConsole()
 			printHelp();
 		}
 #if ZB_DEBUG
+		else if (cmd.first == "dump")
+		{
+			dumpStuff(cmd.second.c_str());
+		}
 		else if (cmd.first == "defaults")
 		{
 			buildDefaults();

@@ -73,7 +73,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;pdcurses.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -89,11 +89,7 @@
       <IgnoreSpecificDefaultLibraries>MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>if "$(SolutionDir)" == "C:\Users\Intricate\Desktop\Desktop\SVN\ZoneBuilder\" (
-    copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\SteamApps\common\Call of Duty Modern Warfare 2 - REKT\zonetool.dll"
-) 
-
-if "$(SolutionDir)" == "C:\dev\COD Archive\iw4\ZoneBuilder\" (
+      <Command>if "$(SolutionDir)" == "C:\dev\COD Archive\iw4\ZoneBuilder\" (
     copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"
 )
 
@@ -102,8 +98,7 @@ echo $(SolutionDir)</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>call "$(SolutionDir)dependencies/gitrev.bat"</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -117,14 +112,15 @@ echo $(SolutionDir)</Command>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>StdInc.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>zlib.lib;dbghelp.lib;tommath.lib;tomcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -140,11 +136,7 @@ echo $(SolutionDir)</Command>
       <IgnoreSpecificDefaultLibraries>MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>if "$(SolutionDir)" == "C:\Users\Intricate\Desktop\Desktop\SVN\ZoneBuilder\" (
-    copy /y "$(TargetPath)" "C:\Program Files (x86)\Steam\SteamApps\common\Call of Duty Modern Warfare 2 - REKT\zonetool.dll"
-) 
-
-if "$(SolutionDir)" == "C:\dev\mw2dev\ZoneBuilder\" (
+      <Command>if "$(SolutionDir)" == "C:\dev\COD Archive\iw4\ZoneBuilder\" (
     copy /y "$(TargetPath)" "D:\Games\Activision\Modern Warfare 2\zonetool.dll"
 )
 

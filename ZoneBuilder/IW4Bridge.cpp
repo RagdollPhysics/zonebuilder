@@ -134,20 +134,26 @@ void GetMaterialConstants(void* varMaterial, int handle)
 	}
 }
 
-
+/*
 XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
 						   { "localized_code_pre_gfx_mp", 0, 0 },
 						   { "code_post_gfx_mp", 0, 0 },
 						   { "localized_code_post_gfx_mp", 0, 0 },
 						   { "common_mp", 0, 0 },
 						 };
+*/
+
+XZoneInfo baseZones[] = { 
+							{ "defaults", 0, 0 },
+							{ "shaders", 0, 0 } 
+						};
 
 void RunTool()
 {
 	doInit();
 
 	Com_Printf("Loading Base Zones...\n");
-	Com_LoadZones(baseZones, 5);
+	Com_LoadZones(baseZones, 2);
 	Com_Printf("Done IW4 Initialization!\n");
 
 	// allow us to load weapons from disk
@@ -409,7 +415,6 @@ void InitBridge()
 
 	// fs_basegame
 	*(DWORD*)0x6431D1 = (DWORD)fs_basegame;
-	*(DWORD*)0x6431EF = (DWORD)"mods/sherkan";
 
 	// r_registerDvars hack
 	*(BYTE*)0x51B1CD = 0xC3;
@@ -441,106 +446,4 @@ void InitBridge()
 	//ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
 	ReallocateAssetPool(ASSET_TYPE_RAWFILE, 2048);
 	// causes heap issues
-}
-
-
-typedef struct weaponEntry_s
-{
-	const char* name;
-	int offset;
-	int type;
-} weaponEntry_t;
-
-#define NUM_ENTRIES 672
-
-#define WEAPON_DO_ARRAY(ar, c) \
-{ \
-	for (int _l_1 = 0; _l_1 < c; _l_1++) \
-	{ \
-		if (*(int*)data == _l_1) \
-		{ \
-			fprintf(file, "%s", ((char**)ar)[_l_1]); /* why do I have to explicitly define ar as being a char**? */ \
-		} \
-	} \
-}
-
-weaponEntry_t* weaponEntries = (weaponEntry_t*)0x795F00;
-
-typedef struct 
-{
-	int offsetStart;
-	int pointerOrigin;
-} rtOffsetMap_t;
-
-#define NUM_OFFSET_MAPS 14
-
-static rtOffsetMap_t offsetMap[] =
-{
-	{ 116, 4 },
-	{ 1784, 12 },
-	{ 1848, 16 },
-	{ 1996, 120 },
-	{ 2060, 128 },
-	{ 2208, 132 },
-	{ 2356, 140 },
-	{ 2388, 144 },
-	{ 2420, 148 },
-	{ 2452, 152 },
-	{ 2484, 588 },
-	{ 2548, 1208 },
-	{ 2672, 1212 },
-	{ 2796, 1576 },
-	{ 0, 0 }
-};
-
-char* MapOffsetToPointer(char* origin, int offset)
-{
-	for (int i = (NUM_OFFSET_MAPS - 1); i >= 0; i--)
-	{
-		rtOffsetMap_t* current = &offsetMap[i];
-		rtOffsetMap_t* next = &offsetMap[i + 1];
-
-		int max = next->offsetStart;
-		if (max == 0) max = 0xFFFFFF;
-
-		if (offset >= current->offsetStart && offset < max)
-		{
-			char* pointer = *(char**)MapOffsetToPointer(origin, current->pointerOrigin);
-			return (pointer + (offset - current->offsetStart));
-		}
-	}
-
-	return (origin + offset);
-}
-
-bool compareEntries(weaponEntry_t* first, weaponEntry_t* second)
-{
-	return first->offset < second->offset;
-}
-
-void doWeaponEntries()
-{
-	std::list<weaponEntry_t*> entries;
-
-	for(int i=0; i<NUM_ENTRIES; i++)
-	{
-		weaponEntry_t * e = &weaponEntries[i];
-		char* filename = "entries.txt";
-
-		if(e->type >= 16 && e->type <=37)
-			filename = "special.txt";
-		if(e->type == 10)
-			filename = "effects.txt";
-		if(e->type == 11)
-			filename = "models.txt";
-		if(e->type == 12)
-			filename = "materials.txt";
-		if(e->type == 14)
-			filename = "sounds.txt";
-
-		FILE* out = fopen(filename, "a");
-		fprintf(out, "\"%s\",\n", e->name);
-		fclose(out);
-	}
-	getchar();
 }

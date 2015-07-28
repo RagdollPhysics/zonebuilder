@@ -27,7 +27,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		data = (char*)DB_FindXAssetHeader(type, name);
 		if(DB_IsAssetDefault(type, name)) 
 		{
-			Com_Debug("Got Default asset! Make sure this is correct\n");
+			Com_Printf("Got Default asset! Make sure this is correct\n");
 		}
 
 		size = -1;
@@ -42,7 +42,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 
 			if(DB_IsAssetDefault(type, filename)) 
 			{
-				Com_Debug("Got Default asset! Make sure this is correct\n");
+				Com_Printf("Got Default asset! Make sure this is correct\n");
 			}
 			size = -1;
 		}
