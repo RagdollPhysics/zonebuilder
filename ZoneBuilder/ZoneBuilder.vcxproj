@@ -219,6 +219,7 @@ echo $(SolutionDir)</Command>
     <ClCompile Include="TracerData.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="VehicleData.cpp" />
     <ClCompile Include="WeaponData.cpp" />
     <ClCompile Include="WriteMacros.h" />
     <ClCompile Include="XAnimData.cpp" />
@@ -253,6 +254,7 @@ echo $(SolutionDir)</Command>
     <ClInclude Include="StructuredDataDef.h" />
     <ClInclude Include="Tool.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Vehicle.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponDef.h" />
     <ClInclude Include="XAnim.h" />

@@ -154,7 +154,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeTracer(info, buf, (Tracer*)asset->data);
 		break;
 	case ASSET_TYPE_VEHICLE:
-		Com_Error(true, "How did you get an asset that you can't write?\n");
+		writeVehicleDef(info, buf, (VehicleDef*)asset->data);
 		break;
 	}
 

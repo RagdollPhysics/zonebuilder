@@ -166,7 +166,7 @@ void buildDefaults()
 	loadAsset(info, ASSET_TYPE_LEADERBOARDDEF, "THIS_SHOULDNT_EXIST", "DEFAULT_LB");
 	loadAsset(info, ASSET_TYPE_STRUCTUREDDATADEF, "THIS_SHOULDNT_EXIST", "mp/defaultStructuredData.def");
 	loadAsset(info, ASSET_TYPE_TRACER, "THIS_SHOULDNT_EXIST", "defaulttracer");
-	//loadAsset(info, ASSET_TYPE_VEHICLE, "THIS_SHOULDNT_EXIST", "defaultvehicle");
+	loadAsset(info, ASSET_TYPE_VEHICLE, "THIS_SHOULDNT_EXIST", "defaultvehicle");
 	loadAsset(info, ASSET_TYPE_WEAPON, "defaultweapon_mp", "defaultweapon_mp");
 
 	Sleep(100);

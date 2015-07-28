@@ -149,6 +149,9 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	case ASSET_TYPE_TRACER:
 		asset = addTracer(info, name, data, size);
 		break;
+	case ASSET_TYPE_VEHICLE:
+		asset = addVehicleDef(info, name, data, size);
+		break;
 	case ASSET_TYPE_MPTYPE:
 	case ASSET_TYPE_AITYPE:
 	case ASSET_TYPE_CHARACTER:

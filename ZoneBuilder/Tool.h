@@ -214,3 +214,7 @@ extern void * addMenuList(zoneInfo_t* info, const char* name, char* data, int da
 // StructuredDataDefData
 void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDefSet* data);
 extern void * addStructuredDataDefSet(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// VehicleData
+void writeVehicleDef(zoneInfo_t* info, ZStream* buf, VehicleDef* data);
+void * addVehicleDef(zoneInfo_t* info, const char* name, char* data, int dataLen);

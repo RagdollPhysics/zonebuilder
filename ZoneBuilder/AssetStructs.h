@@ -31,7 +31,7 @@ struct StringTable;
 struct LeaderboardDef;
 struct StructuredDataDefSet;
 struct Tracer;
-//struct Vehicle;
+struct VehicleDef;
 
 #include "XAnim.h"
 #include "Material.h"
@@ -42,6 +42,7 @@ struct Tracer;
 #include "Weapon.h"
 #include "StructuredDataDef.h"
 #include "Menu.h"
+#include "Vehicle.h"
 
 struct PhysPreset
 {
@@ -80,18 +81,6 @@ struct VertexShader
 	void * /*IDirect3DVertexShader9**/ shader;
 	DWORD* bytecode;
 	int codeLen;
-};
-
-struct FxMap
-{
-	const char* name;
-	char pad[114];
-};
-
-struct GfxMap
-{
-	const char* name;
-	char pad[624];
 };
 
 struct GfxLightImage
@@ -185,18 +174,6 @@ struct Tracer
 	float screwRadius;
 	float screwDist;
 	float colors[5][4];
-};
-
-struct Vehicle
-{
-	const char* name;
-	char pad[716];
-};
-
-struct AddonMapEnts
-{
-	const char* name;
-	char pad[32];
 };
 
 struct Rawfile
