@@ -148,7 +148,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeLeaderboardDef(info, buf, (LeaderboardDef*)asset->data);
 		break;
 	case ASSET_TYPE_STRUCTUREDDATADEF:
-		Com_Error(true, "How did you get an asset that you can't write?\n");
+		writeStructuredDataDefSet(info, buf, (StructuredDataDefSet*)asset->data);
 		break;
 	case ASSET_TYPE_TRACER:
 		writeTracer(info, buf, (Tracer*)asset->data);

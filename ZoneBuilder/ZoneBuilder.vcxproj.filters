@@ -204,6 +204,12 @@
     <ClCompile Include="FxImpactTableData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MenuData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StructuredDataDefData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SteamFriends005.h">
@@ -291,6 +297,9 @@
       <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
     <ClInclude Include="StructuredDataDef.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
       <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
   </ItemGroup>

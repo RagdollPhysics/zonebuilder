@@ -10,10 +10,6 @@ char header[] = {'I', 'W', 'f', 'f', 'u', '1', '0', '0',
 
 zoneInfo_t* currentInfo;
 
-// loading functions leftover in the game
-typedef WeaponVariantDef* (__cdecl * BG_LoadWeaponDef_LoadObj_t)(const char* filename);
-BG_LoadWeaponDef_LoadObj_t BG_LoadWeaponDef_LoadObj = (BG_LoadWeaponDef_LoadObj_t)0x57B5F0;
-
 void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* name)
 {
 	if(containsAsset(info, type, name) > 0) return;
@@ -84,25 +80,13 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		asset = addGfxImage(info, name, data, size);
 		break;
 	case ASSET_TYPE_TECHSET:
-	{
-		MaterialTechniqueSet* techset = (MaterialTechniqueSet*)data;
-
-		for (int i = 0; i<48; i++)
-		{
-			MaterialTechnique* tech = techset->techniques[i];
-			if (!tech) continue;
-
-			if (tech->numPasses != 1) Com_Error(true, "Um why does this technique have more than 1 pass?");
-			addAsset(info, ASSET_TYPE_VERTEXDECL, tech->passes[0].vertexDecl->name, tech->passes[0].vertexDecl);
-			addAsset(info, ASSET_TYPE_VERTEXSHADER, tech->passes[0].vertexShader->name, tech->passes[0].vertexShader);
-			addAsset(info, ASSET_TYPE_PIXELSHADER, tech->passes[0].pixelShader->name, tech->passes[0].pixelShader);
-		}
-
-		asset = techset;
+		asset = addTechset(info, name, data, size);
 		break;
-	}
 	case ASSET_TYPE_XMODEL:
 		asset = addXModel(info, name, data, size);
+		break;
+	case ASSET_TYPE_XMODELSURFS:
+		Com_Error(false, "Can't create XModelSurfs directly. Use XModel.");
 		break;
 	case ASSET_TYPE_COL_MAP_MP:
 		//asset = addColMap(info, name, data, size);
@@ -151,16 +135,19 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 	{
 		// its either already loaded or we need to load it here
 		if (size > 0)
-			asset = addWeaponVariantDef(info, name, (char*)BG_LoadWeaponDef_LoadObj(filename), -1);
+			asset = addWeaponVariantDef(info, name, (char*)filename, strlen(filename));
 		else
 			asset = addWeaponVariantDef(info, name, data, -1);
 		break;
 	}
-	case ASSET_TYPE_TRACER:
-		asset = addTracer(info, name, data, size);
-		break;
 	case ASSET_TYPE_LEADERBOARDDEF:
 		asset = addLeaderboardDef(info, name, data, size);
+		break;
+	case ASSET_TYPE_STRUCTUREDDATADEF:
+		asset = addStructuredDataDefSet(info, name, data, size);
+		break;
+	case ASSET_TYPE_TRACER:
+		asset = addTracer(info, name, data, size);
 		break;
 	case ASSET_TYPE_MPTYPE:
 	case ASSET_TYPE_AITYPE:

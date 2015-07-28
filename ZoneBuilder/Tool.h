@@ -206,3 +206,11 @@ void * addLeaderboardDef(zoneInfo_t* info, const char* name, char* data, int dat
 // FxImpactTableData
 void writeFxImpactTable(zoneInfo_t* info, ZStream* buf, FxImpactTable* data);
 void * addFxImpactTable(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// MenuData
+extern void writeMenuList(zoneInfo_t* info, ZStream* buf, MenuList* data);
+extern void * addMenuList(zoneInfo_t* info, const char* name, char* data, int dataLen);
+
+// StructuredDataDefData
+void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDefSet* data);
+extern void * addStructuredDataDefSet(zoneInfo_t* info, const char* name, char* data, int dataLen);

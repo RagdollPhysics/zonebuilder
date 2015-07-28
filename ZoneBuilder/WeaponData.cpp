@@ -448,11 +448,14 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 	}
 }
 
+typedef WeaponVariantDef* (__cdecl * BG_LoadWeaponDef_LoadObj_t)(const char* filename);
+BG_LoadWeaponDef_LoadObj_t BG_LoadWeaponDef_LoadObj = (BG_LoadWeaponDef_LoadObj_t)0x57B5F0;
+
 void * addWeaponVariantDef(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
-	if (dataLen > 0) Com_Error(true, "This shouldn't happen...\n");
-
-	WeaponVariantDef* ret = (WeaponVariantDef*)data;
+	WeaponVariantDef* ret;
+	if (dataLen > 0) ret = BG_LoadWeaponDef_LoadObj(data);
+	else ret = (WeaponVariantDef*)data;
 
 	// now add strings to our list
 	// hidetags

@@ -21,8 +21,8 @@ struct LoadedSound;
 //struct GfxMap;
 struct GfxLightDef;
 struct Font;
-//struct MenuFile;
-//struct Menu;
+struct MenuList;
+struct menuDef_t;
 struct Localize;
 struct FXEffectDef;
 struct FxImpactTable;
@@ -41,6 +41,7 @@ struct Tracer;
 #include "Maps.h"
 #include "Weapon.h"
 #include "StructuredDataDef.h"
+#include "Menu.h"
 
 struct PhysPreset
 {
