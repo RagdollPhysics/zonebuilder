@@ -22,12 +22,12 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 				buf->write(&data->trans->u.frames.indices, sizeof(char), data->trans->size + 1);
 			}
 
-			if (data->trans->u.frames.frames)
+			if (data->trans->u.frames.frames._1)
 			{
 				if (data->trans->smallTrans)
-					buf->write(data->trans->u.frames.frames, sizeof(char) * 3, data->trans->size + 1);
+					buf->write(data->trans->u.frames.frames._1, sizeof(char) * 3, data->trans->size + 1);
 				else
-					buf->write(data->trans->u.frames.frames, sizeof(short) * 3, data->trans->size + 1);
+					buf->write(data->trans->u.frames.frames._2, sizeof(short) * 3, data->trans->size + 1);
 				//dest->trans->u.frames.frames = (char*)-1;
 			}
 		}
@@ -100,13 +100,12 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 	WRITE_ASSET(data, XAnim);
 	WRITE_NAME(data);
 
-	WRITE_FIELD(data, tagnames, short, tagCount);
+	WRITE_FIELD(data, tagnames, short, boneCount[PART_TYPE_ALL]);
 	WRITE_FIELD(data, notetracks, XAnimNotifyInfo, notetrackCount);
 	if (data->delta)
 	{
-		dest->delta = NULL;
-		//writeXAnimDeltaParts(info, buf, data);
-		//dest->delta = (XAnimDeltaPart*)-1;
+		writeXAnimDeltaParts(info, buf, data);
+		dest->delta = (XAnimDeltaPart*)-1;
 	}
 	WRITE_FIELD(data, dataByte, char, dataByteCount);
 	WRITE_FIELD(data, dataShort, short, dataShortCount);
@@ -114,19 +113,21 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 	WRITE_FIELD(data, randomDataShort, short, randomDataShortCount);
 	WRITE_FIELD(data, randomDataByte, char, randomDataByteCount);
 	WRITE_FIELD(data, randomDataInt, int, randomDataIntCount);
-	if (data->indicies)
+	if (data->indices.data)
 	{
 		if (data->framecount > 255)
 		{
-			buf->write(data->indicies, data->indexcount * 2, 1);
+			buf->write(data->indices.data, data->indexcount * 2, 1);
 		}
 		else
 		{
-			buf->write(data->indicies, data->indexcount, 1);
+			buf->write(data->indices.data, data->indexcount, 1);
 		}
-		dest->indicies = (char*)-1;
+		dest->indices.data = (void*)-1;
 	}
 }
+
+XAnim* loadXAnimFile(zoneInfo_t* info, const char* name, char* b, int len);
 
 void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
@@ -134,7 +135,7 @@ void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen)
 	{
 		XAnim* a = (XAnim*)data;
 		// fix these if we are dumping a pre loaded anim
-		for (int i = 0; i<a->tagCount; i++)
+		for (int i = 0; i<a->boneCount[PART_TYPE_ALL]; i++)
 		{
 			a->tagnames[i] = addScriptString(info, SL_ConvertToString(a->tagnames[i]));
 		}
@@ -211,27 +212,27 @@ void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen)
 			{
 				if (anim->framecount < 256)
 				{
-					memcpy(anim->delta->trans->u.frames.indices, buf->at(), (anim->delta->trans->size + 1));
+					memcpy(anim->delta->trans->u.frames.indices._1, buf->at(), (anim->delta->trans->size + 1));
 					buf->seek((anim->delta->trans->size + 1), SEEK_CUR);
 				}
 				else
 				{
-					memcpy(anim->delta->trans->u.frames.indices, buf->at(), 2 * (anim->delta->trans->size + 1));
+					memcpy(anim->delta->trans->u.frames.indices._2, buf->at(), 2 * (anim->delta->trans->size + 1));
 					buf->seek(2 * (anim->delta->trans->size + 1), SEEK_CUR);
 				}
 
-				if (anim->delta->trans->u.frames.frames)
+				if (anim->delta->trans->u.frames.frames._1)
 				{
 					// make it as big as it could possibly be
-					anim->delta->trans->u.frames.frames = new char[6 * (anim->delta->trans->size + 1)];
+					anim->delta->trans->u.frames.frames._2 = (unsigned short(*)[3])new char[6 * (anim->delta->trans->size + 1)];
 					if (anim->delta->trans->smallTrans)
 					{
-						memcpy(anim->delta->trans->u.frames.frames, buf->at(), 3 * (anim->delta->trans->size + 1));
+						memcpy(anim->delta->trans->u.frames.frames._1, buf->at(), 3 * (anim->delta->trans->size + 1));
 						buf->seek(3 * (anim->delta->trans->size + 1), SEEK_CUR);
 					}
 					else
 					{
-						memcpy(anim->delta->trans->u.frames.frames, buf->at(), 6 * (anim->delta->trans->size + 1));
+						memcpy(anim->delta->trans->u.frames.frames._2, buf->at(), 6 * (anim->delta->trans->size + 1));
 						buf->seek(6 * (anim->delta->trans->size + 1), SEEK_CUR);
 					}
 				}
@@ -308,17 +309,17 @@ void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen)
 		buf->seek(anim->randomDataIntCount * 4, SEEK_CUR);
 	}
 
-	if (anim->indicies)
+	if (anim->indices.data)
 	{
 		if (anim->framecount < 256)
 		{
-			anim->indicies = new char[anim->indexcount];
-			memcpy(anim->indicies, buf->at(), anim->indexcount);
+			anim->indices.data = new char[anim->indexcount];
+			memcpy(anim->indices.data, buf->at(), anim->indexcount);
 		}
 		else
 		{
-			anim->indicies = new char[anim->indexcount * 2];
-			memcpy(anim->indicies, buf->at(), anim->indexcount * 2);
+			anim->indices.data = new char[anim->indexcount * 2];
+			memcpy(anim->indices.data, buf->at(), anim->indexcount * 2);
 		}
 	}
 
