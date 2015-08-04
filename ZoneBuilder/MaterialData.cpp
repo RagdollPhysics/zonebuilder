@@ -9,8 +9,9 @@ void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data)
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	img->name = (char*)-1;
 
-	if (data->texture)
+	if (data->texture) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->texture, sizeof(GfxImageLoadDef), 1);
 		img->texture = (GfxImageLoadDef*)-1;
 	}
@@ -31,29 +32,34 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 	dest->techniqueSet = (MaterialTechniqueSet*)(techsetOffset);
 
 	// write texturedefs here
-	for(int i=0; i<data->textureCount; i++)
+	if (data->textureTable)
 	{
-		MaterialTextureDef * tex = (MaterialTextureDef*)buf->at();
-		buf->write(&data->textureTable[i], sizeof(MaterialTextureDef), 1);
-		tex->info.image = (GfxImage*)-1;
+		buf->align(ALIGN_TO_4);
+		for (int i = 0; i < data->textureCount; i++)
+		{
+			MaterialTextureDef * tex = (MaterialTextureDef*)buf->at();
+			buf->write(&data->textureTable[i], sizeof(MaterialTextureDef), 1);
+			tex->info.image = (GfxImage*)-1;
+		}
+
+		for (int i = 0; i<data->textureCount; i++)
+		{
+			// TODO, make with work with water images too
+			writeGfxImage(info, buf, data->textureTable[i].info.image);
+		}
+		dest->textureTable = (MaterialTextureDef*)-1;
 	}
 
-	for (int i = 0; i<data->textureCount; i++)
+	if (data->constantTable) // OffsetToPointer
 	{
-		// TODO, make with work with water images too
-		writeGfxImage(info, buf, data->textureTable[i].info.image);
-	}
-
-	dest->textureTable = (MaterialTextureDef*)-1;
-
-	if (data->constantTable)
-	{
+		buf->align(ALIGN_TO_16);
 		buf->write((char*)data->constantTable, data->constantCount * sizeof(MaterialConstantDef), 1);
 		dest->constantTable = (MaterialConstantDef*)-1;
 	}
 
-	if (data->stateBitTable)
+	if (data->stateBitTable) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->stateBitTable, data->stateBitsCount * 8, 1);
 		dest->stateBitTable = (void*)-1;
 	}

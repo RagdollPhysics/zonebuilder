@@ -7,8 +7,9 @@ void writecbrushside_t(ZStream* buf, cBrushSide* data, int num)
 	
 	for(int i=0; i<num; i++)
 	{	
-		if(HAS_FIELD((&data[i]), side))
+		if(HAS_FIELD((&data[i]), side)) // OffsetToPoiner
 		{
+			buf->align(ALIGN_TO_4); 
 			buf->write(data[i].side, sizeof(cPlane), 1);
 			dest[i].side = (cPlane*)-1;
 		}
@@ -29,7 +30,7 @@ void writeBrushWrapper(ZStream* buf, BrushWrapper* data)
 
 	writeBrush(buf, data, dest);
 
-	WRITE_FIELD(data, planes, cPlane, brush.count);
+	WRITE_FIELD_ALIGNED(data, planes, cPlane, brush.count, ALIGN_TO_4); // OffsetToPoiner
 }
 
 void writePhysGeomInfo(ZStream* buf, PhysGeomInfo* data, int num)
@@ -40,6 +41,7 @@ void writePhysGeomInfo(ZStream* buf, PhysGeomInfo* data, int num)
 	{
 		if(dest[i].brush)
 		{
+			buf->align(ALIGN_TO_4);
 			writeBrushWrapper(buf, dest[i].brush);
 		}
 	}
@@ -50,10 +52,16 @@ void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data)
 	WRITE_ASSET(data, PhysGeomList);
 	WRITE_NAME(data);
 
-	writePhysGeomInfo(buf, data->geoms, data->count);
+	if (data->geoms)
+	{
+		buf->align(ALIGN_TO_4);
+		writePhysGeomInfo(buf, data->geoms, data->count);
+	}
 }
 
 void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, int dataLen)
 {
 	if (dataLen < 0) return data;
+	Com_Error(false, "Can't add new PhysCollmap assets!");
+	return NULL;
 }

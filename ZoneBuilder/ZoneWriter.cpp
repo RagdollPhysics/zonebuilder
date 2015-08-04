@@ -4,15 +4,6 @@
 int zero = 0;
 int pad = 0xFFFFFFFF;
 
-typedef struct 
-{
-	int zoneSize;
-	int unk1;
-	int streams[8];
-} xZoneMemory;
-
-xZoneMemory memory = { 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
-
 // must be called before you write anything in your asset!!!
 int requireAsset(zoneInfo_t* info, int type, const char* name, ZStream* buf)
 {
@@ -40,7 +31,9 @@ int requireAsset(zoneInfo_t* info, int type, const char* name, ZStream* buf)
 int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
-	asset->offset = getOffsetForWrite(info, 0x03, buf);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+	buf->align(ALIGN_TO_4); // every asset header is aligned this way
+	asset->offset = ((ZSTREAM_VIRTUAL & 0x0F) << 28) | ((buf->getStreamOffset(ZSTREAM_VIRTUAL) + 1) & 0x0FFFFFFF);
 
 	const char* name = name = getAssetName(asset->type, asset->data);
 
@@ -158,22 +151,17 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		break;
 	}
 
+	buf->popStream();
+
 	asset->written = true;
 	return asset->offset;
 }
 
 ZStream* writeZone(zoneInfo_t * info)
 {
-    ZStream* buf = new ZStream(0x10000000);
-	buf->write(&memory, sizeof(xZoneMemory), 1);
+    ZStream* buf = new ZStream(info->scriptStringCount, info->assetCount);
 
-    buf->write(&info->scriptStringCount, 4, 1);
-
-    if(info->scriptStringCount > 0) buf->write(&pad, 4, 1);
-    else buf->write(&zero, 4, 1);
-
-    buf->write(&info->assetCount, 4, 1);
-    buf->write(&pad, 4, 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 
     for(int i=0; i<info->scriptStringCount; i++)
     {
@@ -185,8 +173,9 @@ ZStream* writeZone(zoneInfo_t * info)
         buf->write((void*)info->scriptStrings[i].c_str(), info->scriptStrings[i].length() + 1, 1);
     }
 
-	info->index_start = buf->getStreamOffset(3) - 56;
-	info->index_start = alignTo(info->index_start, ALIGN_TO_4); // align it to 4 bytes
+	buf->align(ALIGN_TO_4);
+
+	info->index_start = buf->getStreamOffset(ZSTREAM_VIRTUAL);
 
 	Com_Debug("Index start is at 0x%x", info->index_start);
 
@@ -204,14 +193,9 @@ ZStream* writeZone(zoneInfo_t * info)
 
     buf->resize(-1); // should be maxsize
 
-    // Grab the Stream sizes... should be different but who cares if we allocate a bit too much memory :)
-	xZoneMemory* mem = (xZoneMemory*)buf->data();
-    mem->zoneSize = buf->getsize() - 39; // data length
-    mem->streams[0] = (int)(buf->getsize() * 0.4);
-    mem->streams[3] = (int)(buf->getsize() * 1.3);
-	mem->streams[6] = (int)(buf->getStreamOffset(6) * 1.2);
-	mem->streams[7] = (int)(buf->getStreamOffset(7) * 1.2);
-
+    // update the stream sizes to be accurate in the written zone
+	buf->updateStreamOffsetHeader();
+	
 	Com_Debug("\nWrote %d assets, and %d script strings\n", info->assetCount, info->scriptStringCount);
 
     return buf;

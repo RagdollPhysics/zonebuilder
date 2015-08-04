@@ -8,28 +8,31 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 
-	if(dest->entitystring)
+	if(dest->entityString)
 	{
-		buf->write(data->entitystring, strlen(data->entitystring) + 1, 1);
-		dest->entitystring = (char*)-1;
+		buf->write(data->entityString, strlen(data->entityString) + 1, 1);
+		dest->entityString = (char*)-1;
 	}
 
-	if(dest->brushes.unk1)
+	if(dest->trigger.models)
 	{
-		buf->write(data->brushes.unk1, 8 * dest->brushes.unkCount1 << 3, 1);
-		dest->brushes.unk1 = (char*)-1;
+		buf->align(ALIGN_TO_4);
+		buf->write(data->trigger.models, 8 * dest->trigger.modelCount << 3, 1);
+		dest->trigger.models = (TriggerModel*)-1;
 	}
 
-	if(dest->brushes.unk2)
+	if (dest->trigger.hulls)
 	{
-		buf->write(data->brushes.unk2, dest->brushes.unkCount2 << 5, 1);
-		dest->brushes.unk2 = (char*)-1;
+		buf->align(ALIGN_TO_4);
+		buf->write(data->trigger.hulls, dest->trigger.hullCount << 5, 1);
+		dest->trigger.hulls = (TriggerHull*)-1;
 	}
 
-	if(dest->brushes.unk3)
+	if (dest->trigger.slabs)
 	{
-		buf->write(data->brushes.unk3, (dest->brushes.unkCount3 << 2) + dest->brushes.unkCount3 << 2, 1);
-		dest->brushes.unk3 = (char*)-1;
+		buf->align(ALIGN_TO_4);
+		buf->write(data->trigger.slabs, (dest->trigger.slabCount << 2) + dest->trigger.slabCount << 2, 1);
+		dest->trigger.slabs = (TriggerSlab*)-1;
 	}
 
 	if(dest->stages)
@@ -63,8 +66,8 @@ void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen)
 	MapEnts* asset = new MapEnts;
 	memset(asset, 0, sizeof(MapEnts));
 	asset->name = strdup(name);
-	asset->entitystring = strdup(data);
-	asset->entitystrlen = dataLen;
+	asset->entityString = strdup(data);
+	asset->numEntityChars = dataLen;
 	asset->stageCount = 0;
 	asset->stages = 0;
 

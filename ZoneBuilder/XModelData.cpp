@@ -16,42 +16,49 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 	if(data->boneNames)
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->boneNames, sizeof(short), dest->numBones);
 		dest->boneNames = (short*)-1;
 	}
 
 	if (data->parentList)
 	{
+		buf->align(ALIGN_TO_1);
 		buf->write(dest->parentList, 1, dest->numBones - dest->numRootBones);
 		dest->parentList = (char*)-1;
 	}
 
 	if(data->tagAngles) 
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(dest->tagAngles, sizeof(XModelAngle), dest->numBones - dest->numRootBones);
 		dest->tagAngles = (XModelAngle*)-1;
 	}
 
 	if(data->tagPositions)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(dest->tagPositions, sizeof(XModelTagPos), dest->numBones - dest->numRootBones);
 		dest->tagPositions = (XModelTagPos*)-1;
 	}
 
 	if(data->partClassification) 
 	{
+		buf->align(ALIGN_TO_1);
 		buf->write(dest->partClassification, 1, dest->numBones);
 		dest->partClassification = (char*)-1;
 	}
 
 	if(data->animMatrix) 
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(dest->animMatrix, sizeof(DObjAnimMat), dest->numBones);
 		dest->animMatrix = (DObjAnimMat*)-1;
 	}
 
 	if(data->materials)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(materialOffs, sizeof(int), dest->numSurfaces); // should be just the offsets
 		dest->materials = (Material**)-1;
 	}
@@ -66,33 +73,40 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 		if(surfs->surfaces)
 		{
+			buf->align(ALIGN_TO_4);
 			XSurface* surf = (XSurface*)buf->at();
 			buf->write(dest->lods[i].surfaces->surfaces, sizeof(XSurface) * surfs->numSurfaces, 1);
 
 			for(int j=0; j<surfs->numSurfaces; j++)
 			{
-				if(surf[j].blendInfo)
+				if(surf[j].blendInfo) // OffsetToPointer
 				{
+					buf->align(ALIGN_TO_2);
 					buf->write(surf[j].blendInfo, sizeof(short), surf[j].blendNum1 + 
 						(surf[j].blendNum2 * 3) + (surf[j].blendNum3 * 5) + (surf[j].blendNum4 * 7));
 					surf[j].blendInfo = (char*)-1;
 				}
 
-				if(surf[j].vertexBuffer)
+				if(surf[j].vertexBuffer) // OffsetToPointer
 				{
-					buf->write(ZSTREAM_VERTEX, surf[j].vertexBuffer, 32, surf[j].numVertices);
+					buf->pushStream(ZSTREAM_VERTEX);
+					buf->align(ALIGN_TO_16);
+					buf->write(surf[j].vertexBuffer, 32, surf[j].numVertices);
 					surf[j].vertexBuffer = (GfxPackedVertex*)-1;
+					buf->popStream();
 				}
 
 				if(surf[j].ct)
 				{
+					buf->align(ALIGN_TO_4);
 					XSurfaceCT* ct = (XSurfaceCT*)buf->at();
 					buf->write(surf[j].ct, 12, surf[j].numCT);
 					
 					for(int k=0;k<surf[j].numCT; k++)
 					{
-						if(ct[k].entry)
+						if(ct[k].entry) // OffsetToPointer
 						{
+							buf->align(ALIGN_TO_4);
 							XSurfaceCTEntry* entry = (XSurfaceCTEntry*)buf->at();
 							buf->write(ct[k].entry, 40, 1);
 
@@ -117,8 +131,11 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 				if(surf[j].indexBuffer)
 				{
-					buf->write(ZSTREAM_INDEX, surf[j].indexBuffer, 6, surf[j].numPrimitives);
+					buf->pushStream(ZSTREAM_INDEX);
+					buf->align(ALIGN_TO_16);
+					buf->write(surf[j].indexBuffer, 6, surf[j].numPrimitives);
 					surf[j].indexBuffer = (Face*)-1;
+					buf->popStream();
 				}
 			}
 
@@ -130,10 +147,12 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 	if(data->colSurf)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(dest->colSurf, sizeof(XColSurf), dest->numColSurfs);
 
 		for(int i=0; i<dest->numColSurfs; i++)
 		{
+			buf->align(ALIGN_TO_4);
 			buf->write(dest->colSurf[i].tris, 48, dest->colSurf[i].count);
 			dest->colSurf[i].tris = (void*)-1;
 		}
@@ -143,18 +162,21 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 	if(data->boneInfo)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(dest->boneInfo, 28, dest->numBones);
 		dest->boneInfo = (char*)-1;
 	}
 
 	if(dest->physPreset)
 	{
+		buf->align(ALIGN_TO_4);
 		writePhysPreset(info, buf, dest->physPreset);
 		dest->physPreset = (PhysPreset*)-1;
 	}
 
 	if(dest->physCollmap)
 	{
+		buf->align(ALIGN_TO_4);
 		writePhysCollmap(info, buf, dest->physCollmap);
 		dest->physCollmap = (PhysGeomList*)-1;
 	}

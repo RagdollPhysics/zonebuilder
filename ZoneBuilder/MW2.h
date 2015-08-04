@@ -203,7 +203,7 @@ typedef float vec4_t[4];
 typedef struct
 {
 	float x, y, z;
-} Vector3;
+} vec3_t;
 
 typedef struct
 {

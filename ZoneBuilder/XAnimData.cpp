@@ -9,6 +9,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 
 	if (data->trans)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->trans, 4, 1); // not full struct
 		if (data->trans->size)
 		{
@@ -24,10 +25,14 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 
 			if (data->trans->u.frames.frames._1)
 			{
-				if (data->trans->smallTrans)
+				if (data->trans->smallTrans){
+					buf->align(ALIGN_TO_1);
 					buf->write(data->trans->u.frames.frames._1, sizeof(char) * 3, data->trans->size + 1);
-				else
+				}
+				else {
+					buf->align(ALIGN_TO_4);
 					buf->write(data->trans->u.frames.frames._2, sizeof(short) * 3, data->trans->size + 1);
+				}
 				//dest->trans->u.frames.frames = (char*)-1;
 			}
 		}
@@ -40,6 +45,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 
 	if (data->quat2)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->quat2, 4, 1); // not full struct
 		if (data->quat2->size)
 		{
@@ -55,6 +61,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 
 			if (data->quat2->u.frames.frames)
 			{
+				buf->align(ALIGN_TO_4);
 				buf->write(data->quat2->u.frames.frames, sizeof(short) * 2, data->quat2->size + 1);
 				//dest->quat2->u.frames.frames = (short*)-1;
 			}
@@ -68,6 +75,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 
 	if (data->quat)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->quat, 4, 1);
 		if (data->quat->size)
 		{
@@ -83,6 +91,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 
 			if (data->quat->u.frames.frames)
 			{
+				buf->align(ALIGN_TO_4);
 				buf->write(data->quat->u.frames.frames, sizeof(short) * 4, data->quat->size + 1);
 				//dest->quat->u.frames.frames = (short*)-1;
 			}
@@ -100,27 +109,30 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 	WRITE_ASSET(data, XAnim);
 	WRITE_NAME(data);
 
-	WRITE_FIELD(data, tagnames, short, boneCount[PART_TYPE_ALL]);
-	WRITE_FIELD(data, notetracks, XAnimNotifyInfo, notetrackCount);
+	WRITE_FIELD_ALIGNED(data, tagnames, short, boneCount[PART_TYPE_ALL], ALIGN_TO_2);
+	WRITE_FIELD_ALIGNED(data, notetracks, XAnimNotifyInfo, notetrackCount, ALIGN_TO_4);
 	if (data->delta)
 	{
+		buf->align(ALIGN_TO_4);
 		writeXAnimDeltaParts(info, buf, data);
 		dest->delta = (XAnimDeltaPart*)-1;
 	}
-	WRITE_FIELD(data, dataByte, char, dataByteCount);
-	WRITE_FIELD(data, dataShort, short, dataShortCount);
-	WRITE_FIELD(data, dataInt, int, dataIntCount);
-	WRITE_FIELD(data, randomDataShort, short, randomDataShortCount);
-	WRITE_FIELD(data, randomDataByte, char, randomDataByteCount);
-	WRITE_FIELD(data, randomDataInt, int, randomDataIntCount);
+	WRITE_FIELD_ALIGNED(data, dataByte, char, dataByteCount, ALIGN_TO_1);
+	WRITE_FIELD_ALIGNED(data, dataShort, short, dataShortCount, ALIGN_TO_2);
+	WRITE_FIELD_ALIGNED(data, dataInt, int, dataIntCount, ALIGN_TO_4);
+	WRITE_FIELD_ALIGNED(data, randomDataShort, short, randomDataShortCount, ALIGN_TO_2);
+	WRITE_FIELD_ALIGNED(data, randomDataByte, char, randomDataByteCount, ALIGN_TO_1);
+	WRITE_FIELD_ALIGNED(data, randomDataInt, int, randomDataIntCount, ALIGN_TO_4);
 	if (data->indices.data)
 	{
 		if (data->framecount > 255)
 		{
+			buf->align(ALIGN_TO_2);
 			buf->write(data->indices.data, data->indexcount * 2, 1);
 		}
 		else
 		{
+			buf->align(ALIGN_TO_1);
 			buf->write(data->indices.data, data->indexcount, 1);
 		}
 		dest->indices.data = (void*)-1;

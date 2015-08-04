@@ -2,10 +2,11 @@
 #include "StdInc.h"
 #include "Tool.h"
 
-ZStream::ZStream()
-{
-	int size = 0x100000;
+xZoneMemory memory = { 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 
+ZStream::ZStream(int scriptStrings, int assets)
+{
+	int size = 0x10000000;
 	_origin = new char[size];
 	memset(_origin, 0, size);
 	_location = _origin;
@@ -13,17 +14,16 @@ ZStream::ZStream()
 	_offset = 0;
 	_maxsize = 0;
 	memset(_streamOffsets, 0, sizeof(_streamOffsets));
-}
 
-ZStream::ZStream(size_t size)
-{
-	_origin = new char[size];
-	memset(_origin, 0, size);
-	_location = _origin;
-	_size = size;
-	_offset = 0;
-	_maxsize = 0;
-	memset(_streamOffsets, 0, sizeof(_streamOffsets));
+	pushStream(ZSTREAM_TEMP);
+
+	write(&memory, sizeof(xZoneMemory), 1);
+
+	write(scriptStrings, 4, 1);
+	write(scriptStrings > 0 ? (&pad) : (&zero), 4, 1);
+
+	write(&assets, 4, 1);
+	write(assets > 0 ? (&pad) : (&zero), 4, 1);
 }
 
 ZStream::~ZStream()
@@ -75,7 +75,7 @@ size_t ZStream::write(int stream, const void * _str, size_t size, size_t count)
 
 size_t ZStream::write(const void * _str, size_t size, size_t count)
 {
-	return write(3, _str, size, count);
+	return write(_curStream, _str, size, count);
 }
 
 
@@ -133,5 +133,31 @@ BUFFER* ZStream::compressZlib()
 int ZStream::getStreamOffset(int stream)
 {
 	return _streamOffsets[stream];
+}
+
+void ZStream::updateStreamOffsetHeader()
+{
+	xZoneMemory* mem = (xZoneMemory*)data();
+	mem->zoneSize = getsize() - 39; // data length
+	for (int i=0; i<8; i++)
+		mem->streams[i] = _streamOffsets[i];
+}
+
+void ZStream::pushStream(int stream)
+{
+	_streamStack.push(_curStream);
+	_curStream = stream;
+}
+
+void ZStream::popStream()
+{
+	if (_streamStack.empty()) Com_Error(true, "Tried to pop stream when no streams present on the stack!");
+	_curStream = _streamStack.top();
+	_streamStack.pop();
+}
+
+void ZStream::align(int alignment)
+{
+	_streamOffsets[_curStream] = (~alignment & (alignment + _streamOffsets[_curStream]));
 }
 

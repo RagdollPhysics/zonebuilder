@@ -13,6 +13,12 @@
 			buf->write(asset->field, sizeof(type), asset->count); \
 			dest->field = (type*)-1; \
 		}
+#define WRITE_FIELD_ALIGNED(asset, field, type, count, alignment) if(asset->field) { \
+			buf->align(alignment); \
+			buf->write(asset->field, sizeof(type), asset->count); \
+			dest->field = (type*)-1; \
+				}
+
 
 #define WRITE_FIELD_ON_SIZE(asset, field, type, count) 	if(asset->field) \
 	{\

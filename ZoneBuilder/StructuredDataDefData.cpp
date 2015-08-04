@@ -8,6 +8,7 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 
 	if (data->defs)
 	{
+		buf->align(ALIGN_TO_4);
 		StructuredDataDef* defs = (StructuredDataDef*)buf->at();
 		buf->write(data->defs, sizeof(StructuredDataDef), data->defCount);
 
@@ -16,6 +17,7 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 			StructuredDataDef* curdef = &data->defs[i];
 			if (curdef->enums)
 			{
+				buf->align(ALIGN_TO_4);
 				StructuredDataEnum* enums = (StructuredDataEnum*)buf->at();
 				buf->write(curdef->enums, sizeof(StructuredDataEnum), curdef->enumCount);
 
@@ -23,6 +25,7 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 				{
 					if (enums[j].entries)
 					{
+						buf->align(ALIGN_TO_4);
 						StructuredDataEnumEntry* entries = (StructuredDataEnumEntry*)buf->at();
 						buf->write(enums[j].entries, sizeof(StructuredDataEnumEntry), enums[j].entryCount);
 
@@ -43,6 +46,7 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 
 			if (curdef->structs)
 			{
+				buf->align(ALIGN_TO_4);
 				StructuredDataStruct* structs = (StructuredDataStruct*)buf->at();
 				buf->write(curdef->structs, sizeof(StructuredDataStruct), curdef->structCount);
 
@@ -50,6 +54,7 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 				{
 					if (structs[j].properties)
 					{
+						buf->align(ALIGN_TO_4);
 						StructuredDataStructProperty* props = (StructuredDataStructProperty*)buf->at();
 						buf->write(structs[j].properties, sizeof(StructuredDataStructProperty), structs[j].propertyCount);
 
@@ -70,12 +75,14 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 
 			if (curdef->indexedArrays)
 			{
+				buf->align(ALIGN_TO_4);
 				buf->write(curdef->indexedArrays, sizeof(StructuredDataIndexedArray), curdef->indexedArrayCount);
 				defs[i].indexedArrays = (StructuredDataIndexedArray*)-1;
 			}
 
 			if (curdef->enumedArrays)
 			{
+				buf->align(ALIGN_TO_4);
 				buf->write(curdef->enumedArrays, sizeof(StructuredDataEnumedArray), curdef->enumedArrayCount);
 				defs[i].enumedArrays = (StructuredDataEnumedArray*)-1;
 			}

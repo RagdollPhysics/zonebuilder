@@ -8,6 +8,12 @@
 #define MAX_ASSET_COUNT 4096
 #define MAX_SCRIPT_STRINGS 2048
 
+#define ALIGN_TO_1 0
+#define ALIGN_TO_2 1
+#define ALIGN_TO_4 3
+#define ALIGN_TO_8 7
+#define ALIGN_TO_16 15
+
 #if ZB_DEBUG
 #define Com_Debug(fmt, ...) Com_Debug_(false, fmt, __VA_ARGS__)
 #define Com_Debug_logOnly(fmt, ...) Com_Debug_(true, fmt, __VA_ARGS__)
@@ -64,10 +70,6 @@ extern const char* getAssetName(int type, void* data);
 extern void setAssetName(int type, void* data, const char* name);
 extern int getArgc();
 extern LPSTR* getArgs();
-extern unsigned int alignTo(unsigned int value, unsigned int alignment);
-#define ALIGN_TO_4 3
-#define ALIGN_TO_8 7
-#define ALIGN_TO_16 15
 extern long flength(FILE* fp);
 extern void debugChecks();
 extern void Com_LoadZones(XZoneInfo* zones, int count);
@@ -104,7 +106,6 @@ extern int addScriptString(zoneInfo_t* info, char* str);
 extern void doLastAsset(zoneInfo_t* info, const char* name);
 extern void* getAsset(zoneInfo_t* info, int type, const char* name);
 extern void* findAssetEverywhere(zoneInfo_t* info, int type, const char* name);
-extern int getOffsetForWrite(zoneInfo_t* info, int stream, ZStream* buf);
 #if ZB_DEBUG
 void verifyAsset(zoneInfo_t* info, int type, const char* name);
 asset_t* nextUnverifiedAsset(zoneInfo_t* info);

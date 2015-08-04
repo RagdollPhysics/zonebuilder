@@ -1,6 +1,6 @@
-
 #pragma once
 #include "StdInc.h"
+#include <stack>
 
 class ZStream
 {
@@ -11,11 +11,12 @@ private:
 	char * _origin;
 	size_t _maxsize;
 	bool _freeOnDestroy;
-	int _streamOffsets[8];
+	int _curStream;
+	int _streamOffsets[8];	
+	std::stack<int> _streamStack;
 
 public:
-	ZStream();
-	ZStream(size_t size);
+	ZStream(int scriptStrings, int assets)
 	~ZStream();
 	void resize(size_t newsize);
 	size_t getsize();
@@ -29,27 +30,12 @@ public:
 	BUFFER* compressZlib();
 
 	int getStreamOffset(int stream);
+	void updateStreamOffsetHeader();
 
-	void operator++() {
-		_offset++;
-		_location++;
-	}
-	void operator--() {
-		_offset--;
-		_location--;
-	}
-	void operator+=(int b) {
-		_offset+=b;
-		_location+=b;
-	}
-	void operator-=(int b) {
-		_offset-=b;
-		_location-=b;
-	}
-	operator char*() const {
-		return _location;
-	}
+	void pushStream(int stream);
+	void popStream();
 
+	void align(int alignment);
 };
 
 #ifndef SEEK_SET
@@ -73,3 +59,10 @@ enum zStream
 	ZSTREAM_VERTEX,
 	ZSTREAM_INDEX
 };
+
+typedef struct
+{
+	int zoneSize;
+	int unk1;
+	int streams[8];
+} xZoneMemory;

@@ -14,6 +14,7 @@ void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 
 	if (data->compressedData)
 	{
+		//buf->align(ALIGN_TO_0);
 		buf->write(data->compressedData, writeLen, 1);
 		dest->compressedData = (char*)-1;
 	}

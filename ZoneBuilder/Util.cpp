@@ -266,11 +266,6 @@ long flength(FILE* fp)
 	return ret;
 }
 
-unsigned int alignTo(unsigned int value, unsigned int alignment)
-{
-	return (~alignment & (alignment + value));
-}
-
 extern unsigned int R_HashString(const char* string);
 void debugChecks()
 {

@@ -360,7 +360,7 @@ void doParseFxEntry(zoneInfo_t* info, char** session, const char* name, FxEffect
 		}
 	case ENTRY_TYPE_VEC3:
 		{
-			Vector3* vec = (Vector3*)place; 
+			vec3_t* vec = (vec3_t*)place; 
 			vec->x = Com_ParseFloat(session);
 			vec->y = Com_ParseFloat(session);
 			vec->z = Com_ParseFloat(session);

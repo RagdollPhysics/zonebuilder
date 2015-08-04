@@ -36,24 +36,28 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	outST->name = (char*)-1;
 
-	for(int ri=0; ri<data->rows; ri++)
+	if (data->data)
 	{
-		for(int ci=0; ci<data->columns; ci++)
+		buf->align(ALIGN_TO_4);
+		for (int ri = 0; ri < data->rows; ri++)
 		{
-			buf->write(&pad, 4, 1);
-			buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 4, 1);
+			for (int ci = 0; ci < data->columns; ci++)
+			{
+				buf->write(&pad, 4, 1);
+				buf->write((int)data->data[((ri * data->columns) + ci) * 2 + 1], 4, 1);
+			}
 		}
-	}
 
-	for(int ri=0; ri<data->rows; ri++)
-	{
-		for(int ci=0; ci<data->columns; ci++)
+		for (int ri = 0; ri < data->rows; ri++)
 		{
-			buf->write(data->data[((ri * data->columns) + ci) * 2], strlen(data->data[((ri * data->columns) + ci) * 2]) + 1, 1);
+			for (int ci = 0; ci < data->columns; ci++)
+			{
+				buf->write(data->data[((ri * data->columns) + ci) * 2], strlen(data->data[((ri * data->columns) + ci) * 2]) + 1, 1);
+			}
 		}
-	}
 
-	outST->data = (char**)-1;
+		outST->data = (char**)-1;
+	}
 }
 
 void * addStringTable(zoneInfo_t* info, const char* name, char* data, int dataLen)

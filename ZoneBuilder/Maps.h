@@ -1,14 +1,42 @@
 #include "StdInc.h"
 #pragma once
 
-struct MapEntsUnkStruct
+struct Bounds
 {
-	int unkCount1;
-	char* unk1; // sizeof 8
-	int unkCount2;
-	char* unk2; // sizeof 32
-	int unkCount3;
-	char* unk3; // sizeof 20
+	vec3_t midPoint;
+	vec3_t halfSize;
+};
+
+struct TriggerModel
+{
+	int contents;
+	unsigned short hullCount;
+	unsigned short firstHull;
+};
+
+struct TriggerHull
+{
+	Bounds bounds;
+	int contents;
+	unsigned short slabCount;
+	unsigned short firstSlab;
+};
+
+struct TriggerSlab
+{
+	vec3_t dir;
+	float midPoint;
+	float halfSize;
+};
+
+struct MapTriggers
+{
+	int modelCount;
+	TriggerModel* models; // sizeof 8
+	int hullCount;
+	TriggerHull* hulls; // sizeof 32
+	int slabCount;
+	TriggerSlab* slabs; // sizeof 20
 };
 
 struct Stage
@@ -22,9 +50,9 @@ struct Stage
 struct MapEnts
 {
 	const char* name;
-	const char* entitystring;
-	int entitystrlen;
-	MapEntsUnkStruct brushes;
+	const char* entityString;
+	int numEntityChars;
+	MapTriggers trigger;
 	Stage* stages;
 	char stageCount;
 	char pad[3];
@@ -33,7 +61,7 @@ struct MapEnts
 
 struct cPlane
 {
-	Vector3 a;
+	vec3_t a;
 	float dist;
 	int type;
 };
@@ -59,7 +87,7 @@ struct cBrushSide
 
 struct cModel
 {
-	Vector3 loc;
+	vec3_t loc;
 	float rotX, rotY, rotZ, rotW;
 	char pad[40];
 };
@@ -106,7 +134,7 @@ struct CollisionMap
 	int unkCount1; // +80
 	int* unknown1; // +84
 	int numVerts; // +88
-	Vector3* verts; // +92
+	vec3_t* verts; // +92
 	int numTriIndicies; // +96
 	short* triIndicies; // +100
 	bool* triEdgeIsWalkable; // +104

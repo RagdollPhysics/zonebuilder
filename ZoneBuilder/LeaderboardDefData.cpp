@@ -8,18 +8,21 @@ void writeLeaderboardDef(zoneInfo_t* info, ZStream* buf, LeaderboardDef* data)
 
 	if (data->columns)
 	{
+		buf->align(ALIGN_TO_4);
 		LbColumnDef* cols = (LbColumnDef*)buf->at();
 		buf->write(data->columns, sizeof(LbColumnDef), data->columnCount);
 		for (int i = 0; i < data->columnCount; i++)
 		{
 			if (cols[i].title)
 			{
+				buf->align(ALIGN_TO_1);
 				buf->write(data->columns[i].title, strlen(data->columns[i].title) + 1, 1);
 				cols[i].title = (const char*)-1;
 			}
 
 			if (cols[i].statName)
 			{
+				buf->align(ALIGN_TO_1);
 				buf->write(data->columns[i].statName, strlen(data->columns[i].statName) + 1, 1);
 				cols[i].statName = (const char*)-1;
 			}

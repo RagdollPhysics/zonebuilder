@@ -57,6 +57,7 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 
 		if (dest->techniques[i]->numPasses > 1) Com_Error(true, "Error in techset %s: more than one pass in technique?\n", data->name);
 
+		buf->align(ALIGN_TO_4);
 		MaterialTechnique* tech = (MaterialTechnique*)buf->at();
 		buf->write(dest->techniques[i], sizeof(MaterialTechnique), 1);
 
@@ -64,9 +65,13 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 		tech->passes[0].vertexShader = (VertexShader*)(vshader[i]);
 		tech->passes[0].pixelShader = (PixelShader*)(pshader[i]);
 
-		for(int k=0; k<tech->passes[0].argCount1 + tech->passes[0].argCount2 + tech->passes[0].argCount3; k++)
+		if (tech->passes[0].argumentDef)
 		{
-			buf->write(&tech->passes[0].argumentDef[k], sizeof(ShaderArgumentDef), 1);
+			buf->align(ALIGN_TO_4);
+			for (int k = 0; k < tech->passes[0].argCount1 + tech->passes[0].argCount2 + tech->passes[0].argCount3; k++)
+			{
+				buf->write(&tech->passes[0].argumentDef[k], sizeof(ShaderArgumentDef), 1);
+			}
 		}
 
 		buf->write(tech->name, strlen(tech->name) + 1, 1);
@@ -86,14 +91,10 @@ void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen
 
 void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 {
-	PixelShader* dest = (PixelShader*)buf->at();
+	WRITE_ASSET(data, PixelShader);
+	WRITE_NAME(data);
 
-	buf->write(data, sizeof(PixelShader), 1);
-	buf->write(data->name, strlen(data->name) + 1, 1);
-	buf->write(data->bytecode, data->codeLen * 4, 1);
-
-	dest->name = (char*)-1;
-	dest->bytecode = (DWORD*)-1;
+	WRITE_FIELD_ALIGNED(data, bytecode, DWORD, codeLen, ALIGN_TO_4);	
 }
 
 void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
@@ -104,14 +105,10 @@ void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLe
 
 void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
 {
-	VertexShader* dest = (VertexShader*)buf->at();
+	WRITE_ASSET(data, VertexShader);
+	WRITE_NAME(data);
 
-	buf->write(data, sizeof(VertexShader), 1);
-	buf->write(data->name, strlen(data->name) + 1, 1);
-	buf->write(data->bytecode, data->codeLen * 4, 1);
-
-	dest->name = (char*)-1;
-	dest->bytecode = (DWORD*)-1;
+	WRITE_FIELD_ALIGNED(data, bytecode, DWORD, codeLen, ALIGN_TO_4);
 }
 
 void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen)

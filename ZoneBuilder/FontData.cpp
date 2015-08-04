@@ -14,8 +14,9 @@ void writeFont(zoneInfo_t* info, ZStream* buf, Font* data)
 	dest->image = (Material*)image;
 	dest->glowImage = (Material*)glowImage;
 
-	if (data->characters)
+	if (data->characters) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->characters, sizeof(FontEntry), data->entries);
 		dest->characters = (FontEntry*)-1;
 	}

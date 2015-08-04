@@ -3,11 +3,8 @@
 
 void writeSndCurve(zoneInfo_t* info, ZStream* buf, SndCurve* data)
 {
-	SndCurve* curve = (SndCurve*)buf->at();
-	buf->write(data, sizeof(SndCurve), 1);
-	buf->write(curve->name, strlen(curve->name) + 1, 1);
-
-	curve->name = (char*)-1;
+	WRITE_ASSET(data, SndCurve);
+	WRITE_NAME(data);
 }
 
 void writeLoadedSound(zoneInfo_t* info, ZStream* buf, LoadedSound* data)
@@ -18,8 +15,12 @@ void writeLoadedSound(zoneInfo_t* info, ZStream* buf, LoadedSound* data)
 	buf->write(data->name, 1, strlen(data->name) + 1);
 	dest->name = (const char*)-1;
 
-	buf->write(data->data.soundData, 1, data->data.dataLenth);
-	dest->data.soundData = (char*)-1;
+	if (data->data.soundData)
+	{
+		buf->align(ALIGN_TO_1);
+		buf->write(data->data.soundData, 1, data->data.dataLenth);
+		dest->data.soundData = (char*)-1;
+	}
 }
 
 void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
@@ -65,8 +66,9 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 			alias->string4 = (char*)-1;
 		}
 
-		if (alias->soundFile)
+		if (alias->soundFile) // OffsetToPointer
 		{
+			buf->align(ALIGN_TO_4);
 			SoundFile* stream = (SoundFile*)buf->at();
 			buf->write(alias->soundFile, sizeof(SoundFile), 1);
 
@@ -86,6 +88,7 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 			}
 			else if (alias->soundFile->type == SAT_LOADED)
 			{
+				buf->align(ALIGN_TO_4);
 				writeLoadedSound(info, buf, alias->soundFile->data.loaded);
 				stream->data.loaded = (LoadedSound*)-1;
 			}
@@ -95,12 +98,14 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 
 		if (alias->volumeFalloffCurve)
 		{
+			buf->align(ALIGN_TO_4);
 			writeSndCurve(info, buf, alias->volumeFalloffCurve);
 			alias->volumeFalloffCurve = (SndCurve*)-1;
 		}
 
-		if(alias->speakerMap)
+		if(alias->speakerMap) // OffsetToPointer
 		{
+			buf->align(ALIGN_TO_4);
 			SpeakerMap* map = (SpeakerMap*)buf->at();
 			buf->write(alias->speakerMap, sizeof(SpeakerMap), 1);
 			buf->write(map->name, strlen(map->name) + 1, 1);

@@ -264,8 +264,8 @@ struct FxElemDef	// 0xFC
 	//If elemType is 0xB, then use markVisuals
 	//If elemType is not 0xB and visualCount == 1, then use visual
 	//If elemType is not 0xB and visualCount != 1, then use visualsArray
-	Vector3 collMins;
-	Vector3 collMaxs;
+	vec3_t collMins;
+	vec3_t collMaxs;
 	FxEffectDefRef *effectOnImpact;
 	FxEffectDefRef *effectOnDeath;
 	FxEffectDefRef *effectEmitted;
