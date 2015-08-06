@@ -308,5 +308,8 @@
     <ClInclude Include="Vehicle.h">
       <Filter>Header Files\AssetStructures</Filter>
     </ClInclude>
+    <ClInclude Include="ColMap.h">
+      <Filter>Header Files\AssetStructures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,13 +4,18 @@
 void writeSndCurve(zoneInfo_t* info, ZStream* buf, SndCurve* data)
 {
 	WRITE_ASSET(data, SndCurve);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	WRITE_NAME(data);
+
+	buf->popStream();
 }
 
 void writeLoadedSound(zoneInfo_t* info, ZStream* buf, LoadedSound* data)
 {
 	LoadedSound* dest = (LoadedSound*)buf->at();
 	buf->write(data, sizeof(LoadedSound), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 
 	buf->write(data->name, 1, strlen(data->name) + 1);
 	dest->name = (const char*)-1;
@@ -21,12 +26,15 @@ void writeLoadedSound(zoneInfo_t* info, ZStream* buf, LoadedSound* data)
 		buf->write(data->data.soundData, 1, data->data.dataLenth);
 		dest->data.soundData = (char*)-1;
 	}
+	buf->popStream();
 }
 
 void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 {
 	SoundAliasList* list = (SoundAliasList*)buf->at();
 	buf->write(data, sizeof(SoundAliasList), 1);
+
+	buf->pushStream(ZSTREAM_VIRTUAL);
 
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	list->name = (char*)-1;
@@ -88,9 +96,11 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 			}
 			else if (alias->soundFile->type == SAT_LOADED)
 			{
+				buf->pushStream(ZSTREAM_TEMP);
 				buf->align(ALIGN_TO_4);
 				writeLoadedSound(info, buf, alias->soundFile->data.loaded);
 				stream->data.loaded = (LoadedSound*)-1;
+				buf->popStream();
 			}
 
 			alias->soundFile = (SoundFile*)-1;
@@ -98,9 +108,11 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 
 		if (alias->volumeFalloffCurve)
 		{
+			buf->pushStream(ZSTREAM_TEMP);
 			buf->align(ALIGN_TO_4);
 			writeSndCurve(info, buf, alias->volumeFalloffCurve);
 			alias->volumeFalloffCurve = (SndCurve*)-1;
+			buf->popStream();
 		}
 
 		if(alias->speakerMap) // OffsetToPointer
@@ -114,7 +126,7 @@ void writeSoundAlias(zoneInfo_t* info, ZStream* buf, SoundAliasList* data)
 			alias->speakerMap = (SpeakerMap*)-1;
 		}
 	}
-
+	buf->popStream();
 }
 
 void * addSndCurve(zoneInfo_t* info, const char* name, char* data, int dataLen)

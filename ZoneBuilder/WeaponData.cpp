@@ -405,6 +405,7 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 
 	WeaponVariantDef* def = (WeaponVariantDef*)buf->at();
 	buf->write(data, sizeof(WeaponVariantDef), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	def->name = (char*)-1;
@@ -465,6 +466,8 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 		buf->write(data->originalAccuracyGraphKnots, 8, data->originalAccuracyGraphKnotCount);
 		def->originalAccuracyGraphKnots = (vec2_t*)-1;
 	}
+
+	buf->popStream();
 }
 
 typedef WeaponVariantDef* (__cdecl * BG_LoadWeaponDef_LoadObj_t)(const char* filename);

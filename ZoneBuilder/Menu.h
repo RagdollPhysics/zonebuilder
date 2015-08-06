@@ -1,5 +1,5 @@
-#include "StdInc.h"
-#pragma once
+//#include "StdInc.h"
+//#pragma once
 
 typedef float vec_t;
 typedef vec_t vec4_t[4];
@@ -132,7 +132,7 @@ struct Operand
 
 union entryInternalData
 {
-	operationEnum op;
+	//operationEnum op;
 	Operand operand;
 };
 

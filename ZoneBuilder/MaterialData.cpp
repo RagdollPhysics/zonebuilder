@@ -4,8 +4,9 @@
 void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data)
 {
 	GfxImage * img = (GfxImage*)buf->at();
-
 	buf->write(data, sizeof(GfxImage), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	img->name = (char*)-1;
 
@@ -15,6 +16,8 @@ void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data)
 		buf->write(data->texture, sizeof(GfxImageLoadDef), 1);
 		img->texture = (GfxImageLoadDef*)-1;
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
@@ -24,6 +27,8 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 
 	Material* dest = (Material*)buf->at();
 	buf->write(data, sizeof(Material), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 
@@ -45,7 +50,10 @@ void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data)
 		for (int i = 0; i<data->textureCount; i++)
 		{
 			// TODO, make with work with water images too
+			buf->pushStream(ZSTREAM_TEMP);
+			buf->align(ALIGN_TO_4);
 			writeGfxImage(info, buf, data->textureTable[i].info.image);
+			buf->popStream();
 		}
 		dest->textureTable = (MaterialTextureDef*)-1;
 	}

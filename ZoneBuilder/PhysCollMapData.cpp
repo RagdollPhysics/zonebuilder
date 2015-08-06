@@ -50,6 +50,8 @@ void writePhysGeomInfo(ZStream* buf, PhysGeomInfo* data, int num)
 void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data)
 {
 	WRITE_ASSET(data, PhysGeomList);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	WRITE_NAME(data);
 
 	if (data->geoms)
@@ -57,6 +59,8 @@ void writePhysCollmap(zoneInfo_t* info, ZStream* buf, PhysGeomList* data)
 		buf->align(ALIGN_TO_4);
 		writePhysGeomInfo(buf, data->geoms, data->count);
 	}
+
+	buf->popStream();
 }
 
 void * addPhysCollmap(zoneInfo_t* info, const char* name, char* data, int dataLen)

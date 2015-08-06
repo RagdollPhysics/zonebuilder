@@ -5,6 +5,9 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 {
 	MapEnts* dest = (MapEnts*)buf->at();
 	buf->write(data, sizeof(MapEnts), 1);
+
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 
@@ -17,37 +20,42 @@ void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data)
 	if(dest->trigger.models)
 	{
 		buf->align(ALIGN_TO_4);
-		buf->write(data->trigger.models, 8 * dest->trigger.modelCount << 3, 1);
+		buf->write(data->trigger.models, sizeof(TriggerModel), data->trigger.modelCount);
 		dest->trigger.models = (TriggerModel*)-1;
 	}
 
 	if (dest->trigger.hulls)
 	{
 		buf->align(ALIGN_TO_4);
-		buf->write(data->trigger.hulls, dest->trigger.hullCount << 5, 1);
+		buf->write(data->trigger.hulls, sizeof(TriggerHull), data->trigger.hullCount);
 		dest->trigger.hulls = (TriggerHull*)-1;
 	}
 
 	if (dest->trigger.slabs)
 	{
 		buf->align(ALIGN_TO_4);
-		buf->write(data->trigger.slabs, (dest->trigger.slabCount << 2) + dest->trigger.slabCount << 2, 1);
+		buf->write(data->trigger.slabs, sizeof(TriggerSlab), data->trigger.slabCount);
 		dest->trigger.slabs = (TriggerSlab*)-1;
 	}
 
-	if(dest->stages)
+	if(dest->stageNames)
 	{
 		Stage* stages = (Stage*)buf->at();
-		buf->write(data->stages, sizeof(Stage), data->stageCount);
+		buf->write(data->stageNames, sizeof(Stage), data->stageCount);
 
 		for(int i=0; i<dest->stageCount; i++)
 		{
-			buf->write(data->stages[i].name, strlen(data->stages[i].name) + 1, 1);
-			stages[i].name = (const char*)-1;
+			if (data->stageNames[i].stageName)
+			{
+				buf->write(data->stageNames[i].stageName, strlen(data->stageNames[i].stageName) + 1, 1);
+				stages[i].stageName = (char*)-1;
+			}
 		}
 
-		dest->stages = (Stage*)-1;
+		dest->stageNames = (Stage*)-1;
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen)
@@ -69,7 +77,7 @@ void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen)
 	asset->entityString = strdup(data);
 	asset->numEntityChars = dataLen;
 	asset->stageCount = 0;
-	asset->stages = 0;
+	asset->stageNames = 0;
 
 	return asset;
 }

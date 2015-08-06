@@ -47,6 +47,8 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 
 	MaterialTechniqueSet * dest = (MaterialTechniqueSet*)buf->at();
 	buf->write(data, sizeof(MaterialTechniqueSet), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 	dest->remappedTechniques = NULL;
@@ -80,7 +82,7 @@ void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data)
 		tech->passes[0].argumentDef = (ShaderArgumentDef*)-1;
 		dest->techniques[i] = (MaterialTechnique*)-1;
 	}
-
+	buf->popStream();
 }
 
 void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
@@ -92,9 +94,11 @@ void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen
 void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data)
 {
 	WRITE_ASSET(data, PixelShader);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
-	WRITE_FIELD_ALIGNED(data, bytecode, DWORD, codeLen, ALIGN_TO_4);	
+	WRITE_FIELD_ALIGNED(data, bytecode, DWORD, codeLen, ALIGN_TO_4);
+	buf->popStream();
 }
 
 void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen)
@@ -106,9 +110,11 @@ void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLe
 void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data)
 {
 	WRITE_ASSET(data, VertexShader);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
 	WRITE_FIELD_ALIGNED(data, bytecode, DWORD, codeLen, ALIGN_TO_4);
+	buf->popStream();
 }
 
 void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen)
@@ -120,8 +126,11 @@ void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen)
 void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data)
 {
 	VertexDecl* dest = (VertexDecl*)buf->at();
-
 	buf->write(data, sizeof(VertexDecl), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
+
+	buf->popStream();
 }

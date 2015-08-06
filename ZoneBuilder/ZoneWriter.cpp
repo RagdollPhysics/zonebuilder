@@ -22,7 +22,7 @@ int requireAsset(zoneInfo_t* info, int type, const char* name, ZStream* buf)
 	}
 	else
 	{
-		Com_Error(false, "Missing required asset %s (%d). Export may (and probably will) fail!", name, type);
+		Com_Error(false, "Missing required asset %s (%s). Export may (and probably will) fail!", name, getAssetStringForType(type));
 	}
 
 	return -1;
@@ -31,9 +31,9 @@ int requireAsset(zoneInfo_t* info, int type, const char* name, ZStream* buf)
 int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 {
 	if(asset->written) return asset->offset;
-	buf->pushStream(ZSTREAM_VIRTUAL);
+	buf->pushStream(ZSTREAM_TEMP);
 	buf->align(ALIGN_TO_4); // every asset header is aligned this way
-	asset->offset = ((ZSTREAM_VIRTUAL & 0x0F) << 28) | ((buf->getStreamOffset(ZSTREAM_VIRTUAL) + 1) & 0x0FFFFFFF);
+	asset->offset = ((ZSTREAM_TEMP & 0x0F) << 28) | ((buf->getStreamOffset(ZSTREAM_TEMP) + 1) & 0x0FFFFFFF);
 
 	const char* name = name = getAssetName(asset->type, asset->data);
 
@@ -93,7 +93,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeLoadedSound(info, buf, (LoadedSound*)asset->data);
 		break;
 	case ASSET_TYPE_COL_MAP_MP:
-		//writeColMap(info, buf, (Col_Map*)asset->data);
+		writeColMap(info, buf, (clipMap_t*)asset->data);
 		break;
 	case ASSET_TYPE_COM_MAP:
 		//writeComWorld(info, buf, (ComWorld*)asset->data);
@@ -151,7 +151,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		break;
 	}
 
-	buf->popStream();
+	buf->popStream(); // TEMP
 
 	asset->written = true;
 	return asset->offset;

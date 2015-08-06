@@ -223,6 +223,7 @@ echo $(SolutionDir)</Command>
   <ItemGroup>
     <ClInclude Include="AssetStructs.h" />
     <ClInclude Include="Buffers.h" />
+    <ClInclude Include="ColMap.h" />
     <ClInclude Include="CSVFile.h" />
     <ClInclude Include="FX.h" />
     <ClInclude Include="FxParsing.h" />

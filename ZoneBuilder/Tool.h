@@ -13,6 +13,9 @@
 #define ALIGN_TO_4 3
 #define ALIGN_TO_8 7
 #define ALIGN_TO_16 15
+#define ALIGN_TO_32 31
+#define ALIGN_TO_64 63
+#define ALIGN_TO_128 127
 
 #if ZB_DEBUG
 #define Com_Debug(fmt, ...) Com_Debug_(false, fmt, __VA_ARGS__)
@@ -141,8 +144,8 @@ extern void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data
 extern void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data);
 
 // ColMapData
-//extern void * addColMap(zoneInfo_t* info, const char* name, char* data, int dataLen);
-//extern void writeColMap(zoneInfo_t* info, ZStream* buf, ColMap* data);
+extern void * addColMap(zoneInfo_t* info, const char* name, char* data, int dataLen);
+extern void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data);
 
 // MapEntsData
 extern void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen);

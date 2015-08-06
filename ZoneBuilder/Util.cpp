@@ -284,7 +284,9 @@ void debugChecks()
 	ASSERT(sizeof(SpeakerMap) == 408);
 	ASSERT(sizeof(SoundFile) == 12);
 	ASSERT(sizeof(WeaponVariantDef) == 0x74);
-	ASSERT(sizeof(WeaponDef) == 0x684)
+	ASSERT(sizeof(WeaponDef) == 0x684);
+	ASSERT(sizeof(clipMap_t) == 256);
+	ASSERT(sizeof(bool) == 1);
 }
 
 #define	BIG_INFO_STRING		8192  // used for system info key only

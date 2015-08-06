@@ -11,6 +11,8 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 
 	XModel* dest = (XModel*)buf->at();
 	buf->write(data, sizeof(XModel), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	dest->name = (char*)-1;
 
@@ -180,6 +182,8 @@ void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data)
 		writePhysCollmap(info, buf, dest->physCollmap);
 		dest->physCollmap = (PhysGeomList*)-1;
 	}
+
+	buf->popStream();
 }
 
 void* addXModel(zoneInfo_t* info, const char* name, char* data, int dataLen)

@@ -89,7 +89,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		Com_Error(false, "Can't create XModelSurfs directly. Use XModel.");
 		break;
 	case ASSET_TYPE_COL_MAP_MP:
-		//asset = addColMap(info, name, data, size);
+		asset = addColMap(info, name, data, size);
 		break;
 	case ASSET_TYPE_MAP_ENTS:
 		asset = addMapEnts(info, name, data, size);

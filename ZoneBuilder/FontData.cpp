@@ -9,6 +9,7 @@ void writeFont(zoneInfo_t* info, ZStream* buf, Font* data)
 	if (data->glowImage)
 		glowImage = requireAsset(info, ASSET_TYPE_MATERIAL, data->glowImage->name, buf);
 	WRITE_ASSET(data, Font);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
 	dest->image = (Material*)image;
@@ -20,6 +21,7 @@ void writeFont(zoneInfo_t* info, ZStream* buf, Font* data)
 		buf->write(data->characters, sizeof(FontEntry), data->entries);
 		dest->characters = (FontEntry*)-1;
 	}
+	buf->popStream(); // VIRTUAL
 }
 
 void * addFont(zoneInfo_t* info, const char* name, char* data, int dataLen)

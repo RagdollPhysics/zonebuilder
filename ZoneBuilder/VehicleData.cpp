@@ -14,6 +14,7 @@ void writeVehicleDef(zoneInfo_t* info, ZStream* buf, VehicleDef* data)
 		compassEnemyIcon = requireAsset(info, ASSET_TYPE_MATERIAL, data->compassEnemyIcon->name, buf);
 
 	WRITE_ASSET(data, VehicleDef);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 
 	WRITE_NAME(data);
 
@@ -150,6 +151,7 @@ void writeVehicleDef(zoneInfo_t* info, ZStream* buf, VehicleDef* data)
 		dest->surfaceSounds[i].name = (char*)-1;
 	}
 
+	buf->popStream();
 }
 
 void * addVehicleDef(zoneInfo_t* info, const char* name, char* data, int dataLen)

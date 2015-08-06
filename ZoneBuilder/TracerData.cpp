@@ -6,10 +6,10 @@ void writeTracer(zoneInfo_t* info, ZStream* buf, Tracer* data)
 	data->material = (Material*)requireAsset(info, ASSET_TYPE_MATERIAL, (char*)data->material->name, buf);
 
 	WRITE_ASSET(data, Tracer);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
-	// everything else is primed and stored
-	// we done
+	buf->popStream();
 }
 
 void * addTracer(zoneInfo_t* info, const char* name, char* data, int dataLen)

@@ -236,6 +236,8 @@ void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data)
 	FxEffectDef* def = (FxEffectDef*)buf->at();
 	buf->write(data, sizeof(FxEffectDef), 1);
 
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(def->name, strlen(def->name) + 1, 1);
 	def->name = (char*)-1;
 
@@ -252,6 +254,8 @@ void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data)
 
 		def->elemDefs = (FxElemDef*)-1;
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 FxEffectDef * getEffectFromRef(FxEffectDefRef* ref)

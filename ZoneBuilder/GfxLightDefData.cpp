@@ -10,12 +10,16 @@ void writeGfxLightDef(zoneInfo_t* info, ZStream* buf, GfxLightDef* data)
 	}
 
 	WRITE_ASSET(data, GfxLightDef);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	WRITE_NAME(data);
 
 	if (data->attenuation.image)
 	{
 		dest->attenuation.image = (GfxImage*)offset;
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 void * addGfxLightDef(zoneInfo_t* info, const char* name, char* data, int dataLen)

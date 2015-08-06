@@ -4,6 +4,7 @@
 void writeLeaderboardDef(zoneInfo_t* info, ZStream* buf, LeaderboardDef* data)
 {
 	WRITE_ASSET(data, LeaderboardDef);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
 	if (data->columns)
@@ -29,6 +30,8 @@ void writeLeaderboardDef(zoneInfo_t* info, ZStream* buf, LeaderboardDef* data)
 		}
 		dest->columns = (LbColumnDef*)-1;
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 void * addLeaderboardDef(zoneInfo_t* info, const char* name, char* data, int dataLen)

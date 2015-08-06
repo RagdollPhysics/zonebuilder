@@ -5,6 +5,7 @@ void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 {
 	Rawfile* dest = (Rawfile*)buf->at();
 	buf->write(data, sizeof(Rawfile), 1);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 
 	unsigned int writeLen = data->sizeCompressed;
 	if (writeLen == 0) writeLen = data->sizeUnCompressed + 1;
@@ -18,6 +19,8 @@ void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data)
 		buf->write(data->compressedData, writeLen, 1);
 		dest->compressedData = (char*)-1;
 	}
+
+	buf->popStream();
 }
 
 void * addRawfile(zoneInfo_t* info, const char* name, char* data, int dataLen)

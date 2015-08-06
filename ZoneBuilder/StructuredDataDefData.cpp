@@ -4,6 +4,8 @@
 void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDefSet* data)
 {
 	WRITE_ASSET(data, StructuredDataDefSet);
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	WRITE_NAME(data);
 
 	if (data->defs)
@@ -88,6 +90,7 @@ void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDef
 			}
 		}
 	}
+	buf->popStream();
 }
 
 void* addStructuredDataDefSet(zoneInfo_t* info, const char* name, char* data, int dataLen)

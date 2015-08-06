@@ -15,8 +15,9 @@ struct GfxImage;
 struct SoundAliasList;
 struct SndCurve;
 struct LoadedSound;
-//struct CollisionMap;
+struct clipMap_t;
 //struct ComMap;
+struct MapEnts;
 //struct FxMap;
 //struct GfxMap;
 struct GfxLightDef;
@@ -38,11 +39,12 @@ struct VehicleDef;
 #include "XModel.h"
 #include "SoundAlias.h"
 #include "FX.h"
-#include "Maps.h"
 #include "Weapon.h"
 #include "StructuredDataDef.h"
 #include "Menu.h"
 #include "Vehicle.h"
+#include "ColMap.h"
+#include "Maps.h"
 
 struct PhysPreset
 {

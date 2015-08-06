@@ -22,6 +22,7 @@ void writeFxImpactTable(zoneInfo_t* info, ZStream* buf, FxImpactTable* data)
 	}
 
 	WRITE_ASSET(data, FxImpactTable);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
 	if (data->table)
@@ -29,6 +30,8 @@ void writeFxImpactTable(zoneInfo_t* info, ZStream* buf, FxImpactTable* data)
 		buf->write(data->table, sizeof(FxImpactEntry), 15);
 		dest->table = (FxImpactEntry*)-1;
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 void * addFxImpactTable(zoneInfo_t* info, const char* name, char* data, int dataLen)

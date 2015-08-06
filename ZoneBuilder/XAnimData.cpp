@@ -107,6 +107,7 @@ void writeXAnimDeltaParts(zoneInfo_t* info, ZStream* buf, XAnim* parts)
 void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 {
 	WRITE_ASSET(data, XAnim);
+	buf->pushStream(ZSTREAM_VIRTUAL);
 	WRITE_NAME(data);
 
 	WRITE_FIELD_ALIGNED(data, tagnames, short, boneCount[PART_TYPE_ALL], ALIGN_TO_2);
@@ -137,6 +138,8 @@ void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data)
 		}
 		dest->indices.data = (void*)-1;
 	}
+
+	buf->popStream();
 }
 
 XAnim* loadXAnimFile(zoneInfo_t* info, const char* name, char* b, int len);

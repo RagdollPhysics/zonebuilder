@@ -5,6 +5,9 @@ void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data)
 {
 	GameMap_MP* dest = (GameMap_MP*)buf->at();
 	buf->write(data, sizeof(GameMap_MP), 1);
+
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(dest->name, strlen(dest->name) + 1, 1); // bsp HAS to be the same name as the zone
 	dest->name = (char*)-1;
 
@@ -22,6 +25,8 @@ void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data)
 			DebugBreak();
 		}
 	}
+
+	buf->popStream(); // VIRTUAL
 }
 
 void * addGameMap_MP(zoneInfo_t* info, const char* name, char* data, int dataLen)

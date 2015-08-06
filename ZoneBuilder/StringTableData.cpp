@@ -33,6 +33,8 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 	StringTable* outST = (StringTable*)buf->at();
 	buf->write(data, sizeof(StringTable), 1);
 
+	buf->pushStream(ZSTREAM_VIRTUAL);
+
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	outST->name = (char*)-1;
 
@@ -58,6 +60,7 @@ void writeStringTable(zoneInfo_t* info, ZStream* buf, StringTable* data)
 
 		outST->data = (char**)-1;
 	}
+	buf->popStream();
 }
 
 void * addStringTable(zoneInfo_t* info, const char* name, char* data, int dataLen)
