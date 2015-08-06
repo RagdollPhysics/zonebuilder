@@ -16,7 +16,7 @@ private:
 	std::stack<int> _streamStack;
 
 public:
-	ZStream(int scriptStrings, int assets)
+	ZStream(int scriptStrings, int assets);
 	~ZStream();
 	void resize(size_t newsize);
 	size_t getsize();

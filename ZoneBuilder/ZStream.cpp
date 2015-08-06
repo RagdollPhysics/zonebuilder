@@ -19,7 +19,7 @@ ZStream::ZStream(int scriptStrings, int assets)
 
 	write(&memory, sizeof(xZoneMemory), 1);
 
-	write(scriptStrings, 4, 1);
+	write(&scriptStrings, 4, 1);
 	write(scriptStrings > 0 ? (&pad) : (&zero), 4, 1);
 
 	write(&assets, 4, 1);
