@@ -10,10 +10,12 @@ void writeFxElemVisuals(zoneInfo_t* info, ZStream* buf, FxElemVisuals* data, int
 	switch(type)
 	{
 	case 12:
+		buf->align(ALIGN_TO_4);
 		buf->write(data->effectDef->name, strlen(data->effectDef->name) + 1, 1);
 		data->effectDef = (FxEffectDefRef*)-1;
 		break;
 	case 10:
+		buf->align(ALIGN_TO_4);
 		buf->write(data->soundName, strlen(data->soundName) + 1, 1);
 		data->soundName = (const char*)-1;
 		break;
@@ -49,12 +51,14 @@ void writeFxElemDef(zoneInfo_t* info, ZStream* buf, FxElemDef* def)
 {
 	if(def->velSamples)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(def->velSamples, sizeof(FxElemVelStateSample) * (def->velIntervalCount + 1), 1);
 		def->velSamples = (FxElemVelStateSample*)-1;
 	}
 
 	if(def->visSamples)
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(def->visSamples, sizeof(FxElemVisStateSample) * (def->visStateIntervalCount + 1), 1);
 		def->visSamples = (FxElemVisStateSample*)-1;
 	}
@@ -85,16 +89,19 @@ void writeFxElemDef(zoneInfo_t* info, ZStream* buf, FxElemDef* def)
 		{
 			if(def->trailDef->trailDef)
 			{
+				buf->align(ALIGN_TO_4);
 				buf->write(def->trailDef->trailDef, sizeof(FxTrailDef), 1);
 
 				if(def->trailDef->trailDef->verts)
 				{
+					buf->align(ALIGN_TO_4);
 					buf->write(def->trailDef->trailDef->verts, sizeof(FxTrailVertex) * def->trailDef->trailDef->vertCount, 1);
 					def->trailDef->trailDef->verts = (FxTrailVertex*)-1;
 				}
 
 				if(def->trailDef->trailDef->inds)
 				{
+					buf->align(ALIGN_TO_2);
 					buf->write(def->trailDef->trailDef->inds, sizeof(unsigned short) * def->trailDef->trailDef->indCount, 1);
 					def->trailDef->trailDef->inds = (unsigned short*)-1;
 				}
@@ -106,6 +113,7 @@ void writeFxElemDef(zoneInfo_t* info, ZStream* buf, FxElemDef* def)
 		{
 			if(def->trailDef->sparkFountain)
 			{
+				buf->align(ALIGN_TO_4);
 				buf->write(def->trailDef->sparkFountain, sizeof(FxSparkFountain), 1);
 				def->trailDef->sparkFountain = (FxSparkFountain*)-1;
 			}
@@ -114,6 +122,7 @@ void writeFxElemDef(zoneInfo_t* info, ZStream* buf, FxElemDef* def)
 		{
 			if(def->trailDef->unknownBytes)
 			{
+				buf->align(ALIGN_TO_1);
 				buf->write(def->trailDef->unknownBytes, sizeof(byte), 1);
 				def->trailDef->unknownBytes = (char*)-1;
 			}
@@ -232,6 +241,7 @@ void writeFxEffectDef(zoneInfo_t* info, ZStream* buf, FxEffectDef* data)
 
 	if(data->elemDefs)
 	{
+		buf->align(ALIGN_TO_4);
 		FxElemDef* elem = (FxElemDef*)buf->at();
 		buf->write(def->elemDefs, sizeof(FxElemDef) * (def->elemDefCountLooping + def->elemDefCountOneShot + def->elemDefCountEmission), 1);
 

@@ -67,8 +67,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	buf->write(data->szInternalName, strlen(data->szInternalName) + 1, 1);
 	def->szInternalName = (char*)-1;
 
-	if (data->gunXModel)
+	if (data->gunXModel) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		// data in the array is already stored primed
 		buf->write(data->gunXModel, sizeof(XModel*), 16);
 		def->gunXModel = (XModel**)-1;
@@ -77,8 +78,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	// already stored and primed by the require function
 	// handXModel
 
-	if (data->szXAnimsR) 
+	if (data->szXAnimsR) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
 
@@ -95,8 +97,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->szXAnimsR = (const char**)-1;
 	}
 
-	if (data->szXAnimsL) 
+	if (data->szXAnimsL) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
 
@@ -119,26 +122,30 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->szModeName = (char*)-1;
 	}
 
-	if (data->noteTrackSoundMap[0]) 
+	if (data->noteTrackSoundMap[0]) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->noteTrackSoundMap[0], 2, 16);
 		def->noteTrackSoundMap[0] = (short*)-1;
 	}
 
-	if (data->noteTrackSoundMap[1]) 
+	if (data->noteTrackSoundMap[1]) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->noteTrackSoundMap[0], 2, 16);
 		def->noteTrackSoundMap[1] = (short*)-1;
 	}
 
-	if (data->noteTrackRumbleMap[0])
+	if (data->noteTrackRumbleMap[0]) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->noteTrackRumbleMap[0], 2, 16);
 		def->noteTrackRumbleMap[0] = (short*)-1;
 	}
 
-	if (data->noteTrackRumbleMap[1]) 
+	if (data->noteTrackRumbleMap[1]) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->noteTrackRumbleMap[0], 2, 16);
 		def->noteTrackRumbleMap[1] = (short*)-1;
 	}
@@ -156,8 +163,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->sounds[i].name = (char*)-1;
 	}
 
-	if (data->bounceSound) 
+	if (data->bounceSound) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
 
@@ -183,8 +191,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 	// reticleCenter
 	// reticleSide
 
-	if (data->worldModel)
+	if (data->worldModel) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		// data in the array is already stored primed
 		buf->write(data->worldModel, sizeof(XModel*), 16);
 		def->worldModel = (XModel**)-1;
@@ -241,14 +250,16 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->projDudSound.name = (char*)-1;
 	}
 
-	if (data->parallelBounce)
+	if (data->parallelBounce) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->parallelBounce, sizeof(float), 31);
 		def->parallelBounce = (float*)-1;
 	}
 
-	if (data->perpendicularBounce)
+	if (data->perpendicularBounce) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->perpendicularBounce, sizeof(float), 31);
 		def->perpendicularBounce = (float*)-1;
 	}
@@ -271,8 +282,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->accuracyGraphName[0] = (char*)-1;
 	}
 
-	if (data->accuracyGraphKnots)
+	if (data->accuracyGraphKnots) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->accuracyGraphKnots, sizeof(vec2_t), data->accuracyGraphKnotCount);
 		def->accuracyGraphKnots = (vec2_t*)-1;
 	}
@@ -283,8 +295,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->accuracyGraphName[1] = (char*)-1;
 	}
 
-	if (data->originalAccuracyGraphKnots)
+	if (data->originalAccuracyGraphKnots) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->originalAccuracyGraphKnots, sizeof(vec2_t), data->originalAccuracyGraphKnotCount);
 		def->originalAccuracyGraphKnots = (vec2_t*)-1;
 	}
@@ -307,8 +320,9 @@ void writeWeaponDef(zoneInfo_t* info, ZStream* buf, WeaponDef* data)
 		def->szScript = (char*)-1;
 	}
 
-	if (data->locationDamageMultipliers)
+	if (data->locationDamageMultipliers) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->locationDamageMultipliers, sizeof(float), 20);
 		def->locationDamageMultipliers = (float*)-1;
 	}
@@ -395,8 +409,9 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 	buf->write(data->name, strlen(data->name) + 1, 1);
 	def->name = (char*)-1;
 
-	if (data->WeaponDef)
+	if (data->WeaponDef) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		writeWeaponDef(info, buf, data->WeaponDef);
 		def->WeaponDef = (WeaponDef*)-1;
 	}
@@ -404,14 +419,16 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 	buf->write(data->displayName, strlen(data->displayName) + 1, 1);
 	def->displayName = (char*)-1;
 
-	if (data->hideTags) 
+	if (data->hideTags) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_2);
 		buf->write(data->hideTags, 2, 32);
 		def->hideTags = (short*)-1;
 	}
 
-	if (data->szXAnims) 
+	if (data->szXAnims) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		int* ptrs = (int*)buf->at();
 		buf->write(3, -1, 37);
 
@@ -435,14 +452,16 @@ void writeWeaponVariantDef(zoneInfo_t* info, ZStream* buf, WeaponVariantDef* dat
 	// killIcon
 	// dpadIcon
 
-	if (data->accuracyGraphKnots)
+	if (data->accuracyGraphKnots) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->accuracyGraphKnots, 8, data->accuracyGraphKnotCount);
 		def->accuracyGraphKnots = (vec2_t*)-1;
 	}
 
-	if (data->originalAccuracyGraphKnots)
+	if (data->originalAccuracyGraphKnots) // OffsetToPointer
 	{
+		buf->align(ALIGN_TO_4);
 		buf->write(data->originalAccuracyGraphKnots, 8, data->originalAccuracyGraphKnotCount);
 		def->originalAccuracyGraphKnots = (vec2_t*)-1;
 	}
