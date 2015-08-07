@@ -77,14 +77,23 @@ void InitConsole()
 
 	FreeConsole();
 
+	*(DWORD*)0x42895D = 440; // resize window
+
 	DWORD showConsole = 0x4305E0;
 	__asm call showConsole;
 
 	SetWindowText(s_wcd->hWnd, "ZoneBuilder " MAJOR_VERSION_STR "." MINOR_VERSION_STR "." COMMIT_STR " Console");
 
-	HANDLE logo = LoadImage(NULL, "zonebuilder.bmp", 0, 0, 0, LR_LOADFROMFILE);
+	// for some reason LoadImage returns NULL and doesn't set the last error if the format is corupted (AKA exported by GIMP)
+	HANDLE logo = LoadImage(NULL, "zonebuilder.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	if (logo)
 		SendMessageA(s_wcd->codLogo, STM_SETIMAGE, NULL, (LPARAM)logo);
+
+	const char* credit = "ZoneBuilder by TheApadayo, DidUknowiPwn && momo5502. (Build: " COMMIT_STR " " __DATE__ " - " __TIME__ ")";
+
+	HFONT font = CreateFont(-10, 0, 0, 0, 0, 0, 0, 0, 1, 8, 0, 5, 2, "Verdana");
+	HWND static1 = CreateWindowEx(0, "static", credit, 0x50000000, 6, 425, 600, 25, s_wcd->hWnd, 0, GetModuleHandle(NULL), 0);
+	SendMessageA(static1, WM_SETFONT, (WPARAM)font, 0);
 }
 
 
