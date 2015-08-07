@@ -380,6 +380,9 @@ void InitBridge()
 	*(BYTE*)0x51F450 = 0xC3; //r_delayloadimage retn
 	*(BYTE*)0x51F03D = 0xEB; // image release jmp
 
+	// enable loading cfg from disk
+	nop(0x609907, 2);
+
 	// basic checks (hash jumps, both normal and playlist)
 	*(WORD*)0x5B97A3 = 0x9090;
 	*(WORD*)0x5BA493 = 0x9090;

@@ -15,6 +15,7 @@ void printHelp_f()
 	Com_Printf("\tunloadzones - unload all loaded zones\n");
 	Com_Printf("\tlistassets <type> - list all loaded assets of a type\n");
 	Com_Printf("\tdecryptzone <zone> - decrypts an iw4c zone\n");
+	Com_Printf("\texec <script> - runs a batch script\n");
 	Com_Printf("\thelp - prints this message\n");
 	Com_Printf("\tquit - quits the program\n");
 #if ZB_DEBUG
@@ -25,13 +26,19 @@ void printHelp_f()
 
 void loadzone_f()
 {
-	if (Cmd_Argc() != 2) { Com_Printf("loadzone requires 1 argument, zone"); return; }
+	if (Cmd_Argc() < 2) { Com_Printf("loadzone requires at least 1 argument"); return; }
 
-	XZoneInfo info;
-	info.name = Cmd_Argv(1);
-	info.type1 = SOURCE_ZONE_GROUP;
-	info.type2 = 0;
-	Com_LoadZones(&info, 1);
+	int num = Cmd_Argc() - 1;
+	if (num > 9) { Com_Printf("loadzone can't have more than 9 zones at once... ignoring rest\n"); num = 9; }
+	XZoneInfo *info = new XZoneInfo[num];
+	for (int i = 0; i < num; i++)
+	{
+		info[i].name = Cmd_Argv(i + 1);
+		info[i].type1 = SOURCE_ZONE_GROUP;
+		info[i].type2 = 0;
+	}
+
+	Com_LoadZones(info, num);
 	Com_Printf("Loaded!\n");
 }
 
@@ -86,6 +93,19 @@ void listAssets_f()
 		DB_EnumXAssets(type, PrintNameOfAsset, (int)output);
 		fclose(output);
 	}
+}
+
+void exec_f()
+{
+	if (Cmd_Argc() < 2) { Com_Printf("exec requires 1 argument, script\n"); return; }
+	char* buf;
+	if (FS_ReadFile(Cmd_Argv(1), (void**)&buf) > 0)
+	{
+		Cbuf_AddText(0, buf);
+		FS_FreeFile(buf);
+		return;
+	}
+	Com_Printf("Unable to find script file \"%s\"\n", Cmd_Argv(1));
 }
 
 
@@ -181,7 +201,7 @@ void dumpTechsetNames(void* data, int userdata)
 #if ZB_DEBUG
 void dump_f()
 {
-	
+
 }
 
 const char** defaultAssetNames = (const char**)0x799958;
@@ -252,6 +272,12 @@ void buildDefaults_f()
 }
 #endif
 
+void print_f()
+{
+	if (Cmd_Argc() != 2) { Com_Printf("print requires 1 argument, zone"); return; }
+	Com_Printf("%s", Cmd_Argv(1));
+}
+
 cmd_function_t commands[32];
 
 void ConsoleCommands_Init()
@@ -259,15 +285,21 @@ void ConsoleCommands_Init()
 	printHelp_f();
 
 	int i = 0;
+	// direct console stuff
 	Cmd_AddCommand("help", printHelp_f, &commands[i++], 0);
 	Cmd_AddCommand("loadzone", loadzone_f, &commands[i++], 0);	
 	Cmd_AddCommand("buildzone", buildzone_f, &commands[i++], 0);
 	Cmd_AddCommand("unloadzones", unloadZones_f, &commands[i++], 0);
 	Cmd_AddCommand("verify", verify_f, &commands[i++], 0);
 	Cmd_AddCommand("decryptzone", decryptZone_f, &commands[i++], 0);
+	Cmd_AddCommand("exec", exec_f, &commands[i++], 0);
 	Cmd_AddCommand("listassets", listAssets_f, &commands[i++], 0);
 	Cmd_AddCommand("quit", quit_f, &commands[i++], 0);
+
+	// script stuff
+	Cmd_AddCommand("print", print_f, &commands[i++], 0);
 #ifdef ZB_DEBUG
+
 	Cmd_AddCommand("dump", dump_f, &commands[i++], 0);
 	Cmd_AddCommand("defaults", buildDefaults_f, &commands[i++], 0);
 #endif
