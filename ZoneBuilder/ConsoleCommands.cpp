@@ -6,6 +6,89 @@
 
 #include <zlib/zlib.h>
 
+void printHelp_f()
+{
+	Com_Printf("Commands: \n");
+	Com_Printf("\tloadzone <zone> - load a zone as source\n");
+	Com_Printf("\tbuildzone <zone> - build a zone\n");
+	Com_Printf("\tverify <zone> - verify a zone\n");
+	Com_Printf("\tunloadzones - unload all loaded zones\n");
+	Com_Printf("\tlistassets <type> - list all loaded assets of a type\n");
+	Com_Printf("\tdecryptzone <zone> - decrypts an iw4c zone\n");
+	Com_Printf("\thelp - prints this message\n");
+	Com_Printf("\tquit - quits the program\n");
+#if ZB_DEBUG
+	Com_Printf("\tdump - don't even ask, this is basically a throwaway one\n");
+	Com_Printf("\tdefaults - builds defaults.ff\n");
+#endif
+}
+
+void loadzone_f()
+{
+	if (Cmd_Argc() != 2) { Com_Printf("loadzone requires 1 argument, zone"); return; }
+
+	XZoneInfo info;
+	info.name = Cmd_Argv(1);
+	info.type1 = SOURCE_ZONE_GROUP;
+	info.type2 = 0;
+	Com_LoadZones(&info, 1);
+	Com_Printf("Loaded!\n");
+}
+
+extern bool useEntryNames;
+void verify_f()
+{
+	if (Cmd_Argc() != 2) { Com_Printf("verify requires 1 argument, zone"); return; }
+
+	useEntryNames = true;
+	XZoneInfo info;
+	info.name = Cmd_Argv(1);
+	info.type1 = VERIFY_ZONE_GROUP;
+	info.type2 = 0;
+	Com_LoadZones(&info, 1);
+	useEntryNames = false;
+	Com_UnloadZones(VERIFY_ZONE_GROUP);
+	Com_Printf("Verified!\n");
+}
+
+void unloadZones_f()
+{
+	Com_UnloadZones(SOURCE_ZONE_GROUP);
+}
+
+void buildzone_f()
+{
+	if (Cmd_Argc() != 2) { Com_Printf("buildzone requires 1 argument, zone"); return; }
+
+	ZoneBuild(Cmd_Argv(1));
+}
+
+void quit_f()
+{
+	Com_Quit();
+}
+
+void PrintNameOfAsset(void* data, int userdata)
+{
+	FILE* output = (FILE*)userdata;
+	fprintf(output, "%s\n", *((char**)data));
+}
+
+void listAssets_f()
+{
+	if (Cmd_Argc() < 2) { Com_Printf("listAssets requires 1 argument, type\n"); return; }
+
+	Com_Printf("Listing all loaded %s assets to 'assets.txt'\n", Cmd_Argv(1));
+	assetType_t type = (assetType_t)getAssetTypeForString(Cmd_Argv(1));
+	if (type >= 0)
+	{
+		FILE* output = fopen("assets.txt", "w");
+		DB_EnumXAssets(type, PrintNameOfAsset, (int)output);
+		fclose(output);
+	}
+}
+
+
 #include "GfxWorld.h"
 #include "s10e5.h"
 
@@ -23,9 +106,11 @@ struct ZoneKey
 static symmetric_CTR ffCTR;
 static unsigned char ffIV[16];
 
-void decryptFastfile(const char* param)
+void decryptZone_f()
 {
-	FILE* input = fopen(param, "rb");
+	if (Cmd_Argc() != 2) { Com_Printf("decryptzone requires 1 argument, zone"); return; }
+
+	FILE* input = fopen(Cmd_Argv(1), "rb");
 	char ffHeader[21];
 	fread(ffHeader, 1, 21, input);
 
@@ -94,70 +179,14 @@ void dumpTechsetNames(void* data, int userdata)
 }
 
 #if ZB_DEBUG
-void dumpStuff(const char* param)
+void dump_f()
 {
-	Com_LoadZones(dumpZones, 5);
-
-	FILE* techFile = fopen("techsets.csv", "w");
-	DB_EnumXAssets(ASSET_TYPE_TECHSET, dumpTechsetNames, (int)techFile);
-	fclose(techFile);
-
-	return;
-	XZoneInfo info;
-	info.name = param;
-	info.type1 = 2;
-	info.type2 = 0;
-	Com_LoadZones(&info, 1);
-	Com_Printf("Loaded!\n");
-
-	GfxWorld * world = (GfxWorld*)0x69F9060;
-
-	Com_Printf("Map is %s (%s)\n", world->name, world->baseName);
-
-	FILE* out = fopen(va("%s.obj", world->baseName), "w");
-
-	GfxWorldVertex* verts = world->worldDraw.vd.vertices;
-	Com_Printf("Dumping %d verts\n", world->worldDraw.vertexCount);
-
-	fprintf(out, "# location\n");
-	for (int i = 0; i < world->worldDraw.vertexCount; i++)
-	{
-		fprintf(out, "v %g %g %g\n", verts[i].xyz[0], verts[i].xyz[2], verts[i].xyz[1]);
-	}
-
-	fprintf(out, "\n\n# texcoords\n");
-	for (int i = 0; i < world->worldDraw.vertexCount; i++)
-	{
-		fprintf(out, "vt %g %g\n", verts[i].texCoord[0], verts[i].texCoord[1]);
-	}
-
-	fprintf(out, "\n\n# normals\n");
-	for (int i = 0; i < world->worldDraw.vertexCount; i++)
-	{
-		float normal[3];
-		UnpackUnitVec(verts[i].normal, normal);
-		fprintf(out, "vn %g %g %g\n", normal[0], normal[1], normal[2]);
-	}
-
-	Com_Printf("Dumping %d faces\n", world->worldDraw.indexCount);
-	fprintf(out, "\n\n# faces\n");
-	for (int i = 0; i < world->worldDraw.indexCount / 3; i++)
-	{
-		int f1 = world->worldDraw.indices[(i * 3) + 0] + 1;
-		int f2 = world->worldDraw.indices[(i * 3) + 1] + 1;
-		int f3 = world->worldDraw.indices[(i * 3) + 2] + 1;
-		fprintf(out, "f %d/%d/%d %d/%d/%d %d/%d/%d\n", f1, f1, f1, f2, f2, f2, f3, f3, f3);
-
-	}
-
-	fclose(out);
-
-	__asm int 3
+	
 }
 
 const char** defaultAssetNames = (const char**)0x799958;
 extern char header[];
-void buildDefaults()
+void buildDefaults_f()
 {
 	zoneInfo_t* info = getZoneInfo("defaults");
 	loadAsset(info, ASSET_TYPE_PHYSPRESET, "THIS_SHOULDNT_EXIST", "default");
@@ -222,3 +251,24 @@ void buildDefaults()
 
 }
 #endif
+
+cmd_function_t commands[32];
+
+void ConsoleCommands_Init()
+{
+	printHelp_f();
+
+	int i = 0;
+	Cmd_AddCommand("help", printHelp_f, &commands[i++], 0);
+	Cmd_AddCommand("loadzone", loadzone_f, &commands[i++], 0);	
+	Cmd_AddCommand("buildzone", buildzone_f, &commands[i++], 0);
+	Cmd_AddCommand("unloadzones", unloadZones_f, &commands[i++], 0);
+	Cmd_AddCommand("verify", verify_f, &commands[i++], 0);
+	Cmd_AddCommand("decryptzone", decryptZone_f, &commands[i++], 0);
+	Cmd_AddCommand("listassets", listAssets_f, &commands[i++], 0);
+	Cmd_AddCommand("quit", quit_f, &commands[i++], 0);
+#ifdef ZB_DEBUG
+	Cmd_AddCommand("dump", dump_f, &commands[i++], 0);
+	Cmd_AddCommand("defaults", buildDefaults_f, &commands[i++], 0);
+#endif
+}

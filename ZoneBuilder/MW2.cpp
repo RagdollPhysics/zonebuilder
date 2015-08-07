@@ -13,6 +13,7 @@
 
 // function definitions
 Cbuf_AddText_t Cbuf_AddText = (Cbuf_AddText_t)0x404B20;
+Cbuf_Execute_t Cbuf_Execute = (Cbuf_Execute_t)0x4E2C80;
 
 CL_AddReliableCommand_t CL_AddReliableCommand = (CL_AddReliableCommand_t)0x454F40;
 

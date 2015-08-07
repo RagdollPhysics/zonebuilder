@@ -279,8 +279,11 @@ extern DWORD** cmd_argv;
 typedef void (__cdecl * CommandCB_t)(void);
 
 // original functions
-typedef void (__cdecl * Cbuf_AddText_t)(int a1, const char* cmd);
+typedef void (__cdecl * Cbuf_AddText_t)(int client, const char* cmd);
 extern Cbuf_AddText_t Cbuf_AddText;
+
+typedef void(__cdecl * Cbuf_Execute_t)(int client, int zero);
+extern Cbuf_Execute_t Cbuf_Execute;
 
 
 typedef void (__cdecl * CL_AddReliableCommand_t)(int controller, const char* command);

@@ -22,6 +22,7 @@ DWORD Sys_InitMainThread = 0x4301B0;
 DWORD Win_InitLocalization = 0x406D10;
 DWORD SL_Init = 0x4D2280;
 DWORD Swap_Init = 0x47F390;
+DWORD CBuf_Init = 0x4D9210;
 DWORD Com_AllocMemInfo = 0x420830;
 DWORD PMem_Init = 0x64A020;
 DWORD DB_InitThread = 0x4E0FB0;
@@ -44,6 +45,7 @@ void doInit()
 		add esp, 4
 		call SL_Init
 		call Swap_Init
+		call CBuf_Init
 		call Com_AllocMemInfo
 		call PMem_Init
 		call DB_InitThread
@@ -144,8 +146,8 @@ XZoneInfo baseZones [] = { { "code_pre_gfx_mp", 0, 0 },
 */
 
 XZoneInfo baseZones[] = { 
-							{ "defaults", 0, 0 },
-							{ "shaders", 0, 0 } 
+							{ "defaults", DEFAULT_ZONE_GROUP, 0 },
+							{ "shaders", DEFAULT_ZONE_GROUP, 0 }
 						};
 
 void RunTool()
@@ -202,7 +204,6 @@ void RunTool()
 		getchar();
 	}
 
-	DestroyConsole();
 }
 
 DWORD LoadFFDBThread = 0x5BC800;
@@ -316,16 +317,8 @@ const char* soundLoadingHook(const char* ptr)
 
 void InitBridge()
 {
-#if ZB_DEBUG
-	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s (Debug)\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
-#else
-	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
-#endif
-
 	parseArgs();
 	InitConsole();
-
-	Com_Printf("Initializing IW4...\n");
 
 	// check version
 	if (strcmp((char*)0x6E9638, "177"))
@@ -360,9 +353,6 @@ void InitBridge()
 
 	// fuck exceptions
 	memset((DWORD*)0x6114B1, 0x90, 10);
-
-	// always enable system console, not just if generating reflection probes
-	memset((void*)0x60BB58, 0x90, 11);
 
 	// disable 'ignoring asset' notices
 	memset((void*)0x5BB902, 0x90, 5);
@@ -421,7 +411,6 @@ void InitBridge()
 	// r_registerDvars hack
 	*(BYTE*)0x51B1CD = 0xC3;
 
-
 	// weapon entries stuff here
 	//doWeaponEntries();
 
@@ -448,4 +437,12 @@ void InitBridge()
 	//ReallocateAssetPool(ASSET_TYPE_ADDON_MAP_ENTS, 128); // for codol fastfiles
 	ReallocateAssetPool(ASSET_TYPE_RAWFILE, 2048);
 	// causes heap issues
+
+#if ZB_DEBUG
+	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s (Debug)\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
+#else
+	Com_Printf("ZoneBuilder-%d.%d.%d built by %s on %s at %s\n", MAJOR_VERSION, MINOR_VERSION, COMMIT, BUILDHOST, __DATE__, __TIME__);
+#endif
+
+	Com_Printf("Initializing IW4...\n");
 }

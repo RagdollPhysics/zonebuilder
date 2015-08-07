@@ -3,7 +3,8 @@
 #include <shellapi.h>
 
 extern bool console;
-void Sys_Print(const char* message);
+typedef float(__cdecl * Conbuf_AppendTextInMainThread_t)(const char* msg);
+Conbuf_AppendTextInMainThread_t Conbuf_AppendTextInMainThread = (Conbuf_AppendTextInMainThread_t)0x4B2080;
 
 CRITICAL_SECTION logfile_cs;
 FILE* logfile;
@@ -46,7 +47,7 @@ void Com_Printf_(bool logOnly, const char* format, ...)
 	if (!logOnly)
 	{
 		if (console)
-			Sys_Print(buffer);
+			Conbuf_AppendTextInMainThread(buffer);
 		else
 			printf(buffer);
 	}
@@ -72,9 +73,7 @@ void Com_Debug_(bool logOnly, const char* format, ...)
 	if (!logOnly)
 	{
 		if (console){
-			Sys_Print("^3");
-			Sys_Print(buffer);
-			Sys_Print("^7");
+			Conbuf_AppendTextInMainThread(buffer);
 		}
 		else {
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
@@ -103,9 +102,7 @@ void Com_Error(bool exit, const char* format, ...)
 	va_end(va);
 
 	if (console){
-		Sys_Print("^1ERROR: ");
-		Sys_Print(buffer);
-		Sys_Print("^7\n");
+		Conbuf_AppendTextInMainThread(buffer);
 	}
 	else {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);

@@ -17,6 +17,10 @@
 #define ALIGN_TO_64 63
 #define ALIGN_TO_128 127
 
+#define DEFAULT_ZONE_GROUP 0
+#define VERIFY_ZONE_GROUP 4
+#define SOURCE_ZONE_GROUP 8
+
 #if ZB_DEBUG
 #define Com_Debug(fmt, ...) Com_Debug_(false, fmt, __VA_ARGS__)
 #define Com_Debug_logOnly(fmt, ...) Com_Debug_(true, fmt, __VA_ARGS__)
@@ -81,7 +85,6 @@ extern char *Info_ValueForKey(const char *s, const char *key);
 
 // console
 extern void InitConsole();
-extern void DestroyConsole();
 extern void RunConsole();
 
 // args

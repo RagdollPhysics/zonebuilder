@@ -12,7 +12,9 @@
 #pragma once
 
 #define MAJOR_VERSION 2
-#define MINOR_VERSION 0
+#define MAJOR_VERSION_STR "2"
+#define MINOR_VERSION 1
+#define MINOR_VERSION_STR "1"
 
 #ifdef _DEBUG
 #define ZB_DEBUG 1
