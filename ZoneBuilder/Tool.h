@@ -115,45 +115,44 @@ asset_t* nextUnverifiedAsset(zoneInfo_t* info);
 #endif
 
 // XAnimData
-extern void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data);
+void * addXAnim(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeXAnim(zoneInfo_t* info, ZStream* buf, XAnim* data);
 
 // RawfileData
-extern void * addRawfile(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data);
+void * addRawfile(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeRawfile(zoneInfo_t* info, ZStream* buf, Rawfile* data);
 
 // XModelData
-extern void * addXModel(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data);
+void * addXModel(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeXModel(zoneInfo_t* info, ZStream* buf, XModel* data);
 
 // MaterialData
-extern void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void* addGfxImage(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data);
-extern void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data);
-
+void * addMaterial(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void* addGfxImage(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeMaterial(zoneInfo_t* info, ZStream* buf, Material* data);
+void writeGfxImage(zoneInfo_t* info, ZStream* buf, GfxImage* data);
 
 // TechsetData
-extern void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data);
-extern void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data);
-extern void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data);
-extern void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data);
+void* addTechset(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void* addPixelShader(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void* addVertexShader(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void* addVertexDecl(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeTechset(zoneInfo_t* info, ZStream* buf, MaterialTechniqueSet* data);
+void writePixelShader(zoneInfo_t* info, ZStream* buf, PixelShader* data);
+void writeVertexShader(zoneInfo_t* info, ZStream* buf, VertexShader* data);
+void writeVertexDecl(zoneInfo_t* info, ZStream* buf, VertexDecl* data);
 
 // ColMapData
-extern void * addColMap(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data);
+void * addColMap(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data);
 
 // MapEntsData
-extern void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen);
-extern void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data);
+void * addMapEnts(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeMapEnts(zoneInfo_t* info, ZStream* buf, MapEnts* data);
 
 // ComWorldData
-//void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data);
-//void * addComWorld(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeComWorld(zoneInfo_t* info, ZStream* buf, ComWorld* data);
+void * addComWorld(zoneInfo_t* info, const char* name, char* data, int dataLen);
 
 // GameMapData
 void writeGameMap(zoneInfo_t* info, ZStream* buf, GameMap_MP* data);
@@ -213,12 +212,12 @@ void writeFxImpactTable(zoneInfo_t* info, ZStream* buf, FxImpactTable* data);
 void * addFxImpactTable(zoneInfo_t* info, const char* name, char* data, int dataLen);
 
 // MenuData
-extern void writeMenuList(zoneInfo_t* info, ZStream* buf, MenuList* data);
-extern void * addMenuList(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void writeMenuList(zoneInfo_t* info, ZStream* buf, MenuList* data);
+void * addMenuList(zoneInfo_t* info, const char* name, char* data, int dataLen);
 
 // StructuredDataDefData
 void writeStructuredDataDefSet(zoneInfo_t* info, ZStream* buf, StructuredDataDefSet* data);
-extern void * addStructuredDataDefSet(zoneInfo_t* info, const char* name, char* data, int dataLen);
+void * addStructuredDataDefSet(zoneInfo_t* info, const char* name, char* data, int dataLen);
 
 // VehicleData
 void writeVehicleDef(zoneInfo_t* info, ZStream* buf, VehicleDef* data);

@@ -1,13 +1,14 @@
 #include "StdInc.h"
 #pragma once
 
+struct Bounds;
+
 struct PhysMass
 {
 	float centerOfMass[3];
 	float momentsOfInertia[3];
 	float productsOfInertia[3];
 };
-
 
 struct cPlane
 {
@@ -70,8 +71,6 @@ struct cLeafBrushNodeLeaf
 
 struct cLeafBrushNodeChildren
 {
-	float dist;
-	float range;
 	unsigned __int16 childOffset[6];
 };
 
@@ -172,10 +171,10 @@ union CollisionAabbTreeIndex
 
 struct CollisionAabbTree
 {
-	float origin[3];
-	float halfSize[3];
+	vec3_t origin;
 	unsigned __int16 materialIndex;
 	unsigned __int16 childCount;
+	vec3_t halfSize;
 	CollisionAabbTreeIndex u;
 };
 
@@ -207,7 +206,7 @@ struct clipMap_t
 	vec3_t* verts; // +92
 	int numTriIndices; // +96
 	short* triIndices; // +100
-	bool* triEdgeIsWalkable; // +104
+	char* triEdgeIsWalkable; // +104
 	int numCollisionBorders; // +108
 	CollisionBorder* collisionBorders;// sizeof 28, +112
 	int numCollisionPartitions; // +116
@@ -216,11 +215,11 @@ struct clipMap_t
 	CollisionAabbTree* collisionAABBTrees;// sizeof 32, +128
 	int numCModels; // +132
 	cModel* cModels; // sizeof 68, +136
-	short numCBrushes; // +140
+	short numBrushes; // +140
 	short pad2; // +142
-	cBrush * cBrushes; // sizeof 36, +144
-	void* unknown2; // same count as cBrushes, +148
-	int * unknown3; // same count as cBrushes, +152
+	cBrush * brushes; // sizeof 36, +144
+	Bounds* brushBounds; // same count as cBrushes, +148
+	int * brushContents; // same count as cBrushes, +152
 	MapEnts * mapEnts; // +156
 	int unkCount4; // +160
 	void* unknown4; // +164

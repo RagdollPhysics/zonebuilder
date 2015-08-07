@@ -23,7 +23,7 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 	}
 	data->mapEnts = (MapEnts*)(requireAsset(info, ASSET_TYPE_MAP_ENTS, (char*)data->name, buf));
 
-	clipMap_t* dest = (clipMap_t*)buf->at();
+ 	clipMap_t* dest = (clipMap_t*)buf->at();
 	buf->write(data, sizeof(clipMap_t), 1);
 	buf->pushStream(ZSTREAM_VIRTUAL);
 
@@ -114,14 +114,17 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 	if(dest->cLeafBrushNodes)
 	{
 		cLeafBrushNode* node = (cLeafBrushNode*)buf->at();
-		buf->write(data->cLeafBrushNodes, sizeof(cLeafBrushNode), data->numCLeafBrushNodes);
+		buf->write(data->cLeafBrushNodes, sizeof(cLeafBrushNode) , data->numCLeafBrushNodes);
 		for(int i=0; i<data->numCLeafBrushNodes; i++)
 		{
-			if(node[i].leafBrushCount > 0) // OffsetToPointer
+			if(node[i].leafBrushCount > 0)
 			{
-				buf->align(ALIGN_TO_2);
-				buf->write(&node[i].data.leaf, 2, node[i].leafBrushCount);
-				node[i].data.leaf.brushes = (unsigned short*)-1;
+				if(node[i].data.leaf.brushes) // OffsetToPointer
+				{
+					buf->align(ALIGN_TO_2);
+					buf->write(node[i].data.leaf.brushes, 2, node[i].leafBrushCount);
+					node[i].data.leaf.brushes = (unsigned short*)-1;
+				}
 			}
 		}
 		dest->cLeafBrushNodes = (cLeafBrushNode*)-1;
@@ -151,8 +154,8 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 	if(dest->triEdgeIsWalkable)
 	{
 		buf->align(ALIGN_TO_1);
-		buf->write(data->triEdgeIsWalkable, sizeof(bool), ((3 * data->numTriIndices + 31) >> 3) & 0xFFFFFFFC);
-		dest->triEdgeIsWalkable = (bool*)-1;
+		buf->write(data->triEdgeIsWalkable, sizeof(char), ((3 * data->numTriIndices + 31) >> 3) & 0xFFFFFFFC);
+		dest->triEdgeIsWalkable = (char*)-1;
 	}
 
 	if (dest->collisionBorders)
@@ -172,7 +175,7 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 			if (border[i].borders) // OffsetToPointer
 			{
 				buf->align(ALIGN_TO_4);
-				buf->write(&border[i].borders, sizeof(CollisionBorder), border[i].borderCount);
+				buf->write(border[i].borders, sizeof(CollisionBorder), 1);
 				border[i].borders = (CollisionBorder*)-1;
 			}
 		}
@@ -193,21 +196,22 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 		dest->cModels = (cModel*)-1;
 	}
 
-	if(dest->cBrushes)
+	if(dest->brushes)
 	{
 		buf->align(ALIGN_TO_128);
 		cBrush* brushes = (cBrush*)buf->at();
-		buf->write(data->cBrushes, sizeof(cBrush), data->numCBrushes);
-		for(int i=0; i<data->numCBrushes; i++)
+		buf->write(data->brushes, sizeof(cBrush), data->numBrushes);
+		for(int i=0; i<data->numBrushes; i++)
 		{
 			if(brushes[i].brushSide)
 			{
+				cBrushSide* side = (cBrushSide*)buf->at();
 				buf->write(brushes[i].brushSide, sizeof(cBrushSide), 1);
 				if (brushes[i].brushSide->side)
 				{
 					buf->align(ALIGN_TO_4);
 					buf->write(brushes[i].brushSide->side, sizeof(cPlane), 1);
-					brushes[i].brushSide->side = (cPlane*)-1;
+					side->side = (cPlane*)-1;
 				}
 				brushes[i].brushSide = (cBrushSide*)-1;
 			}
@@ -217,21 +221,21 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 				brushes[i].brushEdge = (char*)-1;
 			}
 		}
-		dest->cBrushes = (cBrush*)-1;
+		dest->brushes = (cBrush*)-1;
 	}
 
-	if(dest->unknown2)
+	if(dest->brushBounds)
 	{
 		buf->align(ALIGN_TO_128);
-		buf->write(data->unknown2, 24, data->numCBrushes);
-		dest->unknown2 = (char*)-1;
+		buf->write(data->brushBounds, sizeof(Bounds), data->numBrushes);
+		dest->brushBounds = (Bounds*)-1;
 	}
 
-	if(dest->unknown3)
+	if(dest->brushContents)
 	{
 		buf->align(ALIGN_TO_4);
-		buf->write(data->unknown3, sizeof(int), data->numCBrushes);
-		dest->unknown3 = (int*)-1;
+		buf->write(data->brushContents, sizeof(int), data->numBrushes);
+		dest->brushContents = (int*)-1;
 	}
 
 	if(dest->unknown4)
@@ -240,8 +244,6 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 		buf->write(data->unknown4, 28, data->unkCount4);
 		dest->unknown4 = (int*)-1;
 	}
-
-	buf->pushStream(ZSTREAM_RUNTIME);
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -252,6 +254,8 @@ void writeColMap(zoneInfo_t* info, ZStream* buf, clipMap_t* data)
 			dest->dynEntDefList[i] = (DynEntityDef*)-1;
 		}
 	}
+
+	buf->pushStream(ZSTREAM_RUNTIME);
 
 	for (int i = 0; i < 2; i++)
 	{

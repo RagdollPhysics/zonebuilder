@@ -95,7 +95,7 @@ void loadAsset(zoneInfo_t* info, int type, const char* filename, const char* nam
 		asset = addMapEnts(info, name, data, size);
 		break;
 	case ASSET_TYPE_COM_MAP:
-		//asset = addComWorld(info, name, data, size);
+		asset = addComWorld(info, name, data, size);
 		break;
 	case ASSET_TYPE_GAME_MAP_MP:
 		asset = addGameMap_MP(info, name, data, size);

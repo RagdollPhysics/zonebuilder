@@ -57,6 +57,12 @@ size_t ZStream::getsize()
 
 size_t ZStream::write(int stream, const void * _str, size_t size, size_t count)
 {
+	if (stream == ZSTREAM_RUNTIME)
+	{
+		_streamOffsets[stream] += size*count; // stay up to date on those streams
+		return count;
+	}
+
 	if ((size*count) + _location > _origin + _size)
 	{
 		resize(_size + size*count + 2048);
@@ -159,5 +165,10 @@ void ZStream::popStream()
 void ZStream::align(int alignment)
 {
 	_streamOffsets[_curStream] = (~alignment & (alignment + _streamOffsets[_curStream]));
+}
+
+void ZStream::increaseStreamPos(int amt)
+{
+	_streamOffsets[_curStream] += amt;
 }
 

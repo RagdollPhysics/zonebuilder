@@ -255,6 +255,8 @@ void AddEntryNameHookFunc(int type, const char* name, void* asset)
 		return;
 	}
 
+	if (type == ASSET_TYPE_COL_MAP_MP) __asm int 3
+
 	char blah[1024] = { 0 };
 	_snprintf(blah, sizeof(blah), "%s,%s\n", getAssetStringForType(type), name);
 

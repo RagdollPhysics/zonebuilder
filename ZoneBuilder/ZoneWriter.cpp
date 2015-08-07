@@ -96,7 +96,7 @@ int writeAsset(zoneInfo_t* info, asset_t* asset, ZStream* buf)
 		writeColMap(info, buf, (clipMap_t*)asset->data);
 		break;
 	case ASSET_TYPE_COM_MAP:
-		//writeComWorld(info, buf, (ComWorld*)asset->data);
+		writeComWorld(info, buf, (ComWorld*)asset->data);
 		break;
 	case ASSET_TYPE_GAME_MAP_MP:
 	case ASSET_TYPE_GAME_MAP_SP:

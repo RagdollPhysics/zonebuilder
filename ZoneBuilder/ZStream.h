@@ -36,6 +36,7 @@ public:
 	void popStream();
 
 	void align(int alignment);
+	void increaseStreamPos(int amt);
 };
 
 #ifndef SEEK_SET
