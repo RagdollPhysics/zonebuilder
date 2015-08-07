@@ -298,8 +298,7 @@ void ConsoleCommands_Init()
 
 	// script stuff
 	Cmd_AddCommand("print", print_f, &commands[i++], 0);
-#ifdef ZB_DEBUG
-
+#if ZB_DEBUG
 	Cmd_AddCommand("dump", dump_f, &commands[i++], 0);
 	Cmd_AddCommand("defaults", buildDefaults_f, &commands[i++], 0);
 #endif
