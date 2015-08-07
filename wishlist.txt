@@ -1,2 +1,0 @@
-easier converter for assets from cod4 (maybe assetmanager as base?)
-defaults fastfile to remove dependencies on in a full installation
