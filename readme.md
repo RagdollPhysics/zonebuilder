@@ -1,11 +1,11 @@
-<h1>Introduction</h1>
-Zonebuilder is a tool that was designed to aid in the creation of custom assets for the Fourth Infity Ward Iteration of a certain popular FPS series.  
+<h1>ZoneBuilder</h1>
+Zonebuilder helps create custom assets for fourth-generation FPS titles developed by Infinity Ward.  
 
-<h1>Setup</h1>
-The first step to making your custom assets is to setup your development forlder correctly.  I recommend simply extracting the program directly into your game folder.  This will help with most of the setup.  You need a full game installation for the program to work as it requires many game files to work.
+<h2>Setup</h2>
+Setup the development folder by extracting the ZoneBuilder into the game folder.  Having the ZoneBuilder directory within the game's folders will help with the setup.  The process requires a full game installation for the program to work as ZoneBuild works with the game files.
 
-<h2>Folder Structure</h2>
-This is the basic folder structure that needs to exist in your game folder.  If you extracted the program directly into your game folder then this should already be set up for you. It also includes an example asset (weapon model with anims) for you to test with.
+<h3>Folder Structure</h3>
+Extracting the program directly into the game folder will include the proper folder structure. The extracted files include an example asset (weapon model with animations) to test with.
 
 + /zone_source
     + *.csv files
@@ -17,16 +17,16 @@ This is the basic folder structure that needs to exist in your game folder.  If 
     + build scripts
     + any resource files needed to build fastfiles
     
-<h1>File Formats</h1>
-<h2>CSV File</h2>
-CSV files are included throughout the project (and the game) and describe data through use of a very simple format shown below.
+<h3>File Formats</h3>
+<h4>CSV File</h4>
+The project and game includes CSV files describing data with a simple format:
 ```
 value1, value2, value3
 value4, , value5
 value6, value7, value8
 ```
-<h3>zone_source CSV files</h3>
-Each row of this file describes an asset in the fastfile that will be built. The rows can be described 2 different ways.  You can use any kind of combination of these two in a csv file.
+<h4>zone_source CSV files</h4>
+Rows describe assets in the fastfile to build and can be described 2 ways.  Any combination of the two will work in a csv file.
 
 Custom Asset
 ```
@@ -38,12 +38,12 @@ Repacking Asset *note: for here you need the asset loaded from a source (-s) zon
 type, asset name
 ```
 
-<h3>Material CSV files</h3>
-Materials are described by CSV files even though their extension is ".txt".  Their format is as follows.
+<h4>Material CSV files</h4>
+CSV files describe materials even though the file's extension is ".txt".  The format is as follows.
 ```
 option, value
 ```
-These options are described in the table below.
+The options for materials are described in the table below.
 
 | option | value description |
 | ------ | ----------------- |
@@ -53,42 +53,36 @@ These options are described in the table below.
 | specularMap | specular image | 
 | detailMap | camo image | 
 
-<h2>XME, XAE, and IWI</h2>
-These are files that define models, animations, and images respectively. They are the files referenced in the zone's csv file when creating a custom asset. They are binary formats and not described here.
+<h3>XME, XAE, and IWI</h3>
+XME, XAE, and IWI files define models, animations, and images respectively. The zone's CSV file references the XME, XAR, and IWI files when creating a custom asset. The format for the files are in binary and not described here.
 
-<h1>Building a custom Fastfile</h1>
-Custom Fastfiles are one of the ways that you can load custom assets into the game.  This process is fairly simple if you followed the setup process correctly.  I will refer to paths in reference to the base folder of your game installation.
+<h2>Building a custom Fastfile</h2>
+Custom Fastfiles allows for loading custom assets into the game.  This process is simple if the setup process was done correctly.  The paths reference to the base folder of the game installation.
 
 __Step 1:__
-First step is to create a .csv for your new fastfile.  Using the format described above, create a csv that includes all the assets that you wish to include in your fastfile.
+Create a .csv for the new Fastfile.  Use the format described above and create a CSV including all the assets to be included in the Fastfile.
 
 __Step 2:__
-Make sure all of your asset files are in their correct folders inside the /zonebuilder directory.  If files aren't in here then the tool will be unable to find them.
+Ensure all of the asset files are in the correct folders inside the /zonebuilder directory.  ZoneBuilder cannot find the files when not placed in the correct directory.
 
 __Step 3:__
-Run Zonebuilder.  The simpelest way to do this is to simply call ```zonebuilder.exe fastfile``` where fastfile is the name of your csv.  This will output a fastfile into the /zone/language folder.
+Run Zonebuilder.  A simple way to run ZoneBuilder is to call ```zonebuilder.exe fastfile``` where fastfile is the name of the CSV.  ZoneBuild will output a fastfile into the /zone/language folder.
 
-<h2>Custom Models</h2>
-Coming Soon...
-<h2>Custom Anims</h2>
-Coming Soon...
-<h2>Custom Materials</h2>
-Coming Soon...
 <h2>Custom Sounds</h2>
-In order to make a custom sound you must have a compatable sound file (mp3 or wav).
-The definition for the sound alias is a text file which contains JUST the filename of the sound.
-Sounds must be placed in the /sound subdirectory.
-an example of the corresponding csv line for a sound alias called "explosion3" with a sound file of "sound/explosions/expl3.wav" would be:
+Creating custom sounds requires a compatable sound file (mp3 or wav).
+The definition of the sound alias is a text file and only contains the filename of the sound.
+Place sounds in the /sound subdirectory.
+An example of the corresponding CSV line for a sound alias called "explosion3" with a sound file of "sound/explosions/expl3.wav" would be:
 ```sound,explosion3,sound/expl3.txt ```
 and the contents of sound/expl3.txt would be:
 ```sound/explosions/expl3.wav ```
 
 
-<h1>Command Line Options</h1>
-__-s__: Load a fastfile to be used as a source zone. You can have as many source zones as you want. but be careful about overflowing asset pools. This isn't checked by the tool. *note: there is no space between the -s and the fastfile name!*
+<h2>Command Line Options</h2>
+__-s__: Loads a Fastfile to be the source zone. There is no limit on the number of source zones and be cautious about overflowing asset pools as the issue is not handled by ZoneBuilder. *note: there is no space between the -s and the Fastfile name!*
 
-__-v__: This option allows you to verify a created fastfile. Prints out every asset in the fastfile.
+__-v__: Verifies a created Fastfile and prints out every asset in the Fastfile.
 
-__-d__: Dumps certain assets from the game to a format that can be rebuilt by this tool.
+__-d__: Dumps certain assets from the game to a format that ZoneBuilder can rebuild.
 
-__-b__: Change the value of fs_basegame. Defaults to "zonebulder".  Where you place all data the tool uses.
+__-b__: Changes the value of fs_basegame and defaults to "zonebulder" where all data is placed.
